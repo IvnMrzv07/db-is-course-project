@@ -1,0 +1,90 @@
+classDiagram
+    class AccountCommandServiceController {
+        AccountCommandService service
+    }
+    class AccountCommandService {
+        UserRepository users
+        PasswordHasher hasher
+        CredentialIssuer credentials
+        UnitOfWork unit_of_work
+    }
+    class AccountQueryService {
+        UserRepository users
+    }
+    class AccountDTO {
+        UUID id
+        str email
+        str display_name
+        tuple roles
+        int version
+    }
+    class UserRepository {
+        <<interface>>
+    }
+    class PostgresUserRepository {
+        str connection_url
+    }
+    class PasswordHasher {
+        <<interface>>
+        hash(password)
+        verify(password, password_hash)
+    }
+    class PasswordHashingAdapter {
+        str connection_url
+    }
+    class CredentialIssuer {
+        <<interface>>
+        issue(user_id)
+        revoke(credential)
+    }
+    class CredentialIssuerAdapter {
+        str connection_url
+    }
+    class BookmarkCommandService {
+        BookmarkRepository bookmarks
+        UnitOfWork unit_of_work
+    }
+    class BookmarkQueryService {
+        BookmarkRepository bookmarks
+    }
+    class BookmarkRepository {
+        <<interface>>
+    }
+    class PostgresBookmarkRepository {
+        str connection_url
+    }
+    AccountCommandServiceController --> AccountCommandService
+    AccountCommandService --> UserRepository
+    AccountCommandService --> PasswordHasher
+    AccountCommandService --> CredentialIssuer
+    AccountCommandService --> AccountDTO
+    AccountQueryService --> UserRepository
+    AccountQueryService --> AccountDTO
+    PostgresUserRepository ..|> UserRepository
+    PasswordHashingAdapter ..|> PasswordHasher
+    CredentialIssuerAdapter ..|> CredentialIssuer
+    BookmarkCommandService --> BookmarkRepository
+    BookmarkQueryService --> BookmarkRepository
+    PostgresBookmarkRepository ..|> BookmarkRepository
+    class User {
+        UUID id
+        int version
+        str email
+        str display_name
+        str password_hash
+    }
+    UserRepository --> User : stores
+    class Bookmark {
+        UUID id
+        int version
+        UUID user_id
+        str target_type
+        UUID target_id
+    }
+    BookmarkRepository --> Bookmark : stores
+    class RegistrationDTO {
+        str email
+        str display_name
+        str password
+    }
+    AccountCommandService --> RegistrationDTO : input

@@ -1,0 +1,103 @@
+classDiagram
+    class ComparisonServiceController {
+        ComparisonService service
+    }
+    class ComparisonService {
+        StatisticsReader reader
+        ComparisonCache cache
+    }
+    class StatisticsReader {
+        <<interface>>
+        compare(query)
+        recommend_matches(team_id, limit)
+    }
+    class PostgresStatisticsReader {
+        str connection_url
+    }
+    class ComparisonCache {
+        <<interface>>
+        get(key)
+        put(key, value, ttl_seconds)
+    }
+    class RedisComparisonCache {
+        str connection_url
+    }
+    class RelationshipService {
+        RelationshipReader reader
+    }
+    class RelationshipReader {
+        <<interface>>
+        find_connections(player_id, max_depth)
+    }
+    class Neo4jRelationshipReader {
+        str connection_url
+    }
+    class RecommendationService {
+        StatisticsReader reader
+    }
+    class StatisticsEventConsumer {
+        StatisticsProjectionService service
+    }
+    class StatisticsProjectionService {
+        StatisticsProjection projection
+    }
+    class StatisticsProjection {
+        <<interface>>
+        apply(event)
+        rebuild()
+    }
+    class PostgresStatisticsProjection {
+        str connection_url
+    }
+    class GraphEventConsumer {
+        GraphProjectionService service
+    }
+    class GraphProjectionService {
+        GraphProjection projection
+    }
+    class GraphProjection {
+        <<interface>>
+        apply(event)
+        rebuild()
+    }
+    class Neo4jGraphProjection {
+        str connection_url
+    }
+    ComparisonServiceController --> ComparisonService
+    ComparisonService --> StatisticsReader
+    ComparisonService --> ComparisonCache
+    PostgresStatisticsReader ..|> StatisticsReader
+    RedisComparisonCache ..|> ComparisonCache
+    RelationshipService --> RelationshipReader
+    Neo4jRelationshipReader ..|> RelationshipReader
+    RecommendationService --> StatisticsReader
+    StatisticsEventConsumer --> StatisticsProjectionService
+    StatisticsProjectionService --> StatisticsProjection
+    PostgresStatisticsProjection ..|> StatisticsProjection
+    GraphEventConsumer --> GraphProjectionService
+    GraphProjectionService --> GraphProjection
+    Neo4jGraphProjection ..|> GraphProjection
+    class ComparisonQuery {
+        UUID team1_id
+        UUID team2_id
+        datetime starts_at
+        datetime ends_at
+        str map_name
+    }
+    ComparisonService --> ComparisonQuery : input
+    class TeamComparisonDTO {
+        UUID team1_id
+        UUID team2_id
+        int head_to_head_matches
+        int team1_wins
+        int team2_wins
+    }
+    ComparisonService --> TeamComparisonDTO : returns
+    class RelationshipDTO {
+        tuple player_ids
+        tuple team_ids
+        tuple evidence_match_ids
+        str relationship_kind
+        datetime observed_from
+    }
+    RelationshipService --> RelationshipDTO : returns

@@ -1,0 +1,16 @@
+[project]
+name = "counter-strike-coursework-skeleton"
+version = "0.1.0"
+description = "Typed layered and hexagonal microservice skeleton for a database coursework project"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+# This is a source-tree skeleton, not yet a packaged/deployed application.
+# FastAPI, ORM, broker and database driver dependencies are selected during implementation.

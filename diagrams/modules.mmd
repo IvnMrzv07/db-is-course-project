@@ -1,0 +1,70 @@
+flowchart LR
+    UI[Website and dashboard] --> Proxy[Reverse proxy]
+
+        subgraph IngestionGroup[Ingestion]
+            direction TB
+            Ingestion[ingestion_service]
+            IngestionDB[(Job PostgreSQL)]
+            Sources[Files and provider APIs]
+            Ingestion --> IngestionDB
+            Ingestion --> Sources
+        end
+        subgraph CompetitionGroup[Competition]
+            direction TB
+            Competition[competition_service]
+            CompetitionDB[(Competition PostgreSQL)]
+            Competition --> CompetitionDB
+        end
+        subgraph ContentGroup[Content]
+            direction TB
+            Content[content_service]
+            MongoRouter[mongos]
+            MongoShards[(MongoDB: 3 data shards)]
+            Config[(Config replica set)]
+            Content --> MongoRouter
+            MongoRouter --> MongoShards
+            MongoRouter -. metadata .-> Config
+        end
+        subgraph AnalyticsGroup[Analytics]
+            direction TB
+            Analytics[analytics_service]
+            AnalyticsDB[(Analytics PostgreSQL)]
+            Neo4j[(Neo4j)]
+            AnalyticsCache[(Redis: analytics namespace)]
+            Analytics --> AnalyticsDB
+            Analytics --> Neo4j
+            Analytics --> AnalyticsCache
+        end
+        subgraph SearchGroup[Search]
+            direction TB
+            Search[search_service]
+            ES[(Elasticsearch)]
+            SearchCache[(Redis: search namespace)]
+            Search --> ES
+            Search --> SearchCache
+        end
+        subgraph IdentityGroup[Identity]
+            direction TB
+            Identity[identity_service]
+            IdentityDB[(Identity PostgreSQL)]
+            Identity --> IdentityDB
+        end
+
+    Proxy --> Ingestion
+    Proxy --> Competition
+    Proxy --> Content
+    Proxy --> Analytics
+    Proxy --> Search
+    Proxy --> Identity
+    MQ[RabbitMQ]
+    Ingestion <-->|Batches / results| MQ
+    Competition <-->|Imports / events| MQ
+    Content <-->|Documents / events| MQ
+    MQ -->|Changes| Analytics
+    MQ -->|Changes| Search
+
+    Analytics -. snapshots .-> Competition
+    Search -. snapshots .-> Competition
+    Search -. published snapshots .-> Content
+    Ingestion -. identity mappings .-> Competition
+    Ingestion -. enrichment .-> Content

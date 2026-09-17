@@ -1,0 +1,42 @@
+[
+  {
+    "name": "analytics-classes",
+    "width": 6624,
+    "height": 1812
+  },
+  {
+    "name": "competition-classes",
+    "width": 3582,
+    "height": 3564
+  },
+  {
+    "name": "content-classes",
+    "width": 5660,
+    "height": 2276
+  },
+  {
+    "name": "document-flow",
+    "width": 6040,
+    "height": 1862
+  },
+  {
+    "name": "identity-classes",
+    "width": 4398,
+    "height": 2536
+  },
+  {
+    "name": "ingestion-classes",
+    "width": 6530,
+    "height": 2596
+  },
+  {
+    "name": "modules",
+    "width": 6382,
+    "height": 2492
+  },
+  {
+    "name": "search-classes",
+    "width": 3838,
+    "height": 1970
+  }
+]

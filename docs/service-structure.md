@@ -1,0 +1,460 @@
+# Python Service Structure
+
+The following layouts reflect the source files now present, replacing the earlier proposed filename lists. Package initializer files are omitted for readability.
+
+Domain code depends only on the standard library and its own domain. Application code uses local ports and DTOs plus versioned transport contracts. Controllers and consumers are inbound adapters; technology implementations are outbound adapters. Composition roots inject the adapters.
+
+| Folder | Responsibility |
+| --- | --- |
+| `domain/entities` and `domain/services` | Business data and pure rules. |
+| `application/dtos` | Typed command and query boundary data. |
+| `application/services/commands` | State-changing application operations. |
+| `application/services/queries` | Visibility-aware reads and projections. |
+| `application/repositories` | Local CRUD persistence protocols. |
+| `application/ports` | Transactions, specialized queries, cache, projection, provider, and pacing interfaces. |
+| `application/mappers` | Entity-to-DTO conversions. |
+| `presentation/api/controllers` | Named HTTP adapter classes; FastAPI routes remain to be registered. |
+| `presentation/messaging/consumers` | Inbound message handlers delegating to application services. |
+| `infrastructure` | Database, provider, graph, search, cache, and broker adapter stubs. |
+| `bootstrap.py` | Typed dependency composition, without opening connections. |
+
+See [Skeleton guide](skeleton-guide.md) for scope and verification, [Code inventory](code-inventory.md) for class links, and [Diagrams](diagrams.md) for interactions.
+
+## Competition service
+
+```text
+competition_service/
+    application/
+        dtos/
+            match_commands.py
+            match_components_dto.py
+            match_dto.py
+            player_commands.py
+            player_dto.py
+            team_commands.py
+            team_dto.py
+            tournament_commands.py
+            tournament_dto.py
+        mappers/
+            match_dto_mapper.py
+            player_dto_mapper.py
+            team_dto_mapper.py
+            tournament_dto_mapper.py
+        ports/
+            unit_of_work.py
+        repositories/
+            crud_repository.py
+            external_identity_repository.py
+            map_result_repository.py
+            match_lineup_repository.py
+            match_repository.py
+            player_map_stats_repository.py
+            player_repository.py
+            team_membership_repository.py
+            team_repository.py
+            tournament_repository.py
+        services/
+            commands/
+                import_match_service.py
+                match_command_service.py
+                player_command_service.py
+                team_command_service.py
+                tournament_command_service.py
+            queries/
+                match_query_service.py
+                player_query_service.py
+                team_query_service.py
+                tournament_query_service.py
+    domain/
+        entities/
+            external_identity.py
+            map_result.py
+            match.py
+            match_lineup.py
+            player.py
+            player_map_stats.py
+            team.py
+            team_membership.py
+            tournament.py
+        services/
+            match_result_validator.py
+        exceptions.py
+    infrastructure/
+        database/
+            mappers/
+                player_persistence_mapper.py
+            models/
+                player_model.py
+            repositories/
+                postgres_external_identity_repository.py
+                postgres_map_result_repository.py
+                postgres_match_lineup_repository.py
+                postgres_match_repository.py
+                postgres_player_map_stats_repository.py
+                postgres_player_repository.py
+                postgres_team_membership_repository.py
+                postgres_team_repository.py
+                postgres_tournament_repository.py
+            unit_of_work_adapter.py
+    presentation/
+        api/
+            controllers/
+                match_controller.py
+                player_controller.py
+                team_controller.py
+                tournament_controller.py
+            mappers/
+                player_api_mapper.py
+            schemas/
+                player_request.py
+        messaging/
+            consumers/
+                import_match_consumer.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Content service
+
+```text
+content_service/
+    application/
+        dtos/
+            article_commands.py
+            article_dto.py
+            corpus_statistics_dto.py
+            extended_profile_commands.py
+            extended_profile_dto.py
+            highlight_commands.py
+            highlight_dto.py
+            interview_commands.py
+            interview_dto.py
+            source_document_snapshot_dto.py
+        mappers/
+            article_dto_mapper.py
+            extended_profile_dto_mapper.py
+            highlight_dto_mapper.py
+            interview_dto_mapper.py
+        ports/
+            corpus_statistics.py
+            unit_of_work.py
+        repositories/
+            article_repository.py
+            crud_repository.py
+            extended_profile_repository.py
+            highlight_repository.py
+            interview_repository.py
+            source_document_repository.py
+        services/
+            commands/
+                article_command_service.py
+                extended_profile_command_service.py
+                highlight_command_service.py
+                interview_command_service.py
+                source_document_command_service.py
+            queries/
+                article_query_service.py
+                corpus_statistics_query_service.py
+                extended_profile_query_service.py
+                highlight_query_service.py
+                interview_query_service.py
+                source_document_query_service.py
+    domain/
+        entities/
+            article.py
+            extended_profile.py
+            highlight.py
+            interview.py
+            source_document.py
+        services/
+            publication_policy.py
+        exceptions.py
+    infrastructure/
+        database/
+            mappers/
+                source_document_persistence_mapper.py
+            models/
+                source_document_model.py
+            repositories/
+                mongo_article_repository.py
+                mongo_extended_profile_repository.py
+                mongo_highlight_repository.py
+                mongo_interview_repository.py
+                mongo_source_document_repository.py
+            corpus_statistics_adapter.py
+            unit_of_work_adapter.py
+    presentation/
+        api/
+            controllers/
+                article_controller.py
+                corpus_statistics_query_service_controller.py
+                extended_profile_controller.py
+                highlight_controller.py
+                interview_controller.py
+                source_document_controller.py
+        messaging/
+            consumers/
+                source_document_batch_consumer.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Analytics service
+
+```text
+analytics_service/
+    application/
+        dtos/
+            comparison_query.py
+            recommendation_dto.py
+            relationship_dto.py
+            team_comparison_dto.py
+        ports/
+            comparison_cache.py
+            graph_projection.py
+            relationship_reader.py
+            statistics_projection.py
+            statistics_reader.py
+            unit_of_work.py
+        repositories/
+            crud_repository.py
+        services/
+            commands/
+                graph_projection_service.py
+                statistics_projection_service.py
+            queries/
+                comparison_service.py
+                recommendation_service.py
+                relationship_service.py
+    domain/
+        entities/
+            player_connection.py
+            team_statistics.py
+        services/
+            statistics_calculator.py
+        exceptions.py
+    infrastructure/
+        cache/
+            comparison_cache_adapter.py
+        database/
+            statistics_projection_adapter.py
+            statistics_reader_adapter.py
+            unit_of_work_adapter.py
+        graph/
+            graph_projection_adapter.py
+            relationship_reader_adapter.py
+    presentation/
+        api/
+            controllers/
+                comparison_service_controller.py
+                recommendation_service_controller.py
+                relationship_service_controller.py
+        messaging/
+            consumers/
+                graph_event_consumer.py
+                statistics_event_consumer.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Search service
+
+```text
+search_service/
+    application/
+        dtos/
+            search_history_dto.py
+            search_hit_dto.py
+            search_query_dto.py
+            search_result_dto.py
+        ports/
+            search_cache.py
+            search_history.py
+            search_index.py
+            search_reader.py
+            unit_of_work.py
+        repositories/
+            crud_repository.py
+        services/
+            commands/
+                indexing_service.py
+            queries/
+                search_service.py
+                search_statistics_query_service.py
+    domain/
+        entities/
+            searchable_document.py
+        services/
+            query_normalization_policy.py
+        exceptions.py
+    infrastructure/
+        cache/
+            search_cache_adapter.py
+        database/
+            unit_of_work_adapter.py
+        search/
+            search_history_adapter.py
+            search_index_adapter.py
+            search_reader_adapter.py
+    presentation/
+        api/
+            controllers/
+                search_service_controller.py
+                search_statistics_query_service_controller.py
+        messaging/
+            consumers/
+                indexing_event_consumer.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Identity service
+
+```text
+identity_service/
+    application/
+        dtos/
+            account_dto.py
+            bookmark_dto.py
+            credential_dto.py
+            login_dto.py
+            registration_dto.py
+        ports/
+            credential_issuer.py
+            password_hasher.py
+            unit_of_work.py
+        repositories/
+            bookmark_repository.py
+            crud_repository.py
+            user_repository.py
+        services/
+            commands/
+                account_command_service.py
+                bookmark_command_service.py
+            queries/
+                account_query_service.py
+                bookmark_query_service.py
+    domain/
+        entities/
+            bookmark.py
+            user.py
+        services/
+            bookmark_policy.py
+        exceptions.py
+    infrastructure/
+        database/
+            mappers/
+                user_persistence_mapper.py
+            models/
+                user_model.py
+            repositories/
+                postgres_bookmark_repository.py
+                postgres_user_repository.py
+            unit_of_work_adapter.py
+        security/
+            credential_issuer_adapter.py
+            password_hasher_adapter.py
+    presentation/
+        api/
+            controllers/
+                account_command_service_controller.py
+                account_query_service_controller.py
+                bookmark_command_service_controller.py
+                bookmark_query_service_controller.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Ingestion service
+
+```text
+ingestion_service/
+    application/
+        dtos/
+            job_progress_dto.py
+            provider_metadata_dto.py
+            start_import_dto.py
+            start_replay_dto.py
+        ports/
+            command_publisher.py
+            dataset_reader.py
+            metadata_provider.py
+            rate_controller.py
+            unit_of_work.py
+        repositories/
+            crud_repository.py
+            enrichment_job_repository.py
+            identity_candidate_repository.py
+            import_job_repository.py
+            replay_job_repository.py
+            validation_issue_repository.py
+        services/
+            commands/
+                batch_completion_service.py
+                enrichment_service.py
+                import_review_service.py
+                import_service.py
+                replay_command_service.py
+            queries/
+                import_query_service.py
+                replay_query_service.py
+    domain/
+        entities/
+            enrichment_job.py
+            identity_candidate.py
+            import_job.py
+            replay_job.py
+            validation_issue.py
+        services/
+            entity_resolver.py
+        exceptions.py
+    infrastructure/
+        database/
+            mappers/
+                import_job_persistence_mapper.py
+            models/
+                import_job_model.py
+            repositories/
+                postgres_enrichment_job_repository.py
+                postgres_identity_candidate_repository.py
+                postgres_import_job_repository.py
+                postgres_replay_job_repository.py
+                postgres_validation_issue_repository.py
+            unit_of_work_adapter.py
+        datasets/
+            dataset_reader_adapter.py
+        messaging/
+            command_publisher_adapter.py
+        pacing/
+            rate_controller_adapter.py
+        providers/
+            liquipedia_adapter.py
+            pandascore_adapter.py
+    presentation/
+        api/
+            controllers/
+                enrichment_service_controller.py
+                import_query_service_controller.py
+                import_review_service_controller.py
+                import_service_controller.py
+                replay_command_service_controller.py
+                replay_query_service_controller.py
+        messaging/
+            consumers/
+                batch_completed_consumer.py
+    bootstrap.py
+    logging.yaml
+    settings.py
+```
+
+## Contracts
+
+```text
+contracts/
+    messages.py
+```

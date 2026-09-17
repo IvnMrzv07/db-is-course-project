@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+
+from types import TracebackType
+from typing import Protocol, Self
+from contracts.messages import ChangeNotification, OutboxMessage
+from uuid import UUID
+
+class UnitOfWork(Protocol):
+    """Repositories supplied to a service share this transaction context.
+
+    Stage authoritative changes and outbox messages atomically. Adapters
+    must roll back on exit without a successful commit. Never spans services.
+    """
+
+    async def __aenter__(self) -> Self: ...
+    async def __aexit__(self, exc_type: type[BaseException] | None,
+                        exc: BaseException | None,
+                        traceback: TracebackType | None) -> None: ...
+    async def add_event(self, event: ChangeNotification) -> None: ...
+    async def commit(self) -> None: ...
+    async def rollback(self) -> None: ...
+
+    async def add_message(self, message: OutboxMessage) -> None: ...
+    async def has_receipt(self, message_id: UUID) -> bool: ...
+    async def record_receipt(self, message_id: UUID) -> None: ...

@@ -1,0 +1,113 @@
+classDiagram
+    class ReplayCommandServiceController {
+        ReplayCommandService service
+    }
+    class ReplayCommandService {
+        ReplayJobRepository jobs
+        RateController pacer
+        DatasetReader reader
+        CommandPublisher publisher
+        UnitOfWork unit_of_work
+    }
+    class ReplayJobRepository {
+        <<interface>>
+    }
+    class PostgresReplayJobRepository {
+        str connection_url
+    }
+    class RateController {
+        <<interface>>
+        set_rate(job_id, documents_per_second)
+        acquire(job_id, documents)
+    }
+    class AsyncioRateController {
+        str connection_url
+    }
+    class DatasetReader {
+        <<interface>>
+        read_matches(snapshot_path, checkpoint, limit)
+        read_documents(snapshot_path, checkpoint, limit)
+    }
+    class KaggleAndTextFileReader {
+        str connection_url
+    }
+    class CommandPublisher {
+        <<interface>>
+        publish_match_batch(command)
+        publish_document_batch(command)
+    }
+    class RabbitMQCommandPublisher {
+        str connection_url
+    }
+    class ImportService {
+        ImportJobRepository jobs
+        DatasetReader reader
+        CommandPublisher publisher
+        UnitOfWork unit_of_work
+    }
+    class EnrichmentService {
+        MetadataProvider provider
+        EnrichmentJobRepository jobs
+        IdentityCandidateRepository candidates
+        UnitOfWork unit_of_work
+    }
+    class MetadataProvider {
+        <<interface>>
+        fetch(entity_type, external_ids)
+    }
+    class PandaScoreAdapter {
+        str base_url
+        str api_key
+    }
+    class LiquipediaAdapter {
+        str base_url
+        str api_key
+    }
+    class BatchCompletedConsumer {
+        BatchCompletionService service
+    }
+    class BatchCompletionService {
+        ImportJobRepository imports
+        ReplayJobRepository replays
+        UnitOfWork unit_of_work
+    }
+    ReplayCommandServiceController --> ReplayCommandService
+    ReplayCommandService --> ReplayJobRepository
+    ReplayCommandService --> RateController
+    ReplayCommandService --> DatasetReader
+    ReplayCommandService --> CommandPublisher
+    PostgresReplayJobRepository ..|> ReplayJobRepository
+    AsyncioRateController ..|> RateController
+    KaggleAndTextFileReader ..|> DatasetReader
+    RabbitMQCommandPublisher ..|> CommandPublisher
+    ImportService --> DatasetReader
+    ImportService --> CommandPublisher
+    EnrichmentService --> MetadataProvider
+    PandaScoreAdapter ..|> MetadataProvider
+    LiquipediaAdapter ..|> MetadataProvider
+    BatchCompletedConsumer --> BatchCompletionService
+    BatchCompletionService --> ReplayJobRepository
+    class ReplayJob {
+        UUID id
+        int version
+        str source_snapshot
+        str corpus_scope
+        str status
+    }
+    ReplayJobRepository --> ReplayJob : stores
+    class StartReplayDTO {
+        str snapshot_path
+        str corpus_scope
+        int target_documents_per_second
+        UUID actor_id
+        str idempotency_key
+    }
+    ReplayCommandService --> StartReplayDTO : input
+    class JobProgressDTO {
+        UUID job_id
+        str status
+        int attempted
+        int accepted
+        int rejected
+    }
+    ImportService --> JobProgressDTO : returns

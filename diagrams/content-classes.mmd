@@ -1,0 +1,98 @@
+classDiagram
+    class ArticleController {
+        ArticleCommandService commands
+        ArticleQueryService queries
+    }
+    class ArticleCommandService {
+        ArticleRepository repository
+        UnitOfWork unit_of_work
+    }
+    class ArticleQueryService {
+        ArticleRepository repository
+    }
+    class ArticleRepository {
+        <<interface>>
+    }
+    class MongoArticleRepository {
+        str connection_url
+    }
+    class SourceDocumentBatchConsumer {
+        SourceDocumentCommandService service
+    }
+    class SourceDocumentCommandService {
+        SourceDocumentRepository repository
+        UnitOfWork unit_of_work
+    }
+    class SourceDocumentRepository {
+        <<interface>>
+    }
+    class MongoSourceDocumentRepository {
+        str connection_url
+    }
+    class SourceDocument {
+        UUID id
+        int version
+        str title
+        str text
+        str language
+    }
+    class UnitOfWork {
+        <<interface>>
+        add_event(event)
+        commit()
+    }
+    class MongoUnitOfWork {
+        str connection_url
+    }
+    class CorpusStatisticsQueryServiceController {
+        CorpusStatisticsQueryService service
+    }
+    class CorpusStatisticsQueryService {
+        CorpusStatisticsReader reader
+    }
+    class CorpusStatisticsReader {
+        <<interface>>
+        sample(corpus_scope)
+    }
+    class MongoCorpusStatisticsReader {
+        str connection_url
+    }
+    ArticleController --> ArticleCommandService
+    ArticleController --> ArticleQueryService
+    ArticleCommandService --> ArticleRepository
+    ArticleCommandService --> UnitOfWork
+    ArticleQueryService --> ArticleRepository
+    MongoArticleRepository ..|> ArticleRepository
+    SourceDocumentBatchConsumer --> SourceDocumentCommandService
+    SourceDocumentCommandService --> SourceDocumentRepository
+    SourceDocumentCommandService --> UnitOfWork
+    MongoSourceDocumentRepository ..|> SourceDocumentRepository
+    SourceDocumentRepository --> SourceDocument
+    MongoUnitOfWork ..|> UnitOfWork
+    CorpusStatisticsQueryServiceController --> CorpusStatisticsQueryService
+    CorpusStatisticsQueryService --> CorpusStatisticsReader
+    MongoCorpusStatisticsReader ..|> CorpusStatisticsReader
+    class Article {
+        UUID id
+        int version
+        str title
+        str body
+        UUID match_id
+    }
+    ArticleRepository --> Article : stores
+    class ArticleDTO {
+        UUID id
+        int version
+        str title
+        str body
+        UUID match_id
+    }
+    ArticleQueryService --> ArticleDTO : returns
+    class CorpusStatisticsDTO {
+        str corpus_scope
+        int stored_documents
+        float durable_documents_per_second
+        datetime sampled_at
+        int indexed_documents
+    }
+    CorpusStatisticsQueryService --> CorpusStatisticsDTO : returns

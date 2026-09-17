@@ -1,0 +1,87 @@
+classDiagram
+    class SearchServiceController {
+        SearchService service
+    }
+    class SearchService {
+        SearchReader reader
+        SearchCache cache
+        SearchHistory history
+    }
+    class SearchQueryDTO {
+        str text
+        str corpus_scope
+        str language
+        str mode
+        tuple filters
+    }
+    class SearchResultDTO {
+        tuple hits
+        int total
+        str index_generation
+        datetime updated_at
+    }
+    class SearchReader {
+        <<interface>>
+        search(query)
+    }
+    class ElasticsearchReader {
+        str connection_url
+    }
+    class SearchCache {
+        <<interface>>
+        get(key)
+        put(key, result, ttl_seconds)
+    }
+    class RedisSearchCache {
+        str connection_url
+    }
+    class SearchHistory {
+        <<interface>>
+        record(entry)
+        recent(limit)
+    }
+    class ElasticsearchHistory {
+        str connection_url
+    }
+    class IndexingEventConsumer {
+        IndexingService service
+    }
+    class IndexingService {
+        SearchIndex index
+    }
+    class SearchIndex {
+        <<interface>>
+        apply(event)
+        rebuild(corpus_scope)
+    }
+    class ElasticsearchIndex {
+        str connection_url
+    }
+    SearchServiceController --> SearchService
+    SearchService --> SearchQueryDTO
+    SearchService --> SearchResultDTO
+    SearchService --> SearchReader
+    SearchService --> SearchCache
+    SearchService --> SearchHistory
+    ElasticsearchReader ..|> SearchReader
+    RedisSearchCache ..|> SearchCache
+    ElasticsearchHistory ..|> SearchHistory
+    IndexingEventConsumer --> IndexingService
+    IndexingService --> SearchIndex
+    ElasticsearchIndex ..|> SearchIndex
+    class SearchHitDTO {
+        UUID entity_id
+        str entity_type
+        str title
+        str snippet
+        tuple highlights
+    }
+    SearchResultDTO --> SearchHitDTO : hits
+    class SearchHistoryDTO {
+        str query
+        str corpus_scope
+        str status
+        int result_count
+        float duration_ms
+    }
+    SearchHistory --> SearchHistoryDTO : records

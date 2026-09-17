@@ -1,0 +1,129 @@
+classDiagram
+    class MatchController {
+        MatchCommandService commands
+        MatchQueryService queries
+    }
+    class MatchCommandService {
+        MatchRepository repository
+        UnitOfWork unit_of_work
+    }
+    class MatchQueryService {
+        MatchRepository repository
+    }
+    class CreateMatch {
+        UUID tournament_id
+        UUID team1_id
+        UUID team2_id
+        datetime started_at
+        int best_of
+    }
+    class UpdateMatch {
+        UUID id
+        int expected_version
+        UUID tournament_id
+        UUID team1_id
+        UUID team2_id
+    }
+    class MatchDTO {
+        UUID id
+        int version
+        UUID tournament_id
+        UUID team1_id
+        UUID team2_id
+    }
+    class MatchRepository {
+        <<interface>>
+        create(entity)
+        get(entity_id)
+        list(limit, offset)
+        update(entity, expected_version)
+        delete(entity_id, expected_version)
+    }
+    class PostgresMatchRepository {
+        str connection_url
+    }
+    class UnitOfWork {
+        <<interface>>
+        add_message(message)
+        commit()
+        rollback()
+    }
+    class PostgresUnitOfWork {
+        str connection_url
+    }
+    class Match {
+        UUID id
+        int version
+        UUID tournament_id
+        UUID team1_id
+        UUID team2_id
+    }
+    class MapResult {
+        UUID id
+        int version
+        UUID match_id
+        str map_name
+        int map_number
+    }
+    class PlayerMapStats {
+        UUID id
+        int version
+        UUID player_id
+        UUID team_id
+        int kills
+    }
+    class MatchLineup {
+        UUID id
+        int version
+        UUID match_id
+        UUID team_id
+        tuple player_ids
+    }
+    class ImportMatchConsumer {
+        ImportMatchService service
+    }
+    class ImportMatchService {
+        MatchRepository repository
+        UnitOfWork unit_of_work
+    }
+    MatchController --> MatchCommandService
+    MatchController --> MatchQueryService
+    MatchCommandService --> CreateMatch
+    MatchCommandService --> UpdateMatch
+    MatchCommandService --> MatchRepository
+    MatchCommandService --> UnitOfWork
+    MatchQueryService --> MatchRepository
+    MatchQueryService --> MatchDTO
+    PostgresMatchRepository ..|> MatchRepository
+    PostgresUnitOfWork ..|> UnitOfWork
+    MatchRepository --> Match
+    Match *-- MapResult
+    MapResult *-- PlayerMapStats
+    Match *-- MatchLineup
+    ImportMatchConsumer --> ImportMatchService
+    ImportMatchService --> MatchRepository
+    ImportMatchService --> UnitOfWork
+    class Player {
+        UUID id
+        int version
+        str nickname
+        str real_name
+        str country_code
+    }
+    MatchLineup --> Player : player_ids
+    class Team {
+        UUID id
+        int version
+        str name
+        str region
+        datetime founded_at
+    }
+    Match --> Team : team IDs
+    class Tournament {
+        UUID id
+        int version
+        str name
+        str discipline
+        datetime starts_at
+    }
+    Match --> Tournament : tournament_id

@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+.env
+*.egg-info/
+build/
+dist/
+.diagram-renderer/
+.report-work/
+diagrams/images/*.svg
+diagrams/diagram-images.zip
+tools/scaffold_skeleton.py
+tools/complete_skeleton.py
+tools/wire_skeleton.py
+/Датасет і структура.docx
+/Улановський Павєл КМ-42 Звіт до лабораторної роботи №5.docx
+~$*
+.env.*
+!.env.example

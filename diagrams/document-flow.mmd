@@ -1,0 +1,26 @@
+sequenceDiagram
+    actor Admin
+    participant RC as ReplayCommandService
+    participant R as DatasetReader and RateController
+    participant MQ as RabbitMQ with outbox dispatcher
+    participant C as SourceDocumentCommandService
+    participant CQ as SourceDocumentQueryService
+    participant BC as BatchCompletionService
+    participant DB as MongoDB via mongos
+    participant S as IndexingService
+    participant ES as Elasticsearch
+    Admin->>RC: start or change_rate
+    Note over RC: Persist job/rate, return before processing completes
+    RC->>R: read bounded batch and acquire allowance
+    RC->>MQ: committed StoreSourceDocumentBatch
+    MQ->>C: deliver command
+    C->>DB: transaction: documents, receipt, outbox
+    DB-->>C: durable commit
+    C->>MQ: SourceDocumentStored and DocumentBatchCompleted
+    MQ->>BC: BatchCompleted - update durable replay progress
+    MQ->>S: reference ChangeNotification
+    S->>CQ: read eligible current owner snapshot through owner API
+    CQ-->>S: versioned published document or tombstone
+    S->>ES: version-aware upsert or removal
+    Admin->>C: query database-backed corpus statistics
+    Note over Admin,ES: Planned sequence, infrastructure operations are currently stubs
