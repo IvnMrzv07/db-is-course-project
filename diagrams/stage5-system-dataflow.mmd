@@ -1,0 +1,154 @@
+flowchart TD
+    %% =========================================================================
+    %% МЕТАДАНІ ЗРІЗУ
+    %% =========================================================================
+    subgraph MetaHeader ["Архітектурний зріз системи"]
+        ARCH_STAMP["📅 Станом на: 03.10.2026 | Варіант № 28 CS2 | High-Load Polyglot Platform"]
+    end
+
+    %% =========================================================================
+    %% ШАР 1: КЛІЄНТСЬКИЙ РІВЕНЬ (UI & DASHBOARD)
+    %% =========================================================================
+    subgraph ClientLayer ["1. Клієнтський рівень (Web Frontend & Dashboard)"]
+        UI_Slider["🎛️ Панель динамічного керування швидкістю<br/>(Rate Controller: 10 - 5000 матчів/сек)"]
+        UI_Metrics["📊 Моніторинг у реальному часі<br/>(RPS, Latency &lt; 100ms, Ingested Counter, Error Rate)"]
+        UI_Search["🔍 Пошуковий інтерфейс CS2<br/>(Повнотекстовий пошук турнірів, статей, команд)"]
+        UI_Analytics["📈 Графова та матчева аналітика<br/>(Порівняння команд Head-to-Head, зв'язки ростерів)"]
+    end
+
+    %% =========================================================================
+    %% ШАР 2: DATA INGESTION ENGINE
+    %% =========================================================================
+    subgraph IngestionLayer ["2. Модуль генерації та збору даних (ingestion_service)"]
+        DatasetReader["📂 DatasetReaderAdapter<br/>(Читання CS2 CSV: tier1, tier2, tier3 games)"]
+        PacingController["⏱️ RateControllerAdapter<br/>(Регулювання затримок і розміру batch-пачок)"]
+        ImportReplaySvc["⚙️ ImportService / ReplayCommandService<br/>(Валідація та серіалізація сутностей)"]
+        CommandPublisher["📤 CommandPublisherAdapter<br/>(Пакування у contracts/messages.py)"]
+    end
+
+    %% =========================================================================
+    %% ШАР 3: АСИНХРОННИЙ БРОКЕР ПОВІДОМЛЕНЬ (STREAMING BUS)
+    %% =========================================================================
+    subgraph BrokerLayer ["3. Асинхронна шина подій (Message Broker: Kafka / RabbitMQ)"]
+        TOPIC_MATCHES["📨 Topic: matches.imported<br/>(Матчі, мапи, індивідуальні статси гравців)"]
+        TOPIC_CONTENT["📨 Topic: content.documents.batch<br/>(Специфікації та аналітика матчів CS2)"]
+        TOPIC_GRAPH["📨 Topic: analytics.graph.events<br/>(Оновлення ростерів: Player-PLAYED_WITH-Player)"]
+        TOPIC_SEARCH["📨 Topic: search.indexing.events<br/>(Індексація назв турнірів, біографій, статей)"]
+    end
+
+    %% =========================================================================
+    %% ШАР 4: СЕРВІСНИЙ БЕКЕНД-ШАР (CQRS SERVICES)
+    %% =========================================================================
+    subgraph BackendLayer ["4. Розподілений шар мікросервісів (FastAPI / CQRS Core)"]
+        subgraph SvcCompetition ["competition_service (Реляційне транзакційне ядро)"]
+            CompConsumer["📥 ImportMatchConsumer"]
+            CompCmd["MatchCommandService / PlayerCommandService"]
+            CompQuery["MatchQueryService / TournamentQueryService"]
+            CompUoW["PostgresUnitOfWorkAdapter"]
+        end
+
+        subgraph SvcContent ["content_service (Документне NoSQL-ядро)"]
+            ContentConsumer["📥 SourceDocumentBatchConsumer"]
+            ContentCmd["SourceDocumentCommandService / ArticleCommandService"]
+            ContentQuery["SourceDocumentQueryService / CorpusStatisticsService"]
+            ContentUoW["MongoUnitOfWorkAdapter"]
+        end
+
+        subgraph SvcAnalytics ["analytics_service (Графова аналітика & H2H)"]
+            AnalyticsConsumer["📥 GraphEventConsumer / StatisticsEventConsumer"]
+            GraphProjSvc["GraphProjectionService"]
+            ComparisonSvc["ComparisonService (H2H Winrate)"]
+            RecommendationSvc["RecommendationService (Synergy)"]
+        end
+
+        subgraph SvcSearch ["search_service (Повнотекстовий рушій)"]
+            SearchConsumer["📥 IndexingEventConsumer"]
+            SearchCoreSvc["SearchService (Prefix, Fuzzy, Stemming)"]
+            QueryNormPolicy["QueryNormalizationPolicy"]
+        end
+    end
+
+    %% =========================================================================
+    %% ШАР 5: КЕШУВАННЯ ТА НОРМАЛІЗАЦІЯ КЛЮЧІВ (IN-MEMORY CACHE)
+    %% =========================================================================
+    subgraph CacheLayer ["5. Шар кешування з алгоритмом нормалізації (Redis Cluster)"]
+        KeyNormalizer["🏷️ Блок нормалізації пошукових та аналітичних ключів<br/>1. Lowercase<br/>2. Трімінг зайвих пробілів<br/>3. Алфавітне сортування токенів: sort(A, B) == sort(B, A)<br/>Ключ: h2h:comparison:{team_min_id}:{team_max_id}"]
+        RedisMemory["⚡ Redis In-Memory Storage<br/>(TTL = 3600s, Latency &lt; 2ms, Пропускна здатність 100k+ RPS)"]
+    end
+
+    %% =========================================================================
+    %% ШАР 6: ПОЛІГЛОТНЕ СХОВИЩЕ ДАНИХ (POLYGLOT PERSISTENCE)
+    %% =========================================================================
+    subgraph StorageLayer ["6. Розподілене поліглотне сховище (Polyglot Persistence Layer)"]
+        subgraph PG_Cluster ["PostgreSQL (ACID Реляційна статистика)"]
+            PG_Primary["Master Node (Writes: matches, players, map_results)"]
+            PG_Replica["Read Replica (Queries: tournament brackets, rosters)"]
+        end
+
+        subgraph Mongo_Cluster ["MongoDB Sharded Cluster (NoSQL Document Store, >= 3 ноди)"]
+            Mongo_Router["Mongos Query Router"]
+            Mongo_Shard1["Shard 1: Tier-1 Matches & Pro Articles<br/>(Shard Key: {source_tier: 'tier1', doc_id: 1})"]
+            Mongo_Shard2["Shard 2: Tier-2 Matches & Regional Analytics<br/>(Shard Key: {source_tier: 'tier2', doc_id: 1})"]
+            Mongo_Shard3["Shard 3: Tier-3 Matches & Community Datasets<br/>(Shard Key: {source_tier: 'tier3', doc_id: 1})"]
+        end
+
+        subgraph Graph_Engine ["Graph Database (Neo4j / Graph Store)"]
+            Neo4j_Node["Графові вершини: (:Player {id, nickname})<br/>Графові ребра: -[:PLAYED_WITH {matches_count, win_rate}]->"]
+        end
+
+        subgraph Search_Engine ["Search Engine (Elasticsearch / OpenSearch)"]
+            ES_Cluster["Інвертований індекс (Inverted Index)<br/>Аналізатори тексту, лематизація, n-gram для autocomplete"]
+        end
+    end
+
+    %% =========================================================================
+    %% ЗВ'ЯЗКИ ТА МАРШРУТИЗАЦІЯ ПОТОКІВ
+    %% =========================================================================
+
+    %% UI -> Ingestion & APIs
+    UI_Slider -->|"1. REST: PATCH /api/v1/ingestion/rate {rate_limit}"| PacingController
+    UI_Metrics <-->|"WebSockets / Polling: GET /stats"| BackendLayer
+    UI_Search -->|"2. GET /api/v1/search?q=..."| SvcSearch
+    UI_Analytics -->|"3. GET /api/v1/analytics/compare?team_a=...&team_b=..."| SvcAnalytics
+
+    %% Ingestion Workflow
+    PacingController --> DatasetReader
+    DatasetReader --> ImportReplaySvc
+    ImportReplaySvc --> CommandPublisher
+    CommandPublisher -->|"Асинхронний publish подій"| BrokerLayer
+
+    %% Broker Routing
+    TOPIC_MATCHES --> CompConsumer
+    TOPIC_CONTENT --> ContentConsumer
+    TOPIC_GRAPH --> AnalyticsConsumer
+    TOPIC_SEARCH --> SearchConsumer
+
+    %% Backends Internals
+    CompConsumer --> CompCmd
+    CompCmd --> CompUoW
+    CompQuery --> PG_Replica
+    CompUoW --> PG_Primary
+    PG_Primary -.->|"Streaming Replication"| PG_Replica
+
+    ContentConsumer --> ContentCmd
+    ContentCmd --> ContentUoW
+    ContentQuery --> Mongo_Router
+    ContentUoW --> Mongo_Router
+    Mongo_Router --> Mongo_Shard1
+    Mongo_Router --> Mongo_Shard2
+    Mongo_Router --> Mongo_Shard3
+
+    AnalyticsConsumer --> GraphProjSvc
+    GraphProjSvc --> Neo4j_Node
+    ComparisonSvc --> KeyNormalizer
+    RecommendationSvc --> Neo4j_Node
+
+    SearchConsumer --> SearchCoreSvc
+    SearchCoreSvc --> ES_Cluster
+    SvcSearch --> QueryNormPolicy
+
+    %% Cache Flow
+    KeyNormalizer -->|"Пошук нормалізованого ключа"| RedisMemory
+    RedisMemory -->|"Cache Hit (повернення за 1-2 мс)"| ComparisonSvc
+    ComparisonSvc -->|"Cache Miss (обчислення метрик)"| PG_Replica
+    ComparisonSvc -.->|"Збереження результату з TTL"| RedisMemory

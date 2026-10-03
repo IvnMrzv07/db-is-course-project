@@ -1,0 +1,278 @@
+classDiagram
+    direction TB
+
+    class ArchitectureMetadata {
+        <<Snapshot 03.10.2026>>
+        +String Variant: "№ 28 CS2"
+        +String Architecture: "Hexagonal + CQRS"
+        +String Timestamp: "03.10.2026"
+    }
+
+    namespace Competition_Service {
+        class MatchController {
+            +create_match(dto)
+            +get_match_details(match_id)
+        }
+        class PlayerController {
+            +register_player(dto)
+        }
+        class ImportMatchConsumer {
+            +consume_match_imported_event()
+        }
+        class MatchCommandService {
+            +schedule_match(command)
+        }
+        class PlayerCommandService {
+            +create_player(command)
+        }
+        class ImportMatchService {
+            +execute_bulk_import()
+        }
+        class MatchQueryService {
+            +get_by_id(match_id)
+        }
+        class PlayerQueryService {
+            +get_by_id(player_id)
+        }
+        class ICompetitionUnitOfWork {
+            <<interface>>
+            +commit()
+            +rollback()
+        }
+        class IMatchRepository {
+            <<interface>>
+            +get_by_id(id) Match
+            +save(match)
+        }
+        class IPlayerRepository {
+            <<interface>>
+            +get_by_id(id) Player
+            +save(player)
+        }
+        class Match {
+            +UUID id
+            +record_result()
+        }
+        class Player {
+            +UUID id
+            +String nickname
+        }
+        class MatchResultValidator {
+            +validate_score()
+        }
+        class PostgresMatchRepository {
+            +get_by_id(id) Match
+            +save(match)
+        }
+        class PostgresPlayerRepository {
+            +get_by_id(id) Player
+            +save(player)
+        }
+        class PostgresCompetitionUoWAdapter {
+            +commit()
+            +rollback()
+        }
+    }
+
+    namespace Content_Service {
+        class SourceDocumentController {
+            +ingest_document(dto)
+        }
+        class ArticleController {
+            +publish_article(dto)
+        }
+        class SourceDocumentBatchConsumer {
+            +consume_batch()
+        }
+        class SourceDocumentCommandService {
+            +save_raw_payload()
+        }
+        class ArticleCommandService {
+            +create_article()
+        }
+        class SourceDocumentQueryService {
+            +fetch_by_id()
+        }
+        class CorpusStatisticsQueryService {
+            +get_corpus_distribution()
+        }
+        class IContentUnitOfWork {
+            <<interface>>
+            +commit_transaction()
+        }
+        class ISourceDocumentRepository {
+            <<interface>>
+            +save_batch()
+        }
+        class ICorpusStatisticsPort {
+            <<interface>>
+            +aggregate_word_frequencies()
+        }
+        class SourceDocument {
+            +String document_id
+            +String tier_shard_key
+        }
+        class Article {
+            +String article_id
+            +publish()
+        }
+        class PublicationPolicy {
+            +is_eligible_for_publication()
+        }
+        class MongoSourceDocumentRepository {
+            +save_batch()
+        }
+        class MongoContentUoWAdapter {
+            +commit_transaction()
+        }
+        class MongoCorpusStatisticsAdapter {
+            +aggregate_word_frequencies()
+        }
+    }
+
+    namespace Analytics_Service {
+        class RecommendationServiceController {
+            +get_recommended_teammates()
+        }
+        class RelationshipServiceController {
+            +get_co_occurrence_path()
+        }
+        class ComparisonServiceController {
+            +compare_teams()
+        }
+        class GraphEventConsumer {
+            +consume_lineup_formed()
+        }
+        class GraphProjectionService {
+            +project_played_with_edge()
+        }
+        class StatisticsProjectionService {
+            +project_team_stats()
+        }
+        class RelationshipService {
+            +find_common_matches()
+        }
+        class ComparisonService {
+            +compare_head_to_head()
+        }
+        class RecommendationService {
+            +suggest_synergy_players()
+        }
+        class IAnalyticsUnitOfWork {
+            <<interface>>
+            +commit()
+        }
+        class IGraphProjectionPort {
+            <<interface>>
+            +create_or_update_relationship()
+        }
+        class IRelationshipReaderPort {
+            <<interface>>
+            +get_neighbors()
+        }
+        class IComparisonCachePort {
+            <<interface>>
+            +get_cached_comparison()
+            +set_cached_comparison()
+        }
+        class IStatisticsProjectionPort {
+            <<interface>>
+            +upsert_metrics()
+        }
+        class IStatisticsReaderPort {
+            <<interface>>
+            +fetch_metrics()
+        }
+        class PlayerConnection {
+            +UUID source_player_id
+            +UUID target_player_id
+        }
+        class TeamStatistics {
+            +UUID team_id
+            +Float win_rate
+        }
+        class StatisticsCalculator {
+            +calculate_h2h_winrate()
+        }
+        class GraphProjectionAdapter {
+            +create_or_update_relationship()
+        }
+        class RelationshipReaderAdapter {
+            +get_neighbors()
+        }
+        class ComparisonCacheAdapter {
+            +get_cached_comparison()
+        }
+        class StatisticsProjectionAdapter {
+            +upsert_metrics()
+        }
+        class StatisticsReaderAdapter {
+            +fetch_metrics()
+        }
+        class AnalyticsUnitOfWorkAdapter {
+            +commit()
+        }
+    }
+
+    %% ПРИНУДИТЕЛЬНЫЙ ВЕРТИКАЛЬНЫЙ СТЕК БЛОКОВ
+    ArchitectureMetadata ..> MatchController : metadata
+    PostgresCompetitionUoWAdapter ..> SourceDocumentController : service_flow
+    MongoCorpusStatisticsAdapter ..> RecommendationServiceController : service_flow
+
+    %% Competition Service Relations
+    MatchController --> MatchCommandService
+    MatchController --> MatchQueryService
+    PlayerController --> PlayerCommandService
+    PlayerController --> PlayerQueryService
+    ImportMatchConsumer --> ImportMatchService
+    MatchCommandService --> IMatchRepository
+    MatchCommandService --> ICompetitionUnitOfWork
+    MatchCommandService --> MatchResultValidator
+    PlayerCommandService --> IPlayerRepository
+    PlayerCommandService --> ICompetitionUnitOfWork
+    ImportMatchService --> IMatchRepository
+    MatchQueryService --> IMatchRepository
+    PlayerQueryService --> IPlayerRepository
+    IMatchRepository ..> Match
+    IPlayerRepository ..> Player
+    PostgresMatchRepository ..|> IMatchRepository
+    PostgresPlayerRepository ..|> IPlayerRepository
+    PostgresCompetitionUoWAdapter ..|> ICompetitionUnitOfWork
+
+    %% Content Service Relations
+    SourceDocumentController --> SourceDocumentCommandService
+    SourceDocumentController --> SourceDocumentQueryService
+    ArticleController --> ArticleCommandService
+    SourceDocumentBatchConsumer --> SourceDocumentCommandService
+    SourceDocumentCommandService --> ISourceDocumentRepository
+    SourceDocumentCommandService --> IContentUnitOfWork
+    SourceDocumentCommandService --> PublicationPolicy
+    ArticleCommandService --> IContentUnitOfWork
+    SourceDocumentQueryService --> ISourceDocumentRepository
+    CorpusStatisticsQueryService --> ICorpusStatisticsPort
+    ISourceDocumentRepository ..> SourceDocument
+    MongoSourceDocumentRepository ..|> ISourceDocumentRepository
+    MongoContentUoWAdapter ..|> IContentUnitOfWork
+    MongoCorpusStatisticsAdapter ..|> ICorpusStatisticsPort
+
+    %% Analytics Service Relations
+    RecommendationServiceController --> RecommendationService
+    RelationshipServiceController --> RelationshipService
+    ComparisonServiceController --> ComparisonService
+    GraphEventConsumer --> GraphProjectionService
+    GraphProjectionService --> IGraphProjectionPort
+    GraphProjectionService --> IAnalyticsUnitOfWork
+    StatisticsProjectionService --> IStatisticsProjectionPort
+    StatisticsProjectionService --> StatisticsCalculator
+    RelationshipService --> IRelationshipReaderPort
+    RecommendationService --> IRelationshipReaderPort
+    ComparisonService --> IStatisticsReaderPort
+    ComparisonService --> IComparisonCachePort
+    IGraphProjectionPort ..> PlayerConnection
+    IStatisticsProjectionPort ..> TeamStatistics
+    GraphProjectionAdapter ..|> IGraphProjectionPort
+    RelationshipReaderAdapter ..|> IRelationshipReaderPort
+    ComparisonCacheAdapter ..|> IComparisonCachePort
+    StatisticsProjectionAdapter ..|> IStatisticsProjectionPort
+    StatisticsReaderAdapter ..|> IStatisticsReaderPort
+    AnalyticsUnitOfWorkAdapter ..|> IAnalyticsUnitOfWork
