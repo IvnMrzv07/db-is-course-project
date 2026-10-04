@@ -1,0 +1,47 @@
+services:
+  competition_db:
+    image: postgres:16-alpine
+    container_name: competition_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cs2_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cs2_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    networks:
+      - cs2_network
+
+  competition_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: competition_app
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@competition_db:5432/cs2_db
+      LOG_DIR: /app/logs
+    depends_on:
+      competition_db:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - cs2_network
+
+networks:
+  cs2_network:
+    driver: bridge
+    name: cs2_internal_network
+
+volumes:
+  pg_data:
+    name: cs2_competition_db_data
