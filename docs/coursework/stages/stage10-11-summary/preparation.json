@@ -1,0 +1,14 @@
+{
+  "snapshot_id": "kaggle-cs",
+  "snapshot_sha256": "f8996cee29f7ad33c73d471966caaeba67cc0735706a6593cf6d9ac4864eca24",
+  "template_version": "1",
+  "accepted": 20675,
+  "rejected": 1,
+  "issues": [
+    {
+      "line": 20100,
+      "reason": "Missing team1"
+    }
+  ],
+  "jsonl_sha256": "bef2366cea03b0856f93b230e5b6fccf5456543765205800d405db7ce0114c00"
+}

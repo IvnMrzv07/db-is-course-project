@@ -124,6 +124,7 @@ content_service/
             article_commands.py
             article_dto.py
             corpus_statistics_dto.py
+            document_query.py
             extended_profile_commands.py
             extended_profile_dto.py
             highlight_commands.py
@@ -138,6 +139,7 @@ content_service/
             interview_dto_mapper.py
         ports/
             corpus_statistics.py
+            corpus_store.py
             unit_of_work.py
         repositories/
             article_repository.py
@@ -149,12 +151,14 @@ content_service/
         services/
             commands/
                 article_command_service.py
+                corpus_command_service.py
                 extended_profile_command_service.py
                 highlight_command_service.py
                 interview_command_service.py
                 source_document_command_service.py
             queries/
                 article_query_service.py
+                corpus_query_service.py
                 corpus_statistics_query_service.py
                 extended_profile_query_service.py
                 highlight_query_service.py
@@ -182,23 +186,30 @@ content_service/
                 mongo_highlight_repository.py
                 mongo_interview_repository.py
                 mongo_source_document_repository.py
+            corpus_repository.py
             corpus_statistics_adapter.py
             unit_of_work_adapter.py
+        messaging/
+            runtime_broker.py
     presentation/
         api/
             controllers/
                 article_controller.py
+                corpus_controller.py
                 corpus_statistics_query_service_controller.py
                 extended_profile_controller.py
                 highlight_controller.py
                 interview_controller.py
                 source_document_controller.py
+            app.py
         messaging/
             consumers/
                 source_document_batch_consumer.py
     bootstrap.py
     logging.yaml
+    runtime.py
     settings.py
+    worker.py
 ```
 
 ## Analytics service
@@ -385,6 +396,7 @@ ingestion_service/
             dataset_reader.py
             metadata_provider.py
             rate_controller.py
+            replay_store.py
             unit_of_work.py
         repositories/
             crud_repository.py
@@ -400,8 +412,10 @@ ingestion_service/
                 import_review_service.py
                 import_service.py
                 replay_command_service.py
+                replay_operations.py
             queries/
                 import_query_service.py
+                replay_monitor.py
                 replay_query_service.py
     domain/
         entities/
@@ -425,11 +439,15 @@ ingestion_service/
                 postgres_import_job_repository.py
                 postgres_replay_job_repository.py
                 postgres_validation_issue_repository.py
+            replay_store.py
             unit_of_work_adapter.py
         datasets/
             dataset_reader_adapter.py
+            prepare_corpus.py
         messaging/
             command_publisher_adapter.py
+            redrive.py
+            runtime_broker.py
         pacing/
             rate_controller_adapter.py
         providers/
@@ -443,13 +461,17 @@ ingestion_service/
                 import_review_service_controller.py
                 import_service_controller.py
                 replay_command_service_controller.py
+                replay_controller.py
                 replay_query_service_controller.py
+            app.py
         messaging/
             consumers/
                 batch_completed_consumer.py
     bootstrap.py
     logging.yaml
+    runtime.py
     settings.py
+    worker.py
 ```
 
 ## Contracts

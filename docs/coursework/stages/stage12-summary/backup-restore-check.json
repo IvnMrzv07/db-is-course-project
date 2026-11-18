@@ -1,0 +1,16 @@
+{
+  "verified_at": "2026-11-17T23:10:34.453142+00:00",
+  "source_project": "cs-coursework",
+  "restore_project": "cs-acceptance",
+  "restored_database": "restore_acceptance",
+  "mongo_documents": 20675,
+  "mongo_counter": 20675,
+  "postgres_jobs": 3,
+  "postgres_inserted_sum": 20675,
+  "postgres_duplicates_sum": 41350,
+  "tools": [
+    "mongodump/mongorestore archive",
+    "pg_dump/pg_restore custom format"
+  ],
+  "live_databases_overwritten": false
+}

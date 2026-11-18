@@ -1,0 +1,26 @@
+classDiagram
+    direction TB
+    CorpusController --> CorpusQueryService
+    CorpusQueryService --> CorpusStore
+    CorpusCommandService --> CorpusStore
+    CorpusStore <|.. MongoCorpusRepository
+    ReplayController --> ReplayOperations
+    ReplayController --> ReplayMonitor
+    ReplayOperations --> ReplayStore
+    ReplayMonitor --> ReplayStore
+    ReplayStore <|.. PostgresReplayStore
+    class CorpusController {
+        +list(query)
+        +get(document_id)
+        +statistics()
+    }
+    class MongoCorpusRepository {
+        +browse(query)
+        +read(document_id)
+        +persist_batch(batch)
+    }
+    class PostgresReplayStore {
+        +create_job(snapshot, rate, key)
+        +produce()
+        +complete(result)
+    }

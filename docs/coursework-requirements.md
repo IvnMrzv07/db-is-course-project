@@ -1,5 +1,7 @@
 # Coursework Requirements and Acceptance Plan
 
+> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+
 ## Authority and interpretation
 
 Source: `Курсова робота з Баз даних та інформаційних систем.docx`, reviewed on 2026-09-14, including the grading tables, report requirements, and variant 28. This document maps the brief to the project architecture. It specifies planned acceptance evidence; no implementation or benchmark result is claimed.

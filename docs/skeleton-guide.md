@@ -1,5 +1,7 @@
 # Architecture Skeleton Guide
 
+> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+
 ## Deliverable
 
 The source tree now contains typed Python class stubs for all six services. It implements the structure requested by the next assignment: domain records, principal fields, application DTOs, CQRS services, CRUD repository ports, controllers, mappers, and technology adapter classes. It also contains composition roots and editable Mermaid diagrams.

@@ -1,0 +1,17 @@
+flowchart TB
+    UI[React UI and dashboard] --> Proxy[Nginx]
+    Proxy --> Content[Content API]
+    Proxy --> Ingestion[Ingestion API]
+    Content --> Mongo[(MongoDB - one node rs0)]
+    Ingestion --> PG[(PostgreSQL - ingestion database)]
+    CSV[Combined CSV snapshot] --> Prepare[Deterministic JSONL preparation]
+    Prepare --> Producer[Ingestion worker]
+    Producer --> PG
+    PG --> Outbox[PostgreSQL outbox dispatcher]
+    Outbox --> MQ[RabbitMQ - durable queues]
+    MQ --> Consumer[Content worker]
+    Consumer --> Mongo
+    Mongo --> Completed[MongoDB outbox dispatcher]
+    Completed --> MQ
+    MQ --> Receipt[Ingestion completion consumer]
+    Receipt --> PG

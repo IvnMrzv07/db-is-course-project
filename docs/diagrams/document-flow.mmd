@@ -1,0 +1,24 @@
+sequenceDiagram
+    actor Operator
+    participant UI as React UI
+    participant I as Ingestion API / worker
+    participant P as PostgreSQL
+    participant Q as RabbitMQ
+    participant C as Content worker / API
+    participant M as MongoDB
+    Operator->>UI: Start replay
+    UI->>I: POST /api/v1/replays
+    I->>P: Persist job
+    I-->>UI: 202 job ID
+    I->>P: Persist batch + outbox + produced offset
+    P-->>Q: Outbox publish with confirmation
+    Q->>C: Corpus batch
+    C->>M: Transaction: documents + receipt + outbox + counter
+    C-->>Q: ACK after commit
+    M-->>Q: Completion outbox publish
+    Q->>I: Completion
+    I->>P: Idempotent progress update
+    UI->>C: GET /api/v1/documents
+    C->>M: Repository query
+    M-->>C: Documents
+    C-->>UI: Page of documents

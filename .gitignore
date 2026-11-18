@@ -9,14 +9,22 @@ htmlcov/
 build/
 dist/
 .diagram-renderer/
-.report-work/
-diagrams/images/*.svg
-diagrams/diagram-images.zip
+artifacts/report-work/
+docs/diagrams/images/*.svg
+docs/diagrams/diagram-images.zip
 tools/scaffold_skeleton.py
 tools/complete_skeleton.py
 tools/wire_skeleton.py
 /Датасет і структура.docx
-/Улановський Павєл КМ-42 Звіт до лабораторної роботи №5.docx
 ~$*
 .env.*
 !.env.example
+
+node_modules/
+/data/prepared/
+/test-results/
+.venv312/
+
+.npm-cache/
+
+/artifacts/

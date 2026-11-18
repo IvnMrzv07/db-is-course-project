@@ -1,0 +1,9 @@
+{
+  "verified_at": "2026-11-17T23:11:25.567Z",
+  "isolated_project": "cs-acceptance",
+  "checks": [
+    "MongoDB_outage_503_localized_UI_retry_recovery",
+    "PostgreSQL_outage_503_localized_UI_automatic_recovery",
+    "real_import_history_second_page"
+  ]
+}

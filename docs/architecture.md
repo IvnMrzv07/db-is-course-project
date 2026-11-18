@@ -1,5 +1,7 @@
 # System Architecture
 
+> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+
 ## Purpose and status
 
 The system is a website for exploring professional Counter-Strike tournaments, teams, players, match results, statistics, and related content. It is a semester project implemented by a team of four. The backend implementation language is Python.

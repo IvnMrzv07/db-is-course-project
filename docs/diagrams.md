@@ -1,93 +1,40 @@
 # Module and Class Diagrams
 
-The class diagrams reference classes in the current skeleton. Interface realization arrows represent nominal or structural Python protocol implementation. Method execution, HTTP route registration, database topology, and broker operation are planned, not deployed.
+The class docs/diagrams reference classes in the current skeleton. Interface realization arrows represent nominal or structural Python protocol implementation. Method execution, HTTP route registration, database topology, and broker operation are planned, not deployed.
 
-Each diagram is also stored as an editable `.mmd` source. The diagrams select representative interactions rather than placing every DTO on one unreadable page; [Code inventory](code-inventory.md) lists the complete class set.
+Each diagram is also stored as an editable `.mmd` source. The docs/diagrams select representative interactions rather than placing every DTO on one unreadable page; [Code inventory](code-inventory.md) lists the complete class set.
 
 ## Modules
 
-[Editable Mermaid source](../diagrams/modules.mmd)
+[Editable Mermaid source](diagrams/modules.mmd)
 
 ```mermaid
-flowchart LR
-    UI[Website and dashboard] --> Proxy[Reverse proxy]
-
-        subgraph IngestionGroup[Ingestion]
-            direction TB
-            Ingestion[ingestion_service]
-            IngestionDB[(Job PostgreSQL)]
-            Sources[Files and provider APIs]
-            Ingestion --> IngestionDB
-            Ingestion --> Sources
-        end
-        subgraph CompetitionGroup[Competition]
-            direction TB
-            Competition[competition_service]
-            CompetitionDB[(Competition PostgreSQL)]
-            Competition --> CompetitionDB
-        end
-        subgraph ContentGroup[Content]
-            direction TB
-            Content[content_service]
-            MongoRouter[mongos]
-            MongoShards[(MongoDB: 3 data shards)]
-            Config[(Config replica set)]
-            Content --> MongoRouter
-            MongoRouter --> MongoShards
-            MongoRouter -. metadata .-> Config
-        end
-        subgraph AnalyticsGroup[Analytics]
-            direction TB
-            Analytics[analytics_service]
-            AnalyticsDB[(Analytics PostgreSQL)]
-            Neo4j[(Neo4j)]
-            AnalyticsCache[(Redis: analytics namespace)]
-            Analytics --> AnalyticsDB
-            Analytics --> Neo4j
-            Analytics --> AnalyticsCache
-        end
-        subgraph SearchGroup[Search]
-            direction TB
-            Search[search_service]
-            ES[(Elasticsearch)]
-            SearchCache[(Redis: search namespace)]
-            Search --> ES
-            Search --> SearchCache
-        end
-        subgraph IdentityGroup[Identity]
-            direction TB
-            Identity[identity_service]
-            IdentityDB[(Identity PostgreSQL)]
-            Identity --> IdentityDB
-        end
-
-    Proxy --> Ingestion
-    Proxy --> Competition
-    Proxy --> Content
-    Proxy --> Analytics
-    Proxy --> Search
-    Proxy --> Identity
-    MQ[RabbitMQ]
-    Ingestion <-->|Batches / results| MQ
-    Competition <-->|Imports / events| MQ
-    Content <-->|Documents / events| MQ
-    MQ -->|Changes| Analytics
-    MQ -->|Changes| Search
-
-    Analytics -. snapshots .-> Competition
-    Search -. snapshots .-> Competition
-    Search -. published snapshots .-> Content
-    Ingestion -. identity mappings .-> Competition
-    Ingestion -. enrichment .-> Content
+flowchart TB
+    UI[React UI and dashboard] --> Proxy[Nginx]
+    Proxy --> Content[Content API]
+    Proxy --> Ingestion[Ingestion API]
+    Content --> Mongo[(MongoDB - one node rs0)]
+    Ingestion --> PG[(PostgreSQL - ingestion database)]
+    CSV[Combined CSV snapshot] --> Prepare[Deterministic JSONL preparation]
+    Prepare --> Producer[Ingestion worker]
+    Producer --> PG
+    PG --> Outbox[PostgreSQL outbox dispatcher]
+    Outbox --> MQ[RabbitMQ - durable queues]
+    MQ --> Consumer[Content worker]
+    Consumer --> Mongo
+    Mongo --> Completed[MongoDB outbox dispatcher]
+    Completed --> MQ
+    MQ --> Receipt[Ingestion completion consumer]
+    Receipt --> PG
 ```
 
 The module overview flows from left to right. Each group keeps a service near its storage. Solid arrows show routing, storage access, and labeled broker traffic; dashed arrows show direct owner-API reads or enrichment submissions. The two Redis symbols are namespaces that may share one deployment. MongoDB represents three data shards plus separate configuration infrastructure.
 
-Files include Kaggle and prepared corpora; provider APIs include PandaScore and optional Liquipedia. Elasticsearch includes corpus and telemetry indexes. All infrastructure remains planned. Class diagrams below show selected fields from the actual Python declarations; optional markers and some collection details are abbreviated for readability. The code inventory contains the full definitions.
+Files include Kaggle and prepared corpora; provider APIs include PandaScore and optional Liquipedia. Elasticsearch includes corpus and telemetry indexes. All infrastructure remains planned. Class docs/diagrams below show selected fields from the actual Python declarations; optional markers and some collection details are abbreviated for readability. The code inventory contains the full definitions.
 
 ## Competition Classes
 
-[Editable Mermaid source](../diagrams/competition-classes.mmd)
+[Editable Mermaid source](diagrams/competition-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -223,7 +170,7 @@ classDiagram
 
 ## Content Classes
 
-[Editable Mermaid source](../diagrams/content-classes.mmd)
+[Editable Mermaid source](diagrams/content-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -328,7 +275,7 @@ classDiagram
 
 ## Analytics Classes
 
-[Editable Mermaid source](../diagrams/analytics-classes.mmd)
+[Editable Mermaid source](diagrams/analytics-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -438,7 +385,7 @@ classDiagram
 
 ## Search Classes
 
-[Editable Mermaid source](../diagrams/search-classes.mmd)
+[Editable Mermaid source](diagrams/search-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -532,7 +479,7 @@ classDiagram
 
 ## Identity Classes
 
-[Editable Mermaid source](../diagrams/identity-classes.mmd)
+[Editable Mermaid source](diagrams/identity-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -629,7 +576,7 @@ classDiagram
 
 ## Ingestion Classes
 
-[Editable Mermaid source](../diagrams/ingestion-classes.mmd)
+[Editable Mermaid source](diagrams/ingestion-classes.mmd)
 
 ```mermaid
 classDiagram
@@ -749,33 +696,31 @@ classDiagram
 
 ## Document Flow
 
-[Editable Mermaid source](../diagrams/document-flow.mmd)
+[Editable Mermaid source](diagrams/document-flow.mmd)
 
 ```mermaid
 sequenceDiagram
-    actor Admin
-    participant RC as ReplayCommandService
-    participant R as DatasetReader and RateController
-    participant MQ as RabbitMQ with outbox dispatcher
-    participant C as SourceDocumentCommandService
-    participant CQ as SourceDocumentQueryService
-    participant BC as BatchCompletionService
-    participant DB as MongoDB via mongos
-    participant S as IndexingService
-    participant ES as Elasticsearch
-    Admin->>RC: start or change_rate
-    Note over RC: Persist job/rate, return before processing completes
-    RC->>R: read bounded batch and acquire allowance
-    RC->>MQ: committed StoreSourceDocumentBatch
-    MQ->>C: deliver command
-    C->>DB: transaction: documents, receipt, outbox
-    DB-->>C: durable commit
-    C->>MQ: SourceDocumentStored and DocumentBatchCompleted
-    MQ->>BC: BatchCompleted - update durable replay progress
-    MQ->>S: reference ChangeNotification
-    S->>CQ: read eligible current owner snapshot through owner API
-    CQ-->>S: versioned published document or tombstone
-    S->>ES: version-aware upsert or removal
-    Admin->>C: query database-backed corpus statistics
-    Note over Admin,ES: Planned sequence, infrastructure operations are currently stubs
+    actor Operator
+    participant UI as React UI
+    participant I as Ingestion API / worker
+    participant P as PostgreSQL
+    participant Q as RabbitMQ
+    participant C as Content worker / API
+    participant M as MongoDB
+    Operator->>UI: Start replay
+    UI->>I: POST /api/v1/replays
+    I->>P: Persist job
+    I-->>UI: 202 job ID
+    I->>P: Persist batch + outbox + produced offset
+    P-->>Q: Outbox publish with confirmation
+    Q->>C: Corpus batch
+    C->>M: Transaction: documents + receipt + outbox + counter
+    C-->>Q: ACK after commit
+    M-->>Q: Completion outbox publish
+    Q->>I: Completion
+    I->>P: Idempotent progress update
+    UI->>C: GET /api/v1/documents
+    C->>M: Repository query
+    M-->>C: Documents
+    C-->>UI: Page of documents
 ```

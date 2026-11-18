@@ -1,0 +1,11 @@
+{
+  "environment": "React + Content API + native MongoDB; no HTTP interception",
+  "documents": 20675,
+  "checks": [
+    "list",
+    "detail",
+    "absent marker search",
+    "pagination validation"
+  ],
+  "rabbitmq_tested": false
+}

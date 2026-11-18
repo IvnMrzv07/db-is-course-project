@@ -1,0 +1,27 @@
+{
+  "id": "e13137b8-a979-5d95-b346-e55ef726770b",
+  "version": 1,
+  "title": "Inner Circle vs Acend — Super DraculaN Season 1 — Overpass",
+  "text": "Inner Circle played Acend at Super DraculaN Season 1 on 2026-06-28. Map: Overpass. Map score: 13-8. headtr1ck (Daniil  Valitov), UA: 16.0 kills, 11.0 deaths, 3.0 assists, 76.5 adr, 71.4 kast. cptkurtka023 (Arsenly Derevinskly), UA: 17.0 kills, 12.0 deaths, 7.0 assists, 107.0 adr, 81.0 kast. zeRRoFIX: 11.0 kills, 10.0 deaths, 5.0 assists, 59.3 adr, 66.7 kast. onic: 12.0 kills, 10.0 deaths, 2.0 assists, 54.5 adr, 76.2 kast. Dawy: 9.0 kills, 7.0 deaths, 3.0 assists, 51.9 adr, 85.7 kast. SPELLAN (Teodor Nikolov), BG: 10.0 kills, 14.0 deaths, 2.0 assists, 56.2 adr, 57.1 kast. KalubeR (Kalin Erenditsov), BG: 18.0 kills, 13.0 deaths, 5.0 assists, 89.3 adr, 81.0 kast. h4rn (Deyvid Benchev), BG: 6.0 kills, 12.0 deaths, 5.0 assists, 44.5 adr, 66.7 kast. REDSTAR  (Hristiyan Pironkov), BG: 7.0 kills, 13.0 deaths, 7.0 assists, 43.8 adr, 76.2 kast.",
+  "language": "en",
+  "provider": "kaggle_counter_strike_pro_matches",
+  "source_id": "7303015:map:154188",
+  "source_url": "https://www.kaggle.com/datasets/ektarr/counter-strike-pro-matches",
+  "corpus_scope": "kaggle-cs",
+  "is_synthetic": false,
+  "publication_status": "published",
+  "related_entity_ids": [],
+  "metadata": {
+    "document_type": "map",
+    "match_id": "7303015",
+    "game_id": "154188",
+    "tournament": "Super DraculaN Season 1",
+    "team1": "Inner Circle",
+    "team2": "Acend",
+    "played_at": "2026-06-28T20:00:00",
+    "source_timezone": "unspecified",
+    "snapshot_sha256": "f8996cee29f7ad33c73d471966caaeba67cc0735706a6593cf6d9ac4864eca24",
+    "template_version": "1",
+    "generated_from_dataset": "true"
+  }
+}

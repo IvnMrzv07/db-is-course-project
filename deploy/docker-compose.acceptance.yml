@@ -1,0 +1,31 @@
+services:
+  content_api:
+    image: cs-coursework-content_api
+  content_worker:
+    image: cs-coursework-content_worker
+  ingestion_api:
+    image: cs-coursework-ingestion_api
+  ingestion_worker:
+    image: cs-coursework-ingestion_worker
+  prepare_corpus:
+    command:
+    - python
+    - -c
+    - 'from pathlib import Path
+
+      import json, hashlib
+
+      from ingestion_service.infrastructure.datasets.prepare_corpus import prepare
+
+      p=Path(''/data''); m=prepare(Path(''counter-strike-pro-matches.zip''),p)
+
+      f=p/''kaggle-cs.jsonl''; lines=f.read_bytes().splitlines(keepends=True)[:1000];
+      f.write_bytes(b''''.join(lines)); m[''accepted'']=len(lines);m[''jsonl_sha256'']=hashlib.sha256(f.read_bytes()).hexdigest();(p/''kaggle-cs.manifest.json'').write_text(json.dumps(m))
+
+      '
+    image: cs-coursework-prepare_corpus
+  web:
+    image: cs-coursework-web
+volumes:
+  pg_data:
+    name: cs-acceptance-postgres

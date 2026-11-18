@@ -1,0 +1,57 @@
+[
+  {
+    "name": "analytics-classes",
+    "width": 6624,
+    "height": 1812
+  },
+  {
+    "name": "competition-classes",
+    "width": 3582,
+    "height": 3564
+  },
+  {
+    "name": "content-classes",
+    "width": 5660,
+    "height": 2276
+  },
+  {
+    "name": "document-flow",
+    "width": 4064,
+    "height": 1846
+  },
+  {
+    "name": "identity-classes",
+    "width": 4398,
+    "height": 2536
+  },
+  {
+    "name": "ingestion-classes",
+    "width": 6530,
+    "height": 2596
+  },
+  {
+    "name": "modules",
+    "width": 1844,
+    "height": 2348
+  },
+  {
+    "name": "search-classes",
+    "width": 3838,
+    "height": 1970
+  },
+  {
+    "name": "stage5-class-architecture",
+    "width": 1736,
+    "height": 1490
+  },
+  {
+    "name": "stage5-system-dataflow",
+    "width": 1844,
+    "height": 2348
+  },
+  {
+    "name": "target-modules",
+    "width": 5388,
+    "height": 2486
+  }
+]

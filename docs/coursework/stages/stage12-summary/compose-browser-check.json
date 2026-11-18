@@ -1,0 +1,38 @@
+{
+  "verified_at": "2026-11-17T18:02:04.037Z",
+  "http_mocking": false,
+  "checks": [
+    "real_corpus",
+    "detail",
+    "empty_search",
+    "operator_login",
+    "start_import",
+    "pause",
+    "rate_10_to_500",
+    "resume",
+    "completed_duplicate_import"
+  ],
+  "job": {
+    "id": "038ed73f-2a68-4826-ac40-bb56758be986",
+    "idempotency_key": "7b46c1ba-5fec-4208-be4d-5e47924a211c",
+    "request_hash": "3b41878f9363d5d250f48b61232de132d987163cfbf985b5d997cdea81827372",
+    "snapshot_id": "kaggle-cs",
+    "snapshot_hash": "bef2366cea03b0856f93b230e5b6fccf5456543765205800d405db7ce0114c00",
+    "total": 20675,
+    "status": "completed",
+    "target_rate": 500,
+    "produced": 20675,
+    "checkpoint": 20675,
+    "inserted": 0,
+    "duplicates": 20675,
+    "rejected": 0,
+    "validation_rejected": 1,
+    "error": null,
+    "next_at": "2026-11-17T18:01:57.231098+00:00",
+    "created_at": "2026-11-17T18:00:06.980959+00:00",
+    "updated_at": "2026-11-17T18:02:02.502970+00:00",
+    "attempted": 20675,
+    "backlog": 0
+  },
+  "page_errors": []
+}

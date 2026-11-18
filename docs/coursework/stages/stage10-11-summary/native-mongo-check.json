@@ -1,0 +1,7 @@
+{
+  "environment": "native MongoDB 7.0.14 single-member replica set; direct command-service invocation, RabbitMQ not exercised",
+  "inserted": 20675,
+  "duplicates": 0,
+  "stored_documents": 20675,
+  "native_restart_persistence_verified": true
+}

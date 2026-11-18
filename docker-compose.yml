@@ -1,47 +1,109 @@
+name: cs-coursework
+x-app: &app
+  build: .
+  restart: unless-stopped
+  environment: &environment
+    MONGO_URL: mongodb://mongo:27017/?replicaSet=rs0
+    INGESTION_DATABASE_URL: postgresql://ingestion:ingestion-local@competition_db:5432/ingestion
+    BROKER_URL: amqp://coursework:${RABBITMQ_PASSWORD:-local-coursework-rabbit}@rabbitmq:5672/
+    OPERATOR_TOKEN: ${OPERATOR_TOKEN:?Set OPERATOR_TOKEN in .env}
+    CORPUS_DIR: /data
+  volumes:
+    - corpus_data:/data:ro
+  depends_on: &dependencies
+    mongo_init:
+      condition: service_completed_successfully
+    ingestion_db_init:
+      condition: service_completed_successfully
+    rabbitmq:
+      condition: service_healthy
+    prepare_corpus:
+      condition: service_completed_successfully
+
 services:
   competition_db:
     image: postgres:16-alpine
-    container_name: competition_db
-    restart: unless-stopped
     environment:
       POSTGRES_DB: cs2_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-coursework-postgres}
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d cs2_db"]
-      interval: 2s
-      timeout: 3s
-      retries: 10
-      start_period: 2s
-    networks:
-      - cs2_network
-
-  competition_app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: competition_app
-    restart: "no"
+      test: [CMD-SHELL, 'pg_isready -U postgres -d cs2_db']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  ingestion_db_init:
+    image: postgres:16-alpine
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@competition_db:5432/cs2_db
-      LOG_DIR: /app/logs
+      PGHOST: competition_db
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-local-coursework-postgres}
+    volumes:
+      - ./deploy/postgres-init.sh:/init.sh:ro
+    entrypoint: [sh, /init.sh]
     depends_on:
       competition_db:
         condition: service_healthy
+  mongo:
+    image: mongo:7.0
+    command: [mongod, --replSet, rs0, --bind_ip_all]
     volumes:
-      - ./logs:/app/logs
-    networks:
-      - cs2_network
-
-networks:
-  cs2_network:
-    driver: bridge
-    name: cs2_internal_network
-
+      - mongo_data:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, 'db.adminCommand({ping:1}).ok']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  mongo_init:
+    image: mongo:7.0
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: [bash, -ec]
+    command:
+      - |
+        mongosh --host mongo --quiet --eval 'try { rs.status() } catch(e) { rs.initiate({_id:"rs0",members:[{_id:0,host:"mongo:27017"}]}) }'
+        until mongosh --host mongo --quiet --eval 'quit(db.hello().isWritablePrimary ? 0 : 1)'; do sleep 1; done
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: coursework
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-local-coursework-rabbit}
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  prepare_corpus:
+    build: .
+    command: [python, -m, ingestion_service.infrastructure.datasets.prepare_corpus, --output, /data]
+    volumes:
+      - corpus_data:/data
+  content_api:
+    <<: *app
+  content_worker:
+    <<: *app
+    command: [python, -m, content_service.worker]
+  ingestion_api:
+    <<: *app
+    command: [uvicorn, ingestion_service.presentation.api.app:app, --host, 0.0.0.0, --port, '8000', --log-config, deploy/config/runtime-logging.yaml]
+  ingestion_worker:
+    <<: *app
+    command: [python, -m, ingestion_service.worker]
+  web:
+    build: ./frontend
+    ports:
+      - '127.0.0.1:${HTTP_PORT:-8080}:80'
+    depends_on:
+      - content_api
+      - ingestion_api
 volumes:
   pg_data:
     name: cs2_competition_db_data
+  mongo_data:
+  rabbit_data:
+  corpus_data:

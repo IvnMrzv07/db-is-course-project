@@ -1,0 +1,60 @@
+{
+  "verified_at": "2026-11-17T23:07:17.889785+00:00",
+  "fixture_documents": 1000,
+  "isolated_project": "cs-acceptance",
+  "checks": [
+    "fresh_isolated_deployment_empty_database",
+    "concurrent_idempotent_creation_and_pause_conflict",
+    "SIGKILL_both_workers_resume_checkpoint",
+    "broker_outage_and_concurrent_imports_no_duplicate_documents",
+    "three_poison_messages_bounded_to_five_attempts_and_quarantined",
+    "real_pending_completion_DLQ_redrive_recovers_checkpoint"
+  ],
+  "concurrent_imports": [
+    {
+      "id": "5a62892c-b2dc-4885-b559-caf8230065d8",
+      "idempotency_key": "e776e7f0-ba9c-4645-9aa8-fa0843fa7a4e",
+      "request_hash": "e6150342cc52f82f7041cd99d21a1afb04c7f5f25ab638837c81e5f29f735d5f",
+      "snapshot_id": "kaggle-cs",
+      "snapshot_hash": "007ed59d137b5ed5d31efbdbbe150709ae03decb4004e165fe7437effd132359",
+      "total": 1000,
+      "status": "completed",
+      "target_rate": 500,
+      "produced": 1000,
+      "checkpoint": 1000,
+      "inserted": 1000,
+      "duplicates": 0,
+      "rejected": 0,
+      "validation_rejected": 1,
+      "error": null,
+      "next_at": "2026-11-17T23:07:36.676871+00:00",
+      "created_at": "2026-11-17T23:07:18.481450+00:00",
+      "updated_at": "2026-11-17T23:08:06.799188+00:00",
+      "attempted": 1000,
+      "backlog": 0
+    },
+    {
+      "id": "01290ccf-77bf-4e6e-998a-74a0f5b86dc0",
+      "idempotency_key": "9c9af4bd-5dda-424b-a021-bb9a0f798dc5",
+      "request_hash": "e6150342cc52f82f7041cd99d21a1afb04c7f5f25ab638837c81e5f29f735d5f",
+      "snapshot_id": "kaggle-cs",
+      "snapshot_hash": "007ed59d137b5ed5d31efbdbbe150709ae03decb4004e165fe7437effd132359",
+      "total": 1000,
+      "status": "completed",
+      "target_rate": 500,
+      "produced": 1000,
+      "checkpoint": 1000,
+      "inserted": 0,
+      "duplicates": 1000,
+      "rejected": 0,
+      "validation_rejected": 1,
+      "error": null,
+      "next_at": "2026-11-17T23:07:36.730065+00:00",
+      "created_at": "2026-11-17T23:07:20.442080+00:00",
+      "updated_at": "2026-11-17T23:08:07.137085+00:00",
+      "attempted": 1000,
+      "backlog": 0
+    }
+  ],
+  "stored_documents": 1000
+}

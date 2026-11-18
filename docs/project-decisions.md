@@ -64,7 +64,7 @@ The architecture task requires layered and hexagonal architecture and a diagram 
 | D52 | Include explainable domain recommendations. | Recommend recorded team games or similar players based on supported data, without inventing roles or play styles. |
 | D53 | Produce the required report and bottleneck evidence. | Track measured capacities, topology, tests, rejected approaches, scaling strategies, and individual defense preparation. |
 | D54 | Separate sharding from replication demonstrations. | Three data shards are mandatory; the resilient three-member-per-shard profile is an additional goal requiring sizing and failover evidence. |
-| D55 | Bundle the architecture diagrams with the typed class-skeleton assignment. | Supersedes D41's temporary diagram deferral; provide editable module/class diagrams and Python stubs, not a production implementation. |
+| D55 | Bundle the architecture docs/diagrams with the typed class-skeleton assignment. | Supersedes D41's temporary diagram deferral; provide editable module/class docs/diagrams and Python stubs, not a production implementation. |
 | D56 | Use importable standard-library DTO/entity and protocol stubs. | Python 3.12+; external adapters raise `NotImplementedError`. Add actual FastAPI/driver dependencies in the implementation phase. |
 | D57 | Use explicit controller classes for the assignment. | Place HTTP adapter stubs under `presentation/api/controllers`; route registration is later implementation work. |
 | D58 | Use transport-only shared message contracts. | Stable batch/message IDs, source-scoped versions, current-snapshot reference events, and distinct match-import/document-replay completion kinds. No shared service domain model. |
@@ -114,3 +114,15 @@ The following are open design work, not implied commitments:
 - [FastAPI asynchronous execution](https://fastapi.tiangolo.com/async/): distinction between I/O concurrency and CPU parallelism.
 
 Provider access details can change and should be verified during integration. These references support technical context; the decisions themselves are the team's planning baseline.
+
+## Stages 9–12 implementation decisions (2026-11-13)
+
+These decisions supersede earlier implementation timing, not the long-term ownership model.
+
+- D59: MongoDB is the primary corpus store for these stages, on one single-member replica set for transaction support. Sharding and partitioning are deferred.
+- D60: Elasticsearch, Redis and Neo4j are deferred. Content directly queries MongoDB with literal substring search and metadata filters.
+- D61: React + TypeScript + Vite with Ukrainian UI, English deterministic corpus descriptions, and Nginx routing are selected.
+- D62: Implement Content and Ingestion runtime slices, RabbitMQ durable messaging, PostgreSQL job state, scoped transactions, outboxes and repeatable prepared input.
+- D63: Local operator bearer-token access; full Identity and other domain capabilities remain skeletons. No paid providers or LLM generation.
+- D64: Distinguish prepared records, attempted delivery, unique committed records and duplicate deliveries. Current bundled input prepares 20,675 documents and rejects one row without team1.
+- D65: Existing `bootstrap.py` stays connection-free for architecture inspection; runtime composition is in each implemented service's `runtime.py`. Tests use production repositories for real DB checks and explicitly named doubles for offline contract checks.

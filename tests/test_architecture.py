@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import get_type_hints
 from uuid import uuid4
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1] / "backend"
 SERVICES = ('competition', 'content', 'analytics', 'search', 'identity', 'ingestion')
 
 
@@ -105,7 +105,7 @@ class ArchitectureTests(unittest.TestCase):
         for path in source_files():
             declared.update(n.name for n in ast.parse(path.read_text(encoding='utf-8')).body
                             if isinstance(n, ast.ClassDef))
-        for path in (ROOT / 'diagrams').glob('*-classes.mmd'):
+        for path in (ROOT / 'docs/diagrams').glob('*-classes.mmd'):
             text = path.read_text(encoding='utf-8')
             names = re.findall(r'^\s*class\s+(\w+)', text, flags=re.MULTILINE)
             with self.subTest(diagram=path.name):

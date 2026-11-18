@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-11-17T18:02:36.180739+00:00",
+  "stored_documents": 20675,
+  "redelivered_batch_id": "74fd5beb-c306-59c6-8536-83ae3462deb3",
+  "store_redeliveries": 2,
+  "completion_redeliveries": 2,
+  "document_receipt_and_job_counts_unchanged": true,
+  "queues": {
+    "corpus.completed": 0,
+    "corpus.completed.failed": 0,
+    "corpus.store": 0,
+    "corpus.store.failed": 0
+  }
+}
