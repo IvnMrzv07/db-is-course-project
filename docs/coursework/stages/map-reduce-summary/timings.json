@@ -1,0 +1,236 @@
+{
+  "document-types-all": {
+    "params": {
+      "metric": "document_types",
+      "corpus_scope": "all"
+    },
+    "matched_documents": 100000,
+    "rows": 4,
+    "comparison_equal": true,
+    "coverage_consistent": true,
+    "groups_returned": {
+      "aggregate": 4,
+      "mapreduce": 4
+    },
+    "partial_groups_per_shard": {
+      "aggregate": {
+        "shard1RS": 4,
+        "shard2RS": 4,
+        "shard3RS": 4
+      },
+      "mapreduce": {
+        "shard1RS": 4,
+        "shard2RS": 4,
+        "shard3RS": 4
+      }
+    },
+    "merge_type": {
+      "aggregate": "anyShard",
+      "mapreduce": "anyShard"
+    },
+    "runs_ms": {
+      "aggregate": [
+        479.6,
+        398.9,
+        517.8
+      ],
+      "mapreduce": [
+        1680.2,
+        1644.9,
+        1579.5
+      ]
+    },
+    "median_ms": {
+      "aggregate": 479.6,
+      "mapreduce": 1644.9
+    }
+  },
+  "map-pool-all": {
+    "params": {
+      "metric": "map_pool",
+      "corpus_scope": "all"
+    },
+    "matched_documents": 53990,
+    "rows": 10,
+    "comparison_equal": true,
+    "coverage_consistent": true,
+    "groups_returned": {
+      "aggregate": 10,
+      "mapreduce": 10
+    },
+    "partial_groups_per_shard": {
+      "aggregate": {
+        "shard1RS": 10,
+        "shard2RS": 10,
+        "shard3RS": 10
+      },
+      "mapreduce": {
+        "shard1RS": 10,
+        "shard2RS": 10,
+        "shard3RS": 10
+      }
+    },
+    "merge_type": {
+      "aggregate": "anyShard",
+      "mapreduce": "anyShard"
+    },
+    "runs_ms": {
+      "aggregate": [
+        221.8,
+        227.0,
+        213.7
+      ],
+      "mapreduce": [
+        1167.0,
+        1131.3,
+        839.8
+      ]
+    },
+    "median_ms": {
+      "aggregate": 221.8,
+      "mapreduce": 1131.3
+    }
+  },
+  "series-scores-all": {
+    "params": {
+      "metric": "series_scores",
+      "corpus_scope": "all"
+    },
+    "matched_documents": 46010,
+    "rows": 16,
+    "comparison_equal": true,
+    "coverage_consistent": true,
+    "groups_returned": {
+      "aggregate": 16,
+      "mapreduce": 16
+    },
+    "partial_groups_per_shard": {
+      "aggregate": {
+        "shard1RS": 14,
+        "shard2RS": 14,
+        "shard3RS": 15
+      },
+      "mapreduce": {
+        "shard1RS": 14,
+        "shard2RS": 14,
+        "shard3RS": 15
+      }
+    },
+    "merge_type": {
+      "aggregate": "anyShard",
+      "mapreduce": "anyShard"
+    },
+    "runs_ms": {
+      "aggregate": [
+        168.0,
+        203.0,
+        141.2
+      ],
+      "mapreduce": [
+        765.3,
+        864.0,
+        749.9
+      ]
+    },
+    "median_ms": {
+      "aggregate": 168.0,
+      "mapreduce": 765.3
+    }
+  },
+  "top-players-map-all": {
+    "params": {
+      "metric": "top_players",
+      "document_type": "map",
+      "corpus_scope": "all",
+      "limit": 10
+    },
+    "matched_documents": 53990,
+    "rows": 10,
+    "comparison_equal": true,
+    "coverage_consistent": null,
+    "groups_returned": {
+      "aggregate": 10,
+      "mapreduce": 2312
+    },
+    "partial_groups_per_shard": {
+      "aggregate": {
+        "shard1RS": 2164,
+        "shard2RS": 2149,
+        "shard3RS": 2149
+      },
+      "mapreduce": {
+        "shard1RS": 2164,
+        "shard2RS": 2149,
+        "shard3RS": 2149
+      }
+    },
+    "merge_type": {
+      "aggregate": "anyShard",
+      "mapreduce": "anyShard"
+    },
+    "runs_ms": {
+      "aggregate": [
+        1559.0,
+        1267.2,
+        1467.8
+      ],
+      "mapreduce": [
+        5934.8,
+        5603.0,
+        5482.6
+      ]
+    },
+    "median_ms": {
+      "aggregate": 1467.8,
+      "mapreduce": 5603.0
+    }
+  },
+  "top-players-series-kaggle": {
+    "params": {
+      "metric": "top_players",
+      "document_type": "series",
+      "corpus_scope": "kaggle-cs",
+      "limit": 10
+    },
+    "matched_documents": 9922,
+    "rows": 10,
+    "comparison_equal": true,
+    "coverage_consistent": null,
+    "groups_returned": {
+      "aggregate": 10,
+      "mapreduce": 1192
+    },
+    "partial_groups_per_shard": {
+      "aggregate": {
+        "shard1RS": 1053,
+        "shard2RS": 1052,
+        "shard3RS": 1035
+      },
+      "mapreduce": {
+        "shard1RS": 1053,
+        "shard2RS": 1052,
+        "shard3RS": 1035
+      }
+    },
+    "merge_type": {
+      "aggregate": "anyShard",
+      "mapreduce": "anyShard"
+    },
+    "runs_ms": {
+      "aggregate": [
+        234.3,
+        122.9,
+        160.4
+      ],
+      "mapreduce": [
+        743.3,
+        774.9,
+        548.7
+      ]
+    },
+    "median_ms": {
+      "aggregate": 160.4,
+      "mapreduce": 743.3
+    }
+  }
+}

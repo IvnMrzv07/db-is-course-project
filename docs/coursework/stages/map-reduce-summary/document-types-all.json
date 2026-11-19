@@ -1,0 +1,217 @@
+{
+  "metric": "document_types",
+  "corpus_scope": "all",
+  "document_type": null,
+  "template_version": "2",
+  "engine": "both",
+  "limit": null,
+  "matched_documents": 100000,
+  "rows": [
+    {
+      "corpus_scope": "kaggle-cs",
+      "document_type": "map",
+      "documents": 10753,
+      "with_players": 10723,
+      "player_rows": 102920,
+      "team1_wins": 5775,
+      "team2_wins": 4938,
+      "draws": 1,
+      "avg_players": 9.57,
+      "team1_win_share": 0.539
+    },
+    {
+      "corpus_scope": "kaggle-cs",
+      "document_type": "series",
+      "documents": 9922,
+      "with_players": 5159,
+      "player_rows": 49365,
+      "team1_wins": 5464,
+      "team2_wins": 4453,
+      "draws": 5,
+      "avg_players": 4.98,
+      "team1_win_share": 0.551
+    },
+    {
+      "corpus_scope": "synthetic-cs",
+      "document_type": "map",
+      "documents": 43237,
+      "with_players": 43237,
+      "player_rows": 432370,
+      "team1_wins": 24447,
+      "team2_wins": 18790,
+      "draws": 0,
+      "avg_players": 10.0,
+      "team1_win_share": 0.565
+    },
+    {
+      "corpus_scope": "synthetic-cs",
+      "document_type": "series",
+      "documents": 36088,
+      "with_players": 19236,
+      "player_rows": 192360,
+      "team1_wins": 21194,
+      "team2_wins": 14894,
+      "draws": 0,
+      "avg_players": 5.33,
+      "team1_win_share": 0.587
+    }
+  ],
+  "coverage": {
+    "field": "documents",
+    "grouped_documents": 100000,
+    "matched_documents": 100000,
+    "consistent": true
+  },
+  "executions": [
+    {
+      "engine": "aggregate",
+      "elapsed_ms": 393.3,
+      "groups_returned": 4,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$group"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group",
+          "$sort"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 33457,
+            "docs_examined": 33457,
+            "matched": 33457,
+            "partial_groups": 4,
+            "time_ms": 419
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 33123,
+            "docs_examined": 33123,
+            "matched": 33123,
+            "partial_groups": 4,
+            "time_ms": 390
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 33420,
+            "docs_examined": 33420,
+            "matched": 33420,
+            "partial_groups": 4,
+            "time_ms": 427
+          }
+        ]
+      }
+    },
+    {
+      "engine": "mapreduce",
+      "elapsed_ms": 2348.2,
+      "groups_returned": 4,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$project ($_internalJsEmit)",
+          "$unwind",
+          "$group ($_internalJsReduce)"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group ($_internalJsReduce)"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 33457,
+            "docs_examined": 33457,
+            "matched": 33457,
+            "partial_groups": 4,
+            "time_ms": 1579
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 33123,
+            "docs_examined": 33123,
+            "matched": 33123,
+            "partial_groups": 4,
+            "time_ms": 1539
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_publication_status_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 33420,
+            "docs_examined": 33420,
+            "matched": 33420,
+            "partial_groups": 4,
+            "time_ms": 1609
+          }
+        ]
+      }
+    }
+  ],
+  "comparison": {
+    "equal": true,
+    "rows_compared": 4,
+    "differences": []
+  },
+  "topology": {
+    "sharded": true,
+    "shards": [
+      {
+        "shard": "shard1RS",
+        "documents": 33457
+      },
+      {
+        "shard": "shard2RS",
+        "documents": 33123
+      },
+      {
+        "shard": "shard3RS",
+        "documents": 33420
+      }
+    ]
+  }
+}

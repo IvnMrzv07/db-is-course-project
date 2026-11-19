@@ -1,0 +1,309 @@
+{
+  "metric": "map_pool",
+  "corpus_scope": "all",
+  "document_type": "map",
+  "template_version": "2",
+  "engine": "both",
+  "limit": null,
+  "matched_documents": 53990,
+  "rows": [
+    {
+      "map_name": "Mirage",
+      "maps": 20920,
+      "scored": 20920,
+      "rounds": 435843,
+      "margin": 117641,
+      "team1_wins": 12176,
+      "team2_wins": 8744,
+      "draws": 0,
+      "share": 0.3875,
+      "avg_rounds": 20.83,
+      "avg_margin": 5.62,
+      "team1_win_share": 0.582
+    },
+    {
+      "map_name": "Ancient",
+      "maps": 15369,
+      "scored": 15369,
+      "rounds": 341820,
+      "margin": 64386,
+      "team1_wins": 8512,
+      "team2_wins": 6857,
+      "draws": 0,
+      "share": 0.2847,
+      "avg_rounds": 22.24,
+      "avg_margin": 4.19,
+      "team1_win_share": 0.554
+    },
+    {
+      "map_name": "Inferno",
+      "maps": 9016,
+      "scored": 9016,
+      "rounds": 184740,
+      "margin": 52290,
+      "team1_wins": 4843,
+      "team2_wins": 4173,
+      "draws": 0,
+      "share": 0.167,
+      "avg_rounds": 20.49,
+      "avg_margin": 5.8,
+      "team1_win_share": 0.537
+    },
+    {
+      "map_name": "Nuke",
+      "maps": 3077,
+      "scored": 3077,
+      "rounds": 68499,
+      "margin": 13885,
+      "team1_wins": 1634,
+      "team2_wins": 1443,
+      "draws": 0,
+      "share": 0.057,
+      "avg_rounds": 22.26,
+      "avg_margin": 4.51,
+      "team1_win_share": 0.531
+    },
+    {
+      "map_name": "Dust2",
+      "maps": 2788,
+      "scored": 2788,
+      "rounds": 57870,
+      "margin": 16934,
+      "team1_wins": 1530,
+      "team2_wins": 1258,
+      "draws": 0,
+      "share": 0.0516,
+      "avg_rounds": 20.76,
+      "avg_margin": 6.07,
+      "team1_win_share": 0.549
+    },
+    {
+      "map_name": "Anubis",
+      "maps": 1248,
+      "scored": 1248,
+      "rounds": 27353,
+      "margin": 6577,
+      "team1_wins": 670,
+      "team2_wins": 578,
+      "draws": 0,
+      "share": 0.0231,
+      "avg_rounds": 21.92,
+      "avg_margin": 5.27,
+      "team1_win_share": 0.537
+    },
+    {
+      "map_name": "Overpass",
+      "maps": 612,
+      "scored": 612,
+      "rounds": 13274,
+      "margin": 3176,
+      "team1_wins": 352,
+      "team2_wins": 259,
+      "draws": 1,
+      "share": 0.0113,
+      "avg_rounds": 21.69,
+      "avg_margin": 5.19,
+      "team1_win_share": 0.576
+    },
+    {
+      "map_name": "Vertigo",
+      "maps": 549,
+      "scored": 549,
+      "rounds": 12058,
+      "margin": 2796,
+      "team1_wins": 302,
+      "team2_wins": 247,
+      "draws": 0,
+      "share": 0.0102,
+      "avg_rounds": 21.96,
+      "avg_margin": 5.09,
+      "team1_win_share": 0.55
+    },
+    {
+      "map_name": "Train",
+      "maps": 333,
+      "scored": 333,
+      "rounds": 7243,
+      "margin": 1799,
+      "team1_wins": 181,
+      "team2_wins": 152,
+      "draws": 0,
+      "share": 0.0062,
+      "avg_rounds": 21.75,
+      "avg_margin": 5.4,
+      "team1_win_share": 0.544
+    },
+    {
+      "map_name": null,
+      "maps": 78,
+      "scored": 39,
+      "rounds": 708,
+      "margin": 168,
+      "team1_wins": 22,
+      "team2_wins": 17,
+      "draws": 0,
+      "share": 0.0014,
+      "avg_rounds": 18.15,
+      "avg_margin": 4.31,
+      "team1_win_share": 0.564
+    }
+  ],
+  "coverage": {
+    "field": "maps",
+    "grouped_documents": 53990,
+    "matched_documents": 53990,
+    "consistent": true
+  },
+  "executions": [
+    {
+      "engine": "aggregate",
+      "elapsed_ms": 194.3,
+      "groups_returned": 10,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$group"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group",
+          "$sort"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 18003,
+            "docs_examined": 18001,
+            "matched": 18001,
+            "partial_groups": 10,
+            "time_ms": 165
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 17949,
+            "docs_examined": 17947,
+            "matched": 17947,
+            "partial_groups": 10,
+            "time_ms": 173
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$group"
+            ],
+            "keys_examined": 18044,
+            "docs_examined": 18042,
+            "matched": 18042,
+            "partial_groups": 10,
+            "time_ms": 193
+          }
+        ]
+      }
+    },
+    {
+      "engine": "mapreduce",
+      "elapsed_ms": 932.0,
+      "groups_returned": 10,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$project ($_internalJsEmit)",
+          "$unwind",
+          "$group ($_internalJsReduce)"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group ($_internalJsReduce)"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 18003,
+            "docs_examined": 18001,
+            "matched": 18001,
+            "partial_groups": 10,
+            "time_ms": 971
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 17949,
+            "docs_examined": 17947,
+            "matched": 17947,
+            "partial_groups": 10,
+            "time_ms": 944
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 18044,
+            "docs_examined": 18042,
+            "matched": 18042,
+            "partial_groups": 10,
+            "time_ms": 990
+          }
+        ]
+      }
+    }
+  ],
+  "comparison": {
+    "equal": true,
+    "rows_compared": 10,
+    "differences": []
+  },
+  "topology": {
+    "sharded": true,
+    "shards": [
+      {
+        "shard": "shard1RS",
+        "documents": 33457
+      },
+      {
+        "shard": "shard2RS",
+        "documents": 33123
+      },
+      {
+        "shard": "shard3RS",
+        "documents": 33420
+      }
+    ]
+  }
+}

@@ -1,0 +1,332 @@
+{
+  "metric": "top_players",
+  "corpus_scope": "kaggle-cs",
+  "document_type": "series",
+  "template_version": "2",
+  "engine": "both",
+  "limit": 10,
+  "matched_documents": 9922,
+  "rows": [
+    {
+      "player_id": "2041",
+      "name": "m0NESY (Ilya Osipov), RU",
+      "documents": 203,
+      "kills": 8356,
+      "deaths": 6063,
+      "assists": 2247,
+      "adr_sum": 16656.7,
+      "adr_n": 203,
+      "kast_sum": 15540.7,
+      "kast_n": 203,
+      "kd": 1.38,
+      "kills_per_document": 41.16,
+      "avg_adr": 82.1,
+      "avg_kast": 76.6
+    },
+    {
+      "player_id": "4710",
+      "name": "Donk (Danil Kryshkovets), RU",
+      "documents": 185,
+      "kills": 8168,
+      "deaths": 5985,
+      "assists": 2053,
+      "adr_sum": 18275.5,
+      "adr_n": 185,
+      "kast_sum": 14474.8,
+      "kast_n": 185,
+      "kd": 1.36,
+      "kills_per_document": 44.15,
+      "avg_adr": 98.8,
+      "avg_kast": 78.2
+    },
+    {
+      "player_id": "550",
+      "name": "ZywOo (Mathieu Herbaut), FR",
+      "documents": 189,
+      "kills": 8090,
+      "deaths": 5528,
+      "assists": 2271,
+      "adr_sum": 16901.5,
+      "adr_n": 189,
+      "kast_sum": 14885.9,
+      "kast_n": 189,
+      "kd": 1.46,
+      "kills_per_document": 42.8,
+      "avg_adr": 89.4,
+      "avg_kast": 78.8
+    },
+    {
+      "player_id": "146",
+      "name": "ropz (Robin Kool), EE",
+      "documents": 221,
+      "kills": 8081,
+      "deaths": 6634,
+      "assists": 2085,
+      "adr_sum": 17078.9,
+      "adr_n": 221,
+      "kast_sum": 16760.7,
+      "kast_n": 221,
+      "kd": 1.22,
+      "kills_per_document": 36.57,
+      "avg_adr": 77.3,
+      "avg_kast": 75.8
+    },
+    {
+      "player_id": "26",
+      "name": "NiKo (Nikola Kovač), BA",
+      "documents": 208,
+      "kills": 7785,
+      "deaths": 6907,
+      "assists": 2613,
+      "adr_sum": 17002.5,
+      "adr_n": 208,
+      "kast_sum": 15354.5,
+      "kast_n": 208,
+      "kd": 1.13,
+      "kills_per_document": 37.43,
+      "avg_adr": 81.7,
+      "avg_kast": 73.8
+    },
+    {
+      "player_id": "628",
+      "name": "KSCERATO (Kaike Cerato), BR",
+      "documents": 221,
+      "kills": 7476,
+      "deaths": 6365,
+      "assists": 2707,
+      "adr_sum": 17993.3,
+      "adr_n": 221,
+      "kast_sum": 16800.5,
+      "kast_n": 221,
+      "kd": 1.17,
+      "kills_per_document": 33.83,
+      "avg_adr": 81.4,
+      "avg_kast": 76.0
+    },
+    {
+      "player_id": "704",
+      "name": "frozen (David Čerňanský), SK",
+      "documents": 219,
+      "kills": 7395,
+      "deaths": 6579,
+      "assists": 2578,
+      "adr_sum": 17605.3,
+      "adr_n": 219,
+      "kast_sum": 16356,
+      "kast_n": 219,
+      "kd": 1.12,
+      "kills_per_document": 33.77,
+      "avg_adr": 80.4,
+      "avg_kast": 74.7
+    },
+    {
+      "player_id": "945",
+      "name": "TeSeS (Rene Madsen), DK",
+      "documents": 221,
+      "kills": 7254,
+      "deaths": 7298,
+      "assists": 2447,
+      "adr_sum": 16020.6,
+      "adr_n": 221,
+      "kast_sum": 15979.4,
+      "kast_n": 221,
+      "kd": 0.99,
+      "kills_per_document": 32.82,
+      "avg_adr": 72.5,
+      "avg_kast": 72.3
+    },
+    {
+      "player_id": "156",
+      "name": "XANTARES (Ismailcan Dörtkardeş), TR",
+      "documents": 200,
+      "kills": 7188,
+      "deaths": 6341,
+      "assists": 2467,
+      "adr_sum": 16897.2,
+      "adr_n": 200,
+      "kast_sum": 14919.8,
+      "kast_n": 200,
+      "kd": 1.13,
+      "kills_per_document": 35.94,
+      "avg_adr": 84.5,
+      "avg_kast": 74.6
+    },
+    {
+      "player_id": "4903",
+      "name": "Wicadia ( Ali Haydar Yalçın), TR",
+      "documents": 203,
+      "kills": 7179,
+      "deaths": 6734,
+      "assists": 2004,
+      "adr_sum": 16206.3,
+      "adr_n": 203,
+      "kast_sum": 14694.9,
+      "kast_n": 203,
+      "kd": 1.07,
+      "kills_per_document": 35.36,
+      "avg_adr": 79.8,
+      "avg_kast": 72.4
+    }
+  ],
+  "coverage": null,
+  "executions": [
+    {
+      "engine": "aggregate",
+      "elapsed_ms": 186.8,
+      "groups_returned": 10,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$unwind",
+          "$match",
+          "$group"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group",
+          "$sort (limit 10)"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$unwind",
+              "$match",
+              "$group"
+            ],
+            "keys_examined": 3285,
+            "docs_examined": 3285,
+            "matched": 3285,
+            "partial_groups": 1053,
+            "time_ms": 141
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$unwind",
+              "$match",
+              "$group"
+            ],
+            "keys_examined": 3294,
+            "docs_examined": 3294,
+            "matched": 3294,
+            "partial_groups": 1052,
+            "time_ms": 149
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor",
+              "$unwind",
+              "$match",
+              "$group"
+            ],
+            "keys_examined": 3343,
+            "docs_examined": 3343,
+            "matched": 3343,
+            "partial_groups": 1035,
+            "time_ms": 160
+          }
+        ]
+      }
+    },
+    {
+      "engine": "mapreduce",
+      "elapsed_ms": 628.7,
+      "groups_returned": 1192,
+      "plan": {
+        "topology": "sharded",
+        "merge_type": "anyShard",
+        "shards_part": [
+          "$match",
+          "$project ($_internalJsEmit)",
+          "$unwind",
+          "$group ($_internalJsReduce)"
+        ],
+        "merger_part": [
+          "$mergeCursors",
+          "$group ($_internalJsReduce)"
+        ],
+        "shards": [
+          {
+            "shard": "shard1RS",
+            "host": "shard1:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 3285,
+            "docs_examined": 3285,
+            "matched": 3285,
+            "partial_groups": 1053,
+            "time_ms": 546
+          },
+          {
+            "shard": "shard2RS",
+            "host": "shard2:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 3294,
+            "docs_examined": 3294,
+            "matched": 3294,
+            "partial_groups": 1052,
+            "time_ms": 549
+          },
+          {
+            "shard": "shard3RS",
+            "host": "shard3:27018",
+            "plan": "PROJECTION_DEFAULT → SHARDING_FILTER → FETCH → IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+            "pipeline": [
+              "$cursor ($_internalJsEmit)",
+              "$unwind",
+              "$group ($_internalJsReduce)"
+            ],
+            "keys_examined": 3343,
+            "docs_examined": 3343,
+            "matched": 3343,
+            "partial_groups": 1035,
+            "time_ms": 568
+          }
+        ]
+      }
+    }
+  ],
+  "comparison": {
+    "equal": true,
+    "rows_compared": 10,
+    "differences": []
+  },
+  "topology": {
+    "sharded": true,
+    "shards": [
+      {
+        "shard": "shard1RS",
+        "documents": 33457
+      },
+      {
+        "shard": "shard2RS",
+        "documents": 33123
+      },
+      {
+        "shard": "shard3RS",
+        "documents": 33420
+      }
+    ]
+  }
+}
