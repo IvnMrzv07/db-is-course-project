@@ -1,0 +1,16 @@
+{
+  "snapshot_id": "kaggle-cs",
+  "snapshot_sha256": "f8996cee29f7ad33c73d471966caaeba67cc0735706a6593cf6d9ac4864eca24",
+  "template_version": "2",
+  "provider": "kaggle_counter_strike_pro_matches",
+  "is_synthetic": false,
+  "accepted": 20675,
+  "rejected": 1,
+  "issues": [
+    {
+      "line": 20100,
+      "reason": "Missing team1"
+    }
+  ],
+  "jsonl_sha256": "637f1c09a083c3f9d2eb636c7691a58d183fa0ef0951b1a4562f76e3af1865d3"
+}

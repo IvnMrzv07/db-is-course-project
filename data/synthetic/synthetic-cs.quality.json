@@ -1,0 +1,164 @@
+{
+  "snapshot_id": "synthetic-cs",
+  "generator": "sdv-tvae",
+  "synthesizer": "sdv.single_table.TVAESynthesizer",
+  "seed": 2026,
+  "epochs": {
+    "series": 300,
+    "maps": 300
+  },
+  "fit_seconds": {
+    "series": 321.8,
+    "maps": 383.8
+  },
+  "total_seconds": 765.0,
+  "training_rows": {
+    "series": 9922,
+    "maps": 8587
+  },
+  "rows": {
+    "series_with_maps": 19236,
+    "map_rows": 43237,
+    "series_without_maps": 16852,
+    "series_detail_trimmed_to_budget": 1,
+    "series_rows": 36088,
+    "rows": 79325
+  },
+  "base_documents": 20675,
+  "combined_documents": 100000,
+  "snapshot_sha256": "724fde9191911c57732e67095b354de6e64fdd7f770a1d8f46770171004b2c6c",
+  "snapshot_gzip_sha256": "3ea70fd98686db2015543423b727f633c9f4aacd11b2a2a38c55d9d73d97f8c4",
+  "rejection_sampling": {
+    "series": {
+      "drawn": 60000,
+      "issues": {
+        "valid": 50089,
+        "same_team": 5930,
+        "score_inconsistent_with_best_of": 3981
+      }
+    },
+    "maps": {
+      "drawn": 220000,
+      "issues": {
+        "team_kills_deaths_mismatch": 156835,
+        "valid": 50814,
+        "invalid_round_score": 11266,
+        "deaths_exceed_rounds": 1085
+      },
+      "team_kill_death_gap_tolerance": 4
+    }
+  },
+  "relations": {
+    "map_winners_match_series_score": 19236,
+    "map_names_unique_in_series": 19236,
+    "series_kills_equal_map_sum": 19236,
+    "series_with_maps": 19236,
+    "map_rows_without_series": 0
+  },
+  "sdmetrics": {
+    "series": {
+      "quality_score": 0.5971,
+      "properties": {
+        "Column Shapes": 0.8046,
+        "Column Pair Trends": 0.3897
+      },
+      "diagnostic_score": 1.0,
+      "diagnostic_properties": {
+        "Data Validity": 1.0,
+        "Data Structure": 1.0,
+        "Constraint Validity": NaN
+      },
+      "worst_column_shapes": [
+        {
+          "column": "tournament",
+          "metric": "TVComplement",
+          "score": 0.5278
+        },
+        {
+          "column": "team2",
+          "metric": "TVComplement",
+          "score": 0.5381
+        },
+        {
+          "column": "team1",
+          "metric": "TVComplement",
+          "score": 0.5582
+        },
+        {
+          "column": "played_at",
+          "metric": "KSComplement",
+          "score": 0.9237
+        },
+        {
+          "column": "score1",
+          "metric": "KSComplement",
+          "score": 0.9579
+        }
+      ]
+    },
+    "maps": {
+      "quality_score": 0.9089,
+      "properties": {
+        "Column Shapes": 0.8609,
+        "Column Pair Trends": 0.9569
+      },
+      "diagnostic_score": 1.0,
+      "diagnostic_properties": {
+        "Data Validity": 1.0,
+        "Data Structure": 1.0,
+        "Constraint Validity": NaN
+      },
+      "worst_column_shapes": [
+        {
+          "column": "map_name",
+          "metric": "TVComplement",
+          "score": 0.5357
+        },
+        {
+          "column": "w1_assists",
+          "metric": "KSComplement",
+          "score": 0.5893
+        },
+        {
+          "column": "w5_assists",
+          "metric": "KSComplement",
+          "score": 0.6754
+        },
+        {
+          "column": "w3_assists",
+          "metric": "KSComplement",
+          "score": 0.6928
+        },
+        {
+          "column": "w2_assists",
+          "metric": "KSComplement",
+          "score": 0.7433
+        }
+      ]
+    }
+  },
+  "real_reference": {
+    "series_detail_share": 0.5214,
+    "synthetic_detail_share": 0.533,
+    "map_name_share_real": {
+      "Ancient": 0.1659,
+      "Anubis": 0.1074,
+      "Dust2": 0.1318,
+      "Inferno": 0.1322,
+      "Mirage": 0.1703,
+      "Nuke": 0.1482,
+      "Overpass": 0.0604,
+      "Train": 0.0356,
+      "Vertigo": 0.0481
+    },
+    "map_name_share_synthetic": {
+      "Ancient": 0.3098,
+      "Anubis": 0.0001,
+      "Dust2": 0.0327,
+      "Inferno": 0.1753,
+      "Mirage": 0.4477,
+      "Nuke": 0.0345
+    }
+  },
+  "privacy": "teams, players and tournaments are frequency-ranked pseudonyms; no real names are emitted"
+}

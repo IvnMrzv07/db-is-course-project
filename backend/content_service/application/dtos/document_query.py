@@ -25,5 +25,7 @@ class DocumentQuery:
             raise ValueError('End date is outside supported range')
         if self.date_from and self.date_to and self.date_from > self.date_to:
             raise ValueError("Start date must precede end date")
-        if any(len(v) > 200 for v in (self.tournament or "", self.team or "", self.corpus_scope)):
+        if self.corpus_scope not in ("kaggle-cs", "synthetic-cs"):
+            raise ValueError("Unknown corpus scope")
+        if any(len(v) > 200 for v in (self.tournament or "", self.team or "")):
             raise ValueError("Filter too long")

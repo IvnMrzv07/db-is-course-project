@@ -34,7 +34,28 @@ def test_conversion_stable_ids_and_no_invented_values():
     assert first['metadata']['source_timezone']=='unspecified'
     assert 'score:' not in convert(row(score1_game=''),'digest')['text']
 
-@pytest.mark.parametrize('changes',[{'match_id':''},{'team1':''},{'datetime':'invalid'},{'is_total':'maybe'},{'game_id':''},{'score1_game':'nan'}])
+def test_v2_structured_metadata():
+    player=dict(team1_player1='p1',team1_player1_id='77',team1_player1_kills='16.0',team1_player1_deaths='11.0',
+        team1_player1_assists='3.0',team1_player1_adr='76.5',team1_player1_kast='71.4',team1_player1_kddiff='5.0')
+    doc=convert(row(team1_id='10',team2_id='20',bestOf='3.0',map_id='4',team1_win='0',**player),'digest')
+    m=doc['metadata']
+    assert m['template_version']=='2'
+    assert (m['score1'],m['score2'],m['winner'],m['winner_team'])==(13,7,'team1','Alpha')  # score wins over team1_win
+    assert (m['map_name'],m['map_id'],m['best_of'],m['team1_id'],m['team2_id'])==('Dust2','4',3,'10','20')
+    assert 'games_played' not in m
+    assert m['players']==[{'team':1,'slot':1,'player_id':'77','name':'p1','kills':16,'deaths':11,'assists':3,
+        'adr':76.5,'kast':71.4,'kddiff':5}]
+    assert 'p1: 16.0 kills, 11.0 deaths, 3.0 assists, 76.5 adr, 71.4 kast.' in doc['text']
+    json.dumps(doc, allow_nan=False)
+    series=convert(row(is_total='True',score1_match='0.0',score2_match='2.0',games_played='2.0'),'digest')['metadata']
+    assert (series['score1'],series['score2'],series['winner'],series['winner_team'],series['games_played'])==(0,2,'team2','Beta',2)
+    assert 'map_name' not in series and series['players']==[]
+    missing=convert(row(score1_game='',bestOf=''),'digest')['metadata']
+    assert (missing['score1'],missing['winner'],missing['winner_team'],missing['best_of'])==(None,None,None,None)
+    assert convert(row(score2_game='13.0'),'digest')['metadata']['winner']=='draw'
+
+@pytest.mark.parametrize('changes',[{'match_id':''},{'team1':''},{'datetime':'invalid'},{'is_total':'maybe'},{'game_id':''},{'score1_game':'nan'},
+    {'score1_game':'abc'},{'bestOf':'x'},{'team1_player1':'p','team1_player1_kills':'1.5'},{'team1_player1':'p','team1_player1_adr':'inf'}])
 def test_invalid_source_record(changes):
     with pytest.raises(ValueError):
         convert(row(**changes),'digest')
@@ -50,6 +71,10 @@ def test_full_archive_reproducible(tmp_path):
     records=[json.loads(line) for line in (tmp_path/'kaggle-cs.jsonl').read_text(encoding='utf-8').splitlines()]
     assert len({d['id'] for d in records})==20675
     assert {d['metadata']['document_type'] for d in records}=={'series','map'}
+    assert manifest['template_version']=='2' and all(d['metadata']['template_version']=='2' for d in records)
+    assert all(d['metadata']['score1'] is not None for d in records if d['metadata']['document_type']=='series')
+    assert {d['metadata'].get('map_name') for d in records if d['metadata']['document_type']=='series'}=={None}
+    assert sum(len(d['metadata']['players']) for d in records)==102920+49365
 
 
 def test_literal_search_and_combined_filters():

@@ -1,0 +1,13 @@
+# Offline tooling for the synthetic-cs load corpus (not installed in the Docker image).
+# Install into a separate virtualenv; CPU-only torch keeps the download small:
+#   python -m venv .venv-synth
+#   .venv-synth/Scripts/python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+#   .venv-synth/Scripts/python -m pip install -r requirements-synthetic.txt
+# Versions used to generate data/synthetic/synthetic-cs.csv.gz (Python 3.14, Windows, CPU):
+sdv==2.2.0
+sdmetrics==0.33.0
+ctgan==0.13.0
+rdt==2.1.0
+copulas==0.15.0
+pandas==2.3.3
+numpy==2.5.5

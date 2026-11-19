@@ -22,4 +22,4 @@ class SourceDocument:
     is_synthetic: bool
     publication_status: str
     related_entity_ids: tuple[UUID, ...]
-    metadata: dict[str, str]
+    metadata: dict[str, object]

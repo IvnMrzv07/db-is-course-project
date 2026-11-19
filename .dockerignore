@@ -50,3 +50,4 @@ artifacts/report-work
 artifacts/test-results
 
 /artifacts/
+.venv-synth

@@ -1,0 +1,11 @@
+{
+  "snapshot_id": "synthetic-cs",
+  "snapshot_sha256": "724fde9191911c57732e67095b354de6e64fdd7f770a1d8f46770171004b2c6c",
+  "template_version": "2",
+  "provider": "sdv_synthetic_counter_strike",
+  "is_synthetic": true,
+  "accepted": 79325,
+  "rejected": 0,
+  "issues": [],
+  "jsonl_sha256": "c054e5bba2362aaa79c7e55877070a4c4c435ae717297a3762bcda78cf2903c3"
+}

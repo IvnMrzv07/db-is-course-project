@@ -1,7 +1,11 @@
 import React from 'react';
 
-export type Doc = {id:string; title:string; text?:string; source_url:string; source_id:string; metadata:Record<string,string>};
-const labels:Record<string,string> = {match_id:'ID матчу',game_id:'ID карти',snapshot_sha256:'Контрольна сума набору',template_version:'Версія шаблону',generated_from_dataset:'Сформовано з датасету',source_timezone:'Часовий пояс джерела'};
+export type PlayerStat = {team:1|2; slot:number; player_id:string|null; name:string; kills:number|null; deaths:number|null; assists:number|null; adr:number|null; kast:number|null; kddiff:number|null};
+// v1 fields are strings; template v2 adds JSON-typed fields (numbers, null, players list).
+export type DocMetadata = {document_type:string; tournament:string; team1:string; team2:string; played_at:string; players?:PlayerStat[]; [key:string]:unknown};
+export type Doc = {id:string; title:string; text?:string; source_url:string; source_id:string; metadata:DocMetadata};
+const labels:Record<string,string> = {match_id:'ID матчу',game_id:'ID карти',map_name:'Карта',best_of:'Формат (best of)',score1:'Рахунок команди 1',score2:'Рахунок команди 2',winner_team:'Переможець',snapshot_sha256:'Контрольна сума набору',template_version:'Версія шаблону',generated_from_dataset:'Сформовано з датасету',source_timezone:'Часовий пояс джерела'};
+const shown=(value:unknown)=>value===null||value===undefined||value===''?'Не вказано':value==='unspecified'?'Не вказано':value==='true'?'Так':value==='false'?'Ні':String(value);
 
 // Only split the known v1 template into paragraphs; never infer missing statistics.
 export function textSections(text:string) {
@@ -25,7 +29,7 @@ export function DocumentView({doc,close}:{doc:Doc;close:()=>void}) {
       {players.length>0&&<section aria-labelledby="player-title"><h3 id="player-title">Статистика зі джерела</h3><div className="player-records" lang="en">{players.map((player,index)=><p key={index}>{player}</p>)}</div></section>}
       <details className="document-details"><summary>Оригінальний текст документа</summary><p className="full-text" lang="en">{doc.text}</p></details>
       <section className="document-source"><h3>Походження</h3><p>Локальний набір Counter-Strike Pro Matches · фактологічний опис англійською.</p><a href={doc.source_url} target="_blank" rel="noreferrer">Переглянути датасет на Kaggle ↗<span className="sr-only"> (у новій вкладці)</span></a></section>
-      <details className="document-details"><summary>Технічні дані</summary><dl><dt>ID документа</dt><dd>{doc.id}</dd><dt>Ключ джерела</dt><dd>{doc.source_id}</dd>{Object.entries(labels).filter(([key])=>key in m).map(([key,label])=><React.Fragment key={key}><dt>{label}</dt><dd>{m[key]==='unspecified'?'Не вказано':m[key]==='true'?'Так':m[key]||'Не вказано'}</dd></React.Fragment>)}</dl></details>
+      <details className="document-details"><summary>Технічні дані</summary><dl><dt>ID документа</dt><dd>{doc.id}</dd><dt>Ключ джерела</dt><dd>{doc.source_id}</dd>{Object.entries(labels).filter(([key])=>key in m).map(([key,label])=><React.Fragment key={key}><dt>{label}</dt><dd>{shown(m[key])}</dd></React.Fragment>)}</dl></details>
     </div>
   </article>;
 }
