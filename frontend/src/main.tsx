@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 import {DocumentView, type Doc} from './DocumentView';
+import {Distributed} from './Distributed';
+import {Search} from './Search';
 
 type Job = {id:string;status:string;total:number;attempted:number;inserted:number;duplicates:number;rejected:number;validation_rejected:number;backlog:number;target_rate:number;error?:string;updated_at:string};
 type Stats = {stored_documents:number;durable_documents_per_second:number;sampled_at:string};
@@ -19,7 +21,11 @@ async function api(path:string, options:RequestInit = {}) {
 }
 
 function App() {
-  const [view,setView] = useState<'corpus'|'imports'>('corpus');
+  type View = 'corpus'|'search'|'imports'|'distributed';
+  const fromHash = ():View => (['search','imports','distributed'] as View[]).find(v=>location.hash.split('?')[0]==='#'+v) ?? 'corpus';
+  const [view,setViewState] = useState<View>(fromHash);
+  const setView = (next:View) => { setViewState(next); history.replaceState(null,'',next==='corpus'?location.pathname+location.search:'#'+next); };
+  useEffect(() => { const sync=()=>setViewState(fromHash()); addEventListener('hashchange',sync); return ()=>removeEventListener('hashchange',sync); },[]);
   const [stats,setStats] = useState<Stats|null>(null);
   const [statsError,setStatsError] = useState('');
   useEffect(() => {
@@ -32,14 +38,16 @@ function App() {
     <aside><a className="brand" href="#" onClick={e=>{e.preventDefault();setView('corpus');}}><span className="brand-mark">CS</span><span>ARCHIVE<small>COUNTER-STRIKE DATA</small></span></a>
       <div className="nav-label">РОБОЧИЙ ПРОСТІР</div><nav aria-label="Основна навігація">
       <button className={view==='corpus'?'active':''} onClick={()=>setView('corpus')}><span>▦</span> Корпус документів</button>
-      <button className={view==='imports'?'active':''} onClick={()=>setView('imports')}><span>↳</span> Імпорт та моніторинг</button></nav>
+      <button className={view==='search'?'active':''} onClick={()=>setView('search')}><span>⌕</span> Повнотекстовий пошук</button>
+      <button className={view==='imports'?'active':''} onClick={()=>setView('imports')}><span>↳</span> Імпорт та моніторинг</button>
+      <button className={view==='distributed'?'active':''} onClick={()=>setView('distributed')}><span>⇶</span> Розподілені запити</button></nav>
       <div className="side-note"><span className="dot"/> Локальний архів<p>Історія матчів.<br/>Дані з перевіреним походженням.</p><small>КУРСОВИЙ ПРОЄКТ · ЕТАПИ 9–12</small></div>
     </aside>
-    <main><header><span>РОБОЧИЙ ПРОСТІР / {view==='corpus'?'КОРПУС':'ІМПОРТ'}</span><span className="tag">CS / DATA EXPLORER</span></header>
-      <section className="intro"><div className="eyebrow">COUNTER-STRIKE / MATCH RECORDS</div><h1>{view==='corpus'?'Кожен матч має історію.':'Від джерела до архіву.'}</h1><p>{view==='corpus'?'Досліджуйте матчі та карти. Знаходьте факти, команди й результати в одному місці.':'Керуйте завантаженням корпусу та стежте за фактично збереженими даними.'}</p></section>
+    <main><header><span>РОБОЧИЙ ПРОСТІР / {view==='corpus'?'КОРПУС':view==='search'?'ПОШУК':view==='imports'?'ІМПОРТ':'РОЗПОДІЛЕНІ ЗАПИТИ'}</span><span className="tag">CS / DATA EXPLORER</span></header>
+      <section className="intro"><div className="eyebrow">COUNTER-STRIKE / MATCH RECORDS</div><h1>{view==='corpus'?'Кожен матч має історію.':view==='search'?'Знайти за словом, а не за точною назвою.':view==='imports'?'Від джерела до архіву.':'Один запит — три шарди.'}</h1><p>{view==='corpus'?'Досліджуйте матчі та карти. Знаходьте факти, команди й результати в одному місці.':view==='search'?'Повнотекстовий пошук Elasticsearch по всіх 100 000 документах: ранжування за релевантністю, підсвічені збіги та фільтри за корпусом, типом і картою.':view==='imports'?'Керуйте завантаженням корпусу та стежте за фактично збереженими даними.':'Map-Reduce агрегація по всьому корпусу: часткові підсумки на кожному шарді, злиття в один результат і план виконання.'}</p></section>
       <section className="metrics" aria-label="Статистика корпусу"><div><span>ДОКУМЕНТІВ У БАЗІ</span><strong>{stats?number(stats.stored_documents):'—'}</strong><small>Підтверджені записи</small></div><div><span>ШВИДКІСТЬ ЗАПИСУ</span><strong>{stats?number(stats.durable_documents_per_second):'—'} <em>док/с</em></strong><small>Середнє за останні 10 секунд</small></div><div><span>ОСТАННЄ ОНОВЛЕННЯ</span><strong className="clock">{stats?new Date(stats.sampled_at).toLocaleTimeString('uk-UA'):'—'}</strong><small>{statsError?'Зв’язок перервано · дані можуть бути застарілими':'Автоматичне оновлення щосекунди'}</small></div></section>
       {statsError&&<div role="alert" className="error">Статистика недоступна: {statsError}</div>}
-      {view==='corpus'?<Corpus/>:<Imports/>}
+      {view==='corpus'?<Corpus/>:view==='search'?<Search/>:view==='imports'?<Imports/>:<Distributed/>}
       <footer><span>CS ARCHIVE</span><span>Фактологічні описи сформовано з локального датасету Kaggle.</span></footer>
     </main></div>;
 }
@@ -75,7 +83,7 @@ function Corpus(){
 }
 function Imports(){
   const [token,setToken]=useState('');const [draft,setDraft]=useState('');
-  const [jobs,setJobs]=useState<Job[]>([]);const [snapshots,setSnapshots]=useState<{id:string;documents:number;validation_rejected:number}[]>([]);
+  const [jobs,setJobs]=useState<Job[]>([]);const [snapshots,setSnapshots]=useState<{id:string;documents:number;validation_rejected:number;is_synthetic?:boolean}[]>([]);
   const [snapshot,setSnapshot]=useState('kaggle-cs');const [rate,setRate]=useState(100);const [rates,setRates]=useState<Record<string,number>>({});
   const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [notice,setNotice]=useState('');
   const [page,setPage]=useState(1);const [total,setTotal]=useState(0);const [listLoading,setListLoading]=useState(false);
@@ -89,7 +97,7 @@ function Imports(){
   async function start(){setBusy(true);setNotice('');startKey.current??=crypto.randomUUID();try{await api('/replays',{method:'POST',headers:{...headers(),'Idempotency-Key':startKey.current},body:JSON.stringify({snapshot_id:snapshot,target_rate:rate})});startKey.current=null;setPage(1);setNotice('Завдання створено.');}catch(e){setNotice('Помилка запуску: '+(e as Error).message);}finally{setBusy(false);}}
   return <section className="panel"><div className="panel-title"><h2>Керування імпортом</h2><span className="pill">ОПЕРАТОР</span></div>
     {!token?<form className="auth" onSubmit={e=>{e.preventDefault();setToken(draft);setDraft('');}}><h3>Доступ оператора</h3><p>Введіть токен зі свого локального налаштування. Він зберігається лише в пам’яті цієї сторінки.</p><label>Токен<input type="password" required minLength={24} value={draft} onChange={e=>setDraft(e.target.value)} autoComplete="off"/></label><button className="primary">Підключитися →</button></form>:<>
-      <div className="import-form"><label>Підготовлений набір<select value={snapshot} onChange={e=>{setSnapshot(e.target.value);startKey.current=null;}}>{snapshots.map(s=><option key={s.id} value={s.id}>{s.id} · {number(s.documents)} документів</option>)}</select></label><label>Цільовий темп, док/с<input type="number" min={10} max={5000} value={rate} onChange={e=>{setRate(Number(e.target.value));startKey.current=null;}}/></label><button className="primary" disabled={busy||!snapshots.length||!Number.isInteger(rate)||rate<10||rate>5000} onClick={()=>void start()}>Почати імпорт ↗</button><button onClick={()=>{setToken('');setJobs([]);setSnapshots([]);setError('');setNotice('');setPage(1);setTotal(0);}}>Вийти</button></div>
+      <div className="import-form"><label>Підготовлений набір<select value={snapshot} onChange={e=>{setSnapshot(e.target.value);startKey.current=null;}}>{snapshots.map(s=><option key={s.id} value={s.id}>{s.id} · {number(s.documents)} документів{s.is_synthetic?" · синтетичні (навантажувальні)":""}</option>)}</select></label><label>Цільовий темп, док/с<input type="number" min={10} max={5000} value={rate} onChange={e=>{setRate(Number(e.target.value));startKey.current=null;}}/></label><button className="primary" disabled={busy||!snapshots.length||!Number.isInteger(rate)||rate<10||rate>5000} onClick={()=>void start()}>Почати імпорт ↗</button><button onClick={()=>{setToken('');setJobs([]);setSnapshots([]);setError('');setNotice('');setPage(1);setTotal(0);}}>Вийти</button></div>
       <p className="hint">Повторний запуск перевіряє той самий корпус без створення дублікатів. Пауза не скасовує вже відправлені пакети.</p>
       {error&&<div className="error" role="alert">{error}</div>}{notice&&<div className="notice" role="status">{notice}</div>}
       {!jobs.length&&!error&&<div className="empty"><h3>Архів починається з першого імпорту</h3><p>Оберіть набір і запустіть завантаження.</p></div>}

@@ -9,11 +9,16 @@ import aio_pika
 log = logging.getLogger(__name__)
 
 class Broker:
+    QUEUES = ('corpus.store', 'corpus.completed')
+
+    def __init__(self, queues=None):
+        self.queues = tuple(queues or self.QUEUES)
+
     async def connect(self):
         self.connection = await aio_pika.connect_robust(os.environ['BROKER_URL'])
         self.channel = await self.connection.channel(publisher_confirms=True, on_return_raises=True)
         await self.channel.set_qos(prefetch_count=1)
-        for name in ('corpus.store', 'corpus.completed'):
+        for name in self.queues:
             await self.channel.declare_queue(name + '.failed', durable=True)
             await self.channel.declare_queue(name, durable=True)
         return self
@@ -22,7 +27,7 @@ class Broker:
         await self.channel.default_exchange.publish(aio_pika.Message(
             json.dumps(payload).encode(), content_type='application/json',
             delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
-            message_id=payload.get('batch_id'), headers={'attempt': attempt}),
+            message_id=payload.get('event_id') or payload.get('batch_id'), headers={'attempt': attempt}),
             routing_key=queue, mandatory=True, timeout=10)
 
     async def consume(self, queue_name, handler, on_failure=None):

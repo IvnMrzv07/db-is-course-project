@@ -8,9 +8,14 @@ from content_service.infrastructure.database.distributed_aggregation import Mong
 from content_service.application.services.queries.distributed_aggregation_query_service import DistributedAggregationQueryService
 from content_service.presentation.api.controllers.distributed_aggregation_controller import DistributedAggregationController
 
+def search_index_events_enabled() -> bool:
+    """`search.index` events are opt-in (SEARCH_INDEX_EVENTS=1): only stands with a search worker enable them."""
+    return os.environ.get('SEARCH_INDEX_EVENTS', '').strip().lower() in ('1', 'true', 'yes')
+
+
 async def build_runtime():
     client = AsyncMongoClient(os.environ['MONGO_URL'], serverSelectionTimeoutMS=5000, tz_aware=True)
-    repository = MongoCorpusRepository(client.get_database('content'))
+    repository = MongoCorpusRepository(client.get_database('content'), index_events=search_index_events_enabled())
     await repository.initialize()
     return client, repository, CorpusController(CorpusQueryService(repository)), CorpusCommandService(repository)
 

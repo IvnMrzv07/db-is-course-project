@@ -1,0 +1,14 @@
+{
+  "run_id": "fa7cca8929d4",
+  "scope": "all",
+  "batch_size": 100,
+  "events": 1000,
+  "documents": 100000,
+  "documents_by_scope": {
+    "kaggle-cs": 20675,
+    "synthetic-cs": 79325
+  },
+  "publish_seconds": 14.83,
+  "source_documents": 100000,
+  "finished_at": "2026-11-19T15:07:39.822635+00:00"
+}

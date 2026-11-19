@@ -1,0 +1,1678 @@
+{
+  "team_and_map_all_words": {
+    "request": {
+      "q": "Vitality Mirage",
+      "mode": "all"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 81,
+      "total_relation": "eq",
+      "max_score": 25.876076,
+      "hits": [
+        {
+          "id": "d86ccd02-908e-54aa-8367-85e0e334ff1d",
+          "score": 25.876076,
+          "title": "Astralis vs Team Vitality — IEM Chengdu 2025 — Mirage",
+          "snippet": "Astralis played Team Vitality at IEM Chengdu 2025 on 2025-11-07. Map: Mirage. Map score: 7-13. device (Nicolai Reedtz), DK: 13.0 kills, 15.0 deaths, 6.0 assists, 84.5 adr, 75.0 kast. Staehr (Victor Staehr), DK: 12.0 kills, 16.0 deaths, 8.0 …",
+          "highlights": {
+            "team2": [
+              "Team Vitality"
+            ],
+            "text": [
+              "Astralis played Team Vitality at IEM Chengdu 2025 on 2025-11-07. Map: Mirage."
+            ],
+            "title": [
+              "Astralis vs Team Vitality — IEM Chengdu 2025 — Mirage"
+            ],
+            "map_name": [
+              "Mirage"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "Astralis",
+          "team2": "Team Vitality",
+          "tournament": "IEM Chengdu 2025",
+          "played_at": "2025-11-07T09:30:00",
+          "source_id": "5457836:map:124657",
+          "version": 1
+        },
+        {
+          "id": "74398181-4776-57bf-b570-95133fe875bb",
+          "score": 25.862778,
+          "title": "Team Vitality vs BCGame — IEM Atlanta 2026 — Mirage",
+          "snippet": "Team Vitality played BCGame at IEM Atlanta 2026 on 2026-05-11. Map: Mirage. Map score: 13-7. apEX (Dan Madesclaire), FR: 14.0 kills, 13.0 deaths, 11.0 assists, 102.9 adr, 75.0 kast. ZywOo (Mathieu Herbaut), FR: 19.0 kills, 9.0 deaths, 6.0 a…",
+          "highlights": {
+            "team1": [
+              "Team Vitality"
+            ],
+            "text": [
+              "Team Vitality played BCGame at IEM Atlanta 2026 on 2026-05-11. Map: Mirage."
+            ],
+            "title": [
+              "Team Vitality vs BCGame — IEM Atlanta 2026 — Mirage"
+            ],
+            "map_name": [
+              "Mirage"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "Team Vitality",
+          "team2": "BCGame",
+          "tournament": "IEM Atlanta 2026",
+          "played_at": "2026-05-11T21:00:00",
+          "source_id": "7300798:map:153658",
+          "version": 1
+        },
+        {
+          "id": "c769aa9c-a0e4-5454-ae1a-3cd1832de7df",
+          "score": 25.862778,
+          "title": "Team Vitality vs MOUZ — IEM Cologne 2025 — Mirage",
+          "snippet": "Team Vitality played MOUZ at IEM Cologne 2025 on 2025-08-02. Map: Mirage. Map score: 9-13. apEX (Dan Madesclaire), FR: 9.0 kills, 20.0 deaths, 7.0 assists, 67.3 adr, 50.0 kast. ZywOo (Mathieu Herbaut), FR: 8.0 kills, 19.0 deaths, 6.0 assist…",
+          "highlights": {
+            "team1": [
+              "Team Vitality"
+            ],
+            "text": [
+              "Team Vitality played MOUZ at IEM Cologne 2025 on 2025-08-02. Map: Mirage."
+            ],
+            "title": [
+              "Team Vitality vs MOUZ — IEM Cologne 2025 — Mirage"
+            ],
+            "map_name": [
+              "Mirage"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "Team Vitality",
+          "team2": "MOUZ",
+          "tournament": "IEM Cologne 2025",
+          "played_at": "2025-08-02T20:45:00",
+          "source_id": "3415817:map:123583",
+          "version": 1
+        },
+        {
+          "id": "a9d1f0a8-e7a2-58f7-9aca-494e9c5ea3f1",
+          "score": 25.862778,
+          "title": "Team Vitality vs MOUZ — IEM Dallas 2025 — Mirage",
+          "snippet": "Team Vitality played MOUZ at IEM Dallas 2025 on 2025-05-25. Map: Mirage. Map score: 13-9. apEX (Dan Madesclaire), FR: 12.0 kills, 17.0 deaths, 2.0 assists, 52.0 adr, 68.2 kast. ZywOo (Mathieu Herbaut), FR: 25.0 kills, 12.0 deaths, 8.0 assis…",
+          "highlights": {
+            "team1": [
+              "Team Vitality"
+            ],
+            "text": [
+              "Team Vitality played MOUZ at IEM Dallas 2025 on 2025-05-25. Map: Mirage."
+            ],
+            "title": [
+              "Team Vitality vs MOUZ — IEM Dallas 2025 — Mirage"
+            ],
+            "map_name": [
+              "Mirage"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "Team Vitality",
+          "team2": "MOUZ",
+          "tournament": "IEM Dallas 2025",
+          "played_at": "2025-05-25T22:30:00",
+          "source_id": "2965980:map:123212",
+          "version": 1
+        },
+        {
+          "id": "141cc17c-c613-5108-afc1-1eae27fae164",
+          "score": 25.862778,
+          "title": "Team Vitality vs GamerLegion — IEM Dallas 2025 — Mirage",
+          "snippet": "Team Vitality played GamerLegion at IEM Dallas 2025 on 2025-05-20. Map: Mirage. Map score: 13-9. apEX (Dan Madesclaire), FR: 17.0 kills, 15.0 deaths, 5.0 assists, 76.7 adr, 72.7 kast. ZywOo (Mathieu Herbaut), FR: 16.0 kills, 11.0 deaths, 6.…",
+          "highlights": {
+            "team1": [
+              "Team Vitality"
+            ],
+            "text": [
+              "Team Vitality played GamerLegion at IEM Dallas 2025 on 2025-05-20. Map: Mirage."
+            ],
+            "title": [
+              "Team Vitality vs GamerLegion — IEM Dallas 2025 — Mirage"
+            ],
+            "map_name": [
+              "Mirage"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "Team Vitality",
+          "team2": "GamerLegion",
+          "tournament": "IEM Dallas 2025",
+          "played_at": "2025-05-20T22:00:00",
+          "source_id": "2911510:map:123169",
+          "version": 1
+        }
+      ],
+      "took_ms": 23,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Mirage",
+            "count": 81
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 81
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 81
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 81
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "Vitality Mirage",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 29.9
+    }
+  },
+  "player_nickname": {
+    "request": {
+      "q": "s1mple",
+      "mode": "all",
+      "document_type": "map"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 142,
+      "total_relation": "eq",
+      "max_score": 12.923722,
+      "hits": [
+        {
+          "id": "1f47d0ca-ce50-5e7a-9fe1-d2726b9abf53",
+          "score": 12.923722,
+          "title": "MASONIC vs BCGame — Parken Challenger Championship #1 — Nuke",
+          "snippet": "MASONIC played BCGame at Parken Challenger Championship #1 on 2026-02-23. Map: Nuke. Map score: 7-13. Noruyp: 18.0 kills, 14.0 deaths, 0.0 assists, 67.6 adr, 70.0 kast. Botman: 10.0 kills, 16.0 deaths, 6.0 assists, 65.3 adr, 60.0 kast. Bukh…",
+          "highlights": {
+            "text": [
+              "Avou: 7.0 kills, 18.0 deaths, 2.0 assists, 36.3 adr, 55.0 kast. s1mple (Aleksandr Kostyliev), UA: 19.0 kills, 12.0 deaths, 7.0 assists, 99.7 adr, 75.0 kast. electronic"
+            ],
+            "player_names": [
+              "s1mple (Aleksandr Kostyliev), UA"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Nuke",
+          "team1": "MASONIC",
+          "team2": "BCGame",
+          "tournament": "Parken Challenger Championship #1",
+          "played_at": "2026-02-23T15:00:00",
+          "source_id": "6533779:map:125498",
+          "version": 1
+        },
+        {
+          "id": "a302af10-3895-5fa5-8524-1dd6a2913510",
+          "score": 12.923722,
+          "title": "MASONIC vs BCGame — Parken Challenger Championship #1 — Overpass",
+          "snippet": "MASONIC played BCGame at Parken Challenger Championship #1 on 2026-02-23. Map: Overpass. Map score: 8-13. Noruyp: 11.0 kills, 16.0 deaths, 8.0 assists, 67.0 adr, 61.9 kast. Botman: 21.0 kills, 15.0 deaths, 9.0 assists, 107.7 adr, 81.0 kast.…",
+          "highlights": {
+            "text": [
+              "Avou: 13.0 kills, 16.0 deaths, 2.0 assists, 56.1 adr, 57.1 kast. s1mple (Aleksandr Kostyliev), UA: 25.0 kills, 13.0 deaths, 2.0 assists, 108.3 adr, 66.7 kast. electronic"
+            ],
+            "player_names": [
+              "s1mple (Aleksandr Kostyliev), UA"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Overpass",
+          "team1": "MASONIC",
+          "team2": "BCGame",
+          "tournament": "Parken Challenger Championship #1",
+          "played_at": "2026-02-23T15:00:00",
+          "source_id": "6533779:map:125497",
+          "version": 1
+        },
+        {
+          "id": "4d6645f1-2821-5158-b1d1-2ecb1060f4ee",
+          "score": 12.923722,
+          "title": "MASONIC vs BCGame — Parken Challenger Championship #1 — Nuke",
+          "snippet": "MASONIC played BCGame at Parken Challenger Championship #1 on 2026-02-22. Map: Nuke. Map score: 4-13. Noruyp: 7.0 kills, 14.0 deaths, 0.0 assists, 37.5 adr, 52.9 kast. Botman: 11.0 kills, 11.0 deaths, 1.0 assists, 62.4 adr, 64.7 kast. Bukha…",
+          "highlights": {
+            "text": [
+              "Avou: 8.0 kills, 13.0 deaths, 4.0 assists, 58.4 adr, 64.7 kast. s1mple (Aleksandr Kostyliev), UA: 17.0 kills, 6.0 deaths, 2.0 assists, 86.1 adr, 88.2 kast. electronic"
+            ],
+            "player_names": [
+              "s1mple (Aleksandr Kostyliev), UA"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Nuke",
+          "team1": "MASONIC",
+          "team2": "BCGame",
+          "tournament": "Parken Challenger Championship #1",
+          "played_at": "2026-02-22T15:30:00",
+          "source_id": "6416415:map:125458",
+          "version": 1
+        },
+        {
+          "id": "d1fdbc3d-b2dc-5554-943b-9c6ac7835570",
+          "score": 12.923722,
+          "title": "BCGame vs Team QUAZAR — Skyesports Chennai Esports Global Championship 2025. European Qualifier — Mirage",
+          "snippet": "BCGame played Team QUAZAR at Skyesports Chennai Esports Global Championship 2025. European Qualifier on 2025-10-21. Map: Mirage. Map score: 13-6. CacaNito (Aleksandar Kjulukoski), MK: 13.0 kills, 12.0 deaths, 3.0 assists, 65.8 adr, 68.4 kas…",
+          "highlights": {
+            "text": [
+              "Kjulukoski), MK: 13.0 kills, 12.0 deaths, 3.0 assists, 65.8 adr, 68.4 kast. nexa (Nemanja  Isaković), RS: 12.0 kills, 9.0 deaths, 6.0 assists, 71.6 adr, 94.7 kast. s1mple"
+            ],
+            "player_names": [
+              "s1mple (Aleksandr Kostyliev), UA"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Mirage",
+          "team1": "BCGame",
+          "team2": "Team QUAZAR",
+          "tournament": "Skyesports Chennai Esports Global Championship 2025. European Qualifier",
+          "played_at": "2025-10-21T13:00:00",
+          "source_id": "5082459:map:124499",
+          "version": 1
+        },
+        {
+          "id": "31466da5-2bbe-5e8b-929e-4c5ef3e70cbd",
+          "score": 12.318045,
+          "title": "BCGame vs K27 — CCT Season 3 European Series #11 — Ancient",
+          "snippet": "BCGame played K27 at CCT Season 3 European Series #11 on 2025-11-20. Map: Ancient. Map score: 13-11. CacaNito (Aleksandar Kjulukoski), MK: 15.0 kills, 18.0 deaths, 2.0 assists, 64.2 adr, 66.7 kast. nexa (Nemanja  Isaković), RS: 16.0 kills, …",
+          "highlights": {
+            "text": [
+              "Kjulukoski), MK: 15.0 kills, 18.0 deaths, 2.0 assists, 64.2 adr, 66.7 kast. nexa (Nemanja  Isaković), RS: 16.0 kills, 15.0 deaths, 8.0 assists, 77.2 adr, 70.8 kast. s1mple"
+            ],
+            "player_names": [
+              "s1mple (Aleksandr Kostyliev), UA"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "BCGame",
+          "team2": "K27",
+          "tournament": "CCT Season 3 European Series #11",
+          "played_at": "2025-11-20T15:00:00",
+          "source_id": "5633204:map:124713",
+          "version": 1
+        }
+      ],
+      "took_ms": 13,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Mirage",
+            "count": 30
+          },
+          {
+            "value": "Nuke",
+            "count": 25
+          },
+          {
+            "value": "Ancient",
+            "count": 21
+          },
+          {
+            "value": "Dust2",
+            "count": 21
+          },
+          {
+            "value": "Anubis",
+            "count": 16
+          },
+          {
+            "value": "Inferno",
+            "count": 13
+          },
+          {
+            "value": "Overpass",
+            "count": 12
+          },
+          {
+            "value": "Vertigo",
+            "count": 2
+          },
+          {
+            "value": "Train",
+            "count": 1
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 142
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 142
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 142
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "s1mple",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": "map",
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 18.1
+    }
+  },
+  "tournament_phrase": {
+    "request": {
+      "q": "IEM Katowice",
+      "mode": "phrase",
+      "include_synthetic": "false"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 302,
+      "total_relation": "eq",
+      "max_score": 30.23629,
+      "hits": [
+        {
+          "id": "55f9453c-7def-526e-9341-b2a2657cd4ba",
+          "score": 30.23629,
+          "title": "GamerLegion vs Astralis — IEM Katowice 2025",
+          "snippet": "GamerLegion played Astralis at IEM Katowice 2025 on 2025-02-04. Series score: 2-0. sl3nd (Henrich Hevesi), HU: 24.0 kills, 23.0 deaths, 3.0 assists, 70.9 adr, 75.0 kast. ztr (Erik Gustafsson), SE: 18.0 kills, 24.0 deaths, 14.0 assists, 62.7…",
+          "highlights": {
+            "tournament": [
+              "IEM Katowice 2025"
+            ],
+            "text": [
+              "GamerLegion played Astralis at IEM Katowice 2025 on 2025-02-04."
+            ],
+            "title": [
+              "GamerLegion vs Astralis — IEM Katowice 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "GamerLegion",
+          "team2": "Astralis",
+          "tournament": "IEM Katowice 2025",
+          "played_at": "2025-02-04T15:30:00",
+          "source_id": "2009094:series",
+          "version": 1
+        },
+        {
+          "id": "06f26dc3-8647-5cb9-9884-875d66ce17c6",
+          "score": 30.23629,
+          "title": "MOUZ vs GamerLegion — IEM Katowice 2025",
+          "snippet": "MOUZ played GamerLegion at IEM Katowice 2025 on 2025-02-01. Series score: 0-2. torzsi (Ádám Torzsás), HU: 13.0 kills, 16.0 deaths, 5.0 assists, 84.2 adr, 72.7 kast. xertioN (Dorian Berman), IL: 14.0 kills, 17.0 deaths, 6.0 assists, 76.9 adr…",
+          "highlights": {
+            "tournament": [
+              "IEM Katowice 2025"
+            ],
+            "text": [
+              "MOUZ played GamerLegion at IEM Katowice 2025 on 2025-02-01."
+            ],
+            "title": [
+              "MOUZ vs GamerLegion — IEM Katowice 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "MOUZ",
+          "team2": "GamerLegion",
+          "tournament": "IEM Katowice 2025",
+          "played_at": "2025-02-01T20:40:00",
+          "source_id": "1988984:series",
+          "version": 1
+        },
+        {
+          "id": "12466ee1-6b3d-5238-a1e9-015723b86f88",
+          "score": 30.23629,
+          "title": "MIBR vs Virtus.pro — IEM Katowice 2025",
+          "snippet": "MIBR played Virtus.pro at IEM Katowice 2025 on 2025-01-31. Series score: 0-2. exit (Raphael Lacerda), BR: 22.0 kills, 28.0 deaths, 14.0 assists, 73.1 adr, 76.0 kast. insani (Felipe Kuratani), BR: 21.0 kills, 34.0 deaths, 12.0 assists, 69.8 …",
+          "highlights": {
+            "tournament": [
+              "IEM Katowice 2025"
+            ],
+            "text": [
+              "MIBR played Virtus.pro at IEM Katowice 2025 on 2025-01-31."
+            ],
+            "title": [
+              "MIBR vs Virtus.pro — IEM Katowice 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "MIBR",
+          "team2": "Virtus.pro",
+          "tournament": "IEM Katowice 2025",
+          "played_at": "2025-01-31T18:45:00",
+          "source_id": "1981582:series",
+          "version": 1
+        },
+        {
+          "id": "db281c86-98f3-59c8-abd3-dc0685b4874e",
+          "score": 30.23629,
+          "title": "Heroic vs BIG — IEM Katowice 2025",
+          "snippet": "Heroic played BIG at IEM Katowice 2025 on 2025-01-31. Series score: 0-2. SunPayus (Alvaro Garcia), ES: 13.0 kills, 29.0 deaths, 5.0 assists, 54.6 adr, 47.3 kast. xfl0ud (Yasin Koç), TR: 13.0 kills, 28.0 deaths, 6.0 assists, 52.7 adr, 55.7 k…",
+          "highlights": {
+            "tournament": [
+              "IEM Katowice 2025"
+            ],
+            "text": [
+              "Heroic played BIG at IEM Katowice 2025 on 2025-01-31. Series score: 0-2."
+            ],
+            "title": [
+              "Heroic vs BIG — IEM Katowice 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Heroic",
+          "team2": "BIG",
+          "tournament": "IEM Katowice 2025",
+          "played_at": "2025-01-31T18:00:00",
+          "source_id": "1982394:series",
+          "version": 1
+        },
+        {
+          "id": "193f7f08-0b3d-502c-b3e6-a76bb7869e13",
+          "score": 30.23629,
+          "title": "FlyQuest vs Astralis — IEM Katowice 2025",
+          "snippet": "FlyQuest played Astralis at IEM Katowice 2025 on 2025-01-30. Series score: 1-2. INS (Joshua Potter), AU: 40.0 kills, 45.0 deaths, 18.0 assists, 80.3 adr, 74.3 kast. Liazz (Jay Tregillgas), AU: 51.0 kills, 32.0 deaths, 16.0 assists, 78.4 adr…",
+          "highlights": {
+            "tournament": [
+              "IEM Katowice 2025"
+            ],
+            "text": [
+              "FlyQuest played Astralis at IEM Katowice 2025 on 2025-01-30. Series score: 1-2."
+            ],
+            "title": [
+              "FlyQuest vs Astralis — IEM Katowice 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "FlyQuest",
+          "team2": "Astralis",
+          "tournament": "IEM Katowice 2025",
+          "played_at": "2025-01-30T18:00:00",
+          "source_id": "1974308:series",
+          "version": 1
+        }
+      ],
+      "took_ms": 19,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Nuke",
+            "count": 37
+          },
+          {
+            "value": "Ancient",
+            "count": 33
+          },
+          {
+            "value": "Mirage",
+            "count": 32
+          },
+          {
+            "value": "Inferno",
+            "count": 27
+          },
+          {
+            "value": "Anubis",
+            "count": 25
+          },
+          {
+            "value": "Dust2",
+            "count": 17
+          },
+          {
+            "value": "Vertigo",
+            "count": 12
+          },
+          {
+            "value": "Overpass",
+            "count": 11
+          },
+          {
+            "value": "Train",
+            "count": 6
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 302
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 204
+          },
+          {
+            "value": "series",
+            "count": 98
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 302
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "IEM Katowice",
+        "mode": "phrase",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": false
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 24.2
+    }
+  },
+  "typo_tolerant": {
+    "request": {
+      "q": "Natus Vincere Inferrno",
+      "mode": "fuzzy"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 77,
+      "total_relation": "eq",
+      "max_score": 36.462242,
+      "hits": [
+        {
+          "id": "6a06f55f-d531-545d-93fa-6eb6ece59765",
+          "score": 36.462242,
+          "title": "Natus Vincere vs GamerLegion — IEM Atlanta 2026 — Inferno",
+          "snippet": "Natus Vincere played GamerLegion at IEM Atlanta 2026 on 2026-05-13. Map: Inferno. Map score: 13-4. B1T (Valeriy Vakhovskiy), UA: 19.0 kills, 7.0 deaths, 6.0 assists, 112.8 adr, 94.1 kast. Aleksib (Aleksi Virolainen), FI: 11.0 kills, 6.0 dea…",
+          "highlights": {
+            "title": [
+              "Natus Vincere vs GamerLegion — IEM Atlanta 2026 — Inferno"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Inferno",
+          "team1": "Natus Vincere",
+          "team2": "GamerLegion",
+          "tournament": "IEM Atlanta 2026",
+          "played_at": "2026-05-13T00:09:00",
+          "source_id": "7301240:map:153694",
+          "version": 1
+        },
+        {
+          "id": "afc5004c-b092-5ab8-b8cc-d55c56a27bdd",
+          "score": 36.462242,
+          "title": "Heroic vs Natus Vincere — IEM Chengdu 2025 — Inferno",
+          "snippet": "Heroic played Natus Vincere at IEM Chengdu 2025 on 2025-11-04. Map: Inferno. Map score: 13-8. LNZ (Linus Holtäng), SE: 16.0 kills, 15.0 deaths, 8.0 assists, 95.3 adr, 81.0 kast. Yxngstxr (Simon  Boije), SE: 20.0 kills, 15.0 deaths, 8.0 assi…",
+          "highlights": {
+            "title": [
+              "Heroic vs Natus Vincere — IEM Chengdu 2025 — Inferno"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Inferno",
+          "team1": "Heroic",
+          "team2": "Natus Vincere",
+          "tournament": "IEM Chengdu 2025",
+          "played_at": "2025-11-04T10:30:00",
+          "source_id": "5428253:map:124627",
+          "version": 1
+        },
+        {
+          "id": "97d16bfb-14a3-553d-9f6d-2f7ea524b241",
+          "score": 36.462242,
+          "title": "Astralis vs Natus Vincere — IEM Chengdu 2025 — Inferno",
+          "snippet": "Astralis played Natus Vincere at IEM Chengdu 2025 on 2025-11-03. Map: Inferno. Map score: 16-12. device (Nicolai Reedtz), DK: 19.0 kills, 19.0 deaths, 3.0 assists, 69.8 adr, 71.4 kast. Staehr (Victor Staehr), DK: 18.0 kills, 19.0 deaths, 7.…",
+          "highlights": {
+            "title": [
+              "Astralis vs Natus Vincere — IEM Chengdu 2025 — Inferno"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Inferno",
+          "team1": "Astralis",
+          "team2": "Natus Vincere",
+          "tournament": "IEM Chengdu 2025",
+          "played_at": "2025-11-03T12:45:00",
+          "source_id": "5166826:map:124612",
+          "version": 1
+        },
+        {
+          "id": "c8050c1a-7bf6-5098-87a2-1505b2c6e6d0",
+          "score": 36.462242,
+          "title": "Natus Vincere vs BIG — PGL Astana 2025 — Inferno",
+          "snippet": "Natus Vincere played BIG at PGL Astana 2025 on 2025-05-11. Map: Inferno. Map score: 13-8. B1T (Valeriy Vakhovskiy), UA: 12.0 kills, 12.0 deaths, 5.0 assists, 54.7 adr, 81.0 kast. Aleksib (Aleksi Virolainen), FI: 18.0 kills, 12.0 deaths, 5.0…",
+          "highlights": {
+            "title": [
+              "Natus Vincere vs BIG — PGL Astana 2025 — Inferno"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Inferno",
+          "team1": "Natus Vincere",
+          "team2": "BIG",
+          "tournament": "PGL Astana 2025",
+          "played_at": "2025-05-11T11:55:00",
+          "source_id": "2792212:map:123057",
+          "version": 1
+        },
+        {
+          "id": "daf01132-4895-595d-825f-816e2097fce0",
+          "score": 36.462242,
+          "title": "Natus Vincere vs FlyQuest — IEM Melbourne 2025 — Inferno",
+          "snippet": "Natus Vincere played FlyQuest at IEM Melbourne 2025 on 2025-04-23. Map: Inferno. Map score: 13-7. B1T (Valeriy Vakhovskiy), UA: 16.0 kills, 8.0 deaths, 3.0 assists, 76.3 adr, 95.0 kast. Aleksib (Aleksi Virolainen), FI: 10.0 kills, 11.0 deat…",
+          "highlights": {
+            "title": [
+              "Natus Vincere vs FlyQuest — IEM Melbourne 2025 — Inferno"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Inferno",
+          "team1": "Natus Vincere",
+          "team2": "FlyQuest",
+          "tournament": "IEM Melbourne 2025",
+          "played_at": "2025-04-23T06:45:00",
+          "source_id": "2518779:map:122794",
+          "version": 1
+        }
+      ],
+      "took_ms": 232,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Inferno",
+            "count": 77
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 77
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 77
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 77
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "Natus Vincere Inferrno",
+        "mode": "fuzzy",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 240.1
+    }
+  },
+  "any_word": {
+    "request": {
+      "q": "FaZe Astralis",
+      "mode": "any",
+      "corpus_scope": "kaggle-cs"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 1317,
+      "total_relation": "eq",
+      "max_score": 31.568827,
+      "hits": [
+        {
+          "id": "edea6300-5bca-5eac-a544-20bfaecd3601",
+          "score": 31.568827,
+          "title": "FaZe Clan vs Astralis — PGL Bucharest 2025",
+          "snippet": "FaZe Clan played Astralis at PGL Bucharest 2025 on 2025-04-06. Series score: 1-2. rain (Håvard Nygaard), NO: 32.0 kills, 45.0 deaths, 19.0 assists, 69.7 adr, 65.6 kast. broky (Helvijs Saukants), LV: 56.0 kills, 40.0 deaths, 7.0 assists, 74.…",
+          "highlights": {
+            "team1": [
+              "FaZe Clan"
+            ],
+            "team2": [
+              "Astralis"
+            ],
+            "text": [
+              "FaZe Clan played Astralis at PGL Bucharest 2025 on 2025-04-06."
+            ],
+            "title": [
+              "FaZe Clan vs Astralis — PGL Bucharest 2025"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "FaZe Clan",
+          "team2": "Astralis",
+          "tournament": "PGL Bucharest 2025",
+          "played_at": "2025-04-06T17:00:00",
+          "source_id": "2406991:series",
+          "version": 1
+        },
+        {
+          "id": "14e35ef8-c374-5a1e-bc27-d1ed7406ca6f",
+          "score": 31.568827,
+          "title": "Astralis vs FaZe Clan — IEM Chengdu 2024",
+          "snippet": "Astralis played FaZe Clan at IEM Chengdu 2024 on 2024-04-13. Series score: 1-2. device (Nicolai Reedtz), DK: 23.0 kills, 23.0 deaths, 7.0 assists, 64.2 adr, 73.1 kast. Staehr (Victor Staehr), DK: 24.0 kills, 28.0 deaths, 4.0 assists, 68.3 a…",
+          "highlights": {
+            "team1": [
+              "Astralis"
+            ],
+            "team2": [
+              "FaZe Clan"
+            ],
+            "text": [
+              "Astralis played FaZe Clan at IEM Chengdu 2024 on 2024-04-13."
+            ],
+            "title": [
+              "Astralis vs FaZe Clan — IEM Chengdu 2024"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Astralis",
+          "team2": "FaZe Clan",
+          "tournament": "IEM Chengdu 2024",
+          "played_at": "2024-04-13T13:45:00",
+          "source_id": "1106483:series",
+          "version": 1
+        },
+        {
+          "id": "1a93db31-7755-5d30-935c-80f3664d5d40",
+          "score": 31.568827,
+          "title": "FaZe Clan vs Astralis — IEM Chengdu 2024",
+          "snippet": "FaZe Clan played Astralis at IEM Chengdu 2024 on 2024-04-09. Series score: 0-2. rain (Håvard Nygaard), NO: 17.0 kills, 32.0 deaths, 7.0 assists, 63.1 adr, 61.9 kast. broky (Helvijs Saukants), LV: 23.0 kills, 29.0 deaths, 6.0 assists, 70.5 a…",
+          "highlights": {
+            "team1": [
+              "FaZe Clan"
+            ],
+            "team2": [
+              "Astralis"
+            ],
+            "text": [
+              "FaZe Clan played Astralis at IEM Chengdu 2024 on 2024-04-09."
+            ],
+            "title": [
+              "FaZe Clan vs Astralis — IEM Chengdu 2024"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "FaZe Clan",
+          "team2": "Astralis",
+          "tournament": "IEM Chengdu 2024",
+          "played_at": "2024-04-09T12:15:00",
+          "source_id": "1087467:series",
+          "version": 1
+        },
+        {
+          "id": "34b23bae-3844-599d-adad-3a74a097f494",
+          "score": 30.191278,
+          "title": "FaZe Clan vs Astralis — PGL Cluj-Napoca 2026",
+          "snippet": "FaZe Clan played Astralis at PGL Cluj-Napoca 2026 on 2026-02-17. Series score: 0-2. karrigan (Finn Andersen), DK: 15.0 kills, 31.0 deaths, 9.0 assists, 48.3 adr, 51.3 kast. frozen (David Čerňanský), SK: 16.0 kills, 32.0 deaths, 9.0 assists,…",
+          "highlights": {
+            "team1": [
+              "FaZe Clan"
+            ],
+            "team2": [
+              "Astralis"
+            ],
+            "text": [
+              "FaZe Clan played Astralis at PGL Cluj-Napoca 2026 on 2026-02-17."
+            ],
+            "title": [
+              "FaZe Clan vs Astralis — PGL Cluj-Napoca 2026"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "FaZe Clan",
+          "team2": "Astralis",
+          "tournament": "PGL Cluj-Napoca 2026",
+          "played_at": "2026-02-17T13:00:00",
+          "source_id": "6379243:series",
+          "version": 1
+        },
+        {
+          "id": "06cc3da5-b0a6-5b16-95fc-2431ce836520",
+          "score": 30.191278,
+          "title": "FaZe Clan vs Astralis — PGL Bucharest 2025 — Dust2",
+          "snippet": "FaZe Clan played Astralis at PGL Bucharest 2025 on 2025-04-06. Map: Dust2. Map score: 16-13. rain (Håvard Nygaard), NO: 10.0 kills, 17.0 deaths, 8.0 assists, 45.6 adr, 72.4 kast. broky (Helvijs Saukants), LV: 26.0 kills, 16.0 deaths, 4.0 as…",
+          "highlights": {
+            "team1": [
+              "FaZe Clan"
+            ],
+            "team2": [
+              "Astralis"
+            ],
+            "text": [
+              "FaZe Clan played Astralis at PGL Bucharest 2025 on 2025-04-06. Map: Dust2."
+            ],
+            "title": [
+              "FaZe Clan vs Astralis — PGL Bucharest 2025 — Dust2"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Dust2",
+          "team1": "FaZe Clan",
+          "team2": "Astralis",
+          "tournament": "PGL Bucharest 2025",
+          "played_at": "2025-04-06T17:00:00",
+          "source_id": "2406991:map:122512",
+          "version": 1
+        }
+      ],
+      "took_ms": 38,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Nuke",
+            "count": 170
+          },
+          {
+            "value": "Mirage",
+            "count": 154
+          },
+          {
+            "value": "Ancient",
+            "count": 152
+          },
+          {
+            "value": "Inferno",
+            "count": 131
+          },
+          {
+            "value": "Dust2",
+            "count": 111
+          },
+          {
+            "value": "Overpass",
+            "count": 68
+          },
+          {
+            "value": "Anubis",
+            "count": 48
+          },
+          {
+            "value": "Vertigo",
+            "count": 28
+          },
+          {
+            "value": "Train",
+            "count": 16
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 1317
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 880
+          },
+          {
+            "value": "series",
+            "count": 437
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 1317
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "FaZe Astralis",
+        "mode": "any",
+        "corpus_scope": "kaggle-cs",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 44.3
+    }
+  },
+  "map_filter_kaggle_only": {
+    "request": {
+      "q": "NAVI",
+      "map_name": "Nuke",
+      "include_synthetic": "false"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 1,
+      "total_relation": "eq",
+      "max_score": 31.894085,
+      "hits": [
+        {
+          "id": "c839406f-e95b-503f-87a8-1b514bd2ad58",
+          "score": 31.894085,
+          "title": "Fluxo Demons vs NAVI Javelins — ESL Impact League Season 6 — Nuke",
+          "snippet": "Fluxo Demons played NAVI Javelins at ESL Impact League Season 6 on 2024-11-23. Map: Nuke. Map score: 7-13. yungher (Giovanna Yungh), BR: 10.0 kills, 11.0 deaths, 2.0 assists, 47.0 adr, 65.0 kast. goddess (Lara Baceiredo), BR: 11.0 kills, 16…",
+          "highlights": {
+            "team2": [
+              "NAVI Javelins"
+            ],
+            "text": [
+              "Fluxo Demons played NAVI Javelins at ESL Impact League Season 6 on 2024-11-23. Map: Nuke."
+            ],
+            "title": [
+              "Fluxo Demons vs NAVI Javelins — ESL Impact League Season 6 — Nuke"
+            ]
+          },
+          "corpus_scope": "kaggle-cs",
+          "is_synthetic": false,
+          "document_type": "map",
+          "map_name": "Nuke",
+          "team1": "Fluxo Demons",
+          "team2": "NAVI Javelins",
+          "tournament": "ESL Impact League Season 6",
+          "played_at": "2024-11-23T19:00:00",
+          "source_id": "1838851:map:120916",
+          "version": 1
+        }
+      ],
+      "took_ms": 6,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Inferno",
+            "count": 6
+          },
+          {
+            "value": "Ancient",
+            "count": 4
+          },
+          {
+            "value": "Anubis",
+            "count": 4
+          },
+          {
+            "value": "Dust2",
+            "count": 4
+          },
+          {
+            "value": "Mirage",
+            "count": 1
+          },
+          {
+            "value": "Nuke",
+            "count": 1
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "kaggle-cs",
+            "count": 1
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 1
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "false",
+            "count": 1
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "NAVI",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": "Nuke",
+        "include_synthetic": false
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 10.9
+    }
+  },
+  "synthetic_scope": {
+    "request": {
+      "q": "Synthetic Team 039",
+      "corpus_scope": "synthetic-cs",
+      "document_type": "series"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 1132,
+      "total_relation": "eq",
+      "max_score": 16.379318,
+      "hits": [
+        {
+          "id": "e6a2f422-726d-5be3-883e-f55d7f42f415",
+          "score": 16.379318,
+          "title": "Synthetic Team 004 vs Synthetic Team 039 — Synthetic Tournament 010",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 004 played Synthetic Team 039 at Synthetic Tournament 010 on 2024-10-26. Series score: 2-0. Synthetic Player 004-1: 31.0 kills, 18.0 deaths, 7.…",
+          "highlights": {
+            "team1": [
+              "Synthetic Team 004"
+            ],
+            "team2": [
+              "Synthetic Team 039"
+            ],
+            "tournament": [
+              "Synthetic Tournament 010"
+            ],
+            "text": [
+              "Synthetic Team 004 played Synthetic Team 039 at Synthetic Tournament 010 on 2024-10-26. Series score: 2-0.",
+              "Synthetic Player 039-1: 18.0 kills, 28.0 deaths, 5.0 assists, 57.8 adr, 65.2 kast.",
+              "Synthetic Player 039-2: 18.0 kills, 30.0 deaths, 7.0 assists, 60.2 adr, 61.2 kast."
+            ],
+            "title": [
+              "Synthetic Team 004 vs Synthetic Team 039 — Synthetic Tournament 010"
+            ],
+            "player_names": [
+              "Synthetic Player 039-1",
+              "Synthetic Player 039-2",
+              "Synthetic Player 039-3",
+              "Synthetic Player 039-4",
+              "Synthetic Player 039-5"
+            ]
+          },
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Synthetic Team 004",
+          "team2": "Synthetic Team 039",
+          "tournament": "Synthetic Tournament 010",
+          "played_at": "2024-10-26T23:49:45",
+          "source_id": "S008392:series",
+          "version": 1
+        },
+        {
+          "id": "7d2670a6-6af2-549d-bfbc-0f0aa39ede7a",
+          "score": 16.379318,
+          "title": "Synthetic Team 111 vs Synthetic Team 039 — Synthetic Tournament 157",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 111 played Synthetic Team 039 at Synthetic Tournament 157 on 2024-10-03. Series score: 0-2. Synthetic Player 111-1: 25.0 kills, 29.0 deaths, 7.…",
+          "highlights": {
+            "team1": [
+              "Synthetic Team 111"
+            ],
+            "team2": [
+              "Synthetic Team 039"
+            ],
+            "tournament": [
+              "Synthetic Tournament 157"
+            ],
+            "text": [
+              "Synthetic Team 111 played Synthetic Team 039 at Synthetic Tournament 157 on 2024-10-03. Series score: 0-2.",
+              "Synthetic Player 039-1: 29.0 kills, 24.0 deaths, 6.0 assists, 74.4 adr, 76.3 kast.",
+              "Synthetic Player 039-5: 26.0 kills, 29.0 deaths, 9.0 assists, 66.2 adr, 75.0 kast."
+            ],
+            "title": [
+              "Synthetic Team 111 vs Synthetic Team 039 — Synthetic Tournament 157"
+            ],
+            "player_names": [
+              "Synthetic Player 039-1",
+              "Synthetic Player 039-2",
+              "Synthetic Player 039-3",
+              "Synthetic Player 039-4",
+              "Synthetic Player 039-5"
+            ]
+          },
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Synthetic Team 111",
+          "team2": "Synthetic Team 039",
+          "tournament": "Synthetic Tournament 157",
+          "played_at": "2024-10-03T01:02:41",
+          "source_id": "S035369:series",
+          "version": 1
+        },
+        {
+          "id": "23525697-2d48-5f65-a3a3-9d87c1c78785",
+          "score": 16.379318,
+          "title": "Synthetic Team 069 vs Synthetic Team 039 — Synthetic Tournament 006",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 069 played Synthetic Team 039 at Synthetic Tournament 006 on 2024-09-19. Series score: 0-2. Synthetic Player 069-1: 24.0 kills, 32.0 deaths, 8.…",
+          "highlights": {
+            "team1": [
+              "Synthetic Team 069"
+            ],
+            "team2": [
+              "Synthetic Team 039"
+            ],
+            "tournament": [
+              "Synthetic Tournament 006"
+            ],
+            "text": [
+              "Synthetic Team 069 played Synthetic Team 039 at Synthetic Tournament 006 on 2024-09-19. Series score: 0-2.",
+              "Synthetic Player 039-2: 29.0 kills, 22.0 deaths, 9.0 assists, 89.0 adr, 78.8 kast.",
+              "Synthetic Player 039-3: 30.0 kills, 24.0 deaths, 9.0 assists, 92.3 adr, 88.2 kast."
+            ],
+            "title": [
+              "Synthetic Team 069 vs Synthetic Team 039 — Synthetic Tournament 006"
+            ],
+            "player_names": [
+              "Synthetic Player 039-1",
+              "Synthetic Player 039-2",
+              "Synthetic Player 039-3",
+              "Synthetic Player 039-4",
+              "Synthetic Player 039-5"
+            ]
+          },
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Synthetic Team 069",
+          "team2": "Synthetic Team 039",
+          "tournament": "Synthetic Tournament 006",
+          "played_at": "2024-09-19T03:22:45",
+          "source_id": "S019274:series",
+          "version": 1
+        },
+        {
+          "id": "b9c92863-5548-5109-99e5-f2563bc6d5dc",
+          "score": 16.379318,
+          "title": "Synthetic Team 069 vs Synthetic Team 039 — Synthetic Tournament 057",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 069 played Synthetic Team 039 at Synthetic Tournament 057 on 2024-08-28. Series score: 0-2. Synthetic Player 069-1: 25.0 kills, 30.0 deaths, 8.…",
+          "highlights": {
+            "team1": [
+              "Synthetic Team 069"
+            ],
+            "team2": [
+              "Synthetic Team 039"
+            ],
+            "tournament": [
+              "Synthetic Tournament 057"
+            ],
+            "text": [
+              "Synthetic Team 069 played Synthetic Team 039 at Synthetic Tournament 057 on 2024-08-28. Series score: 0-2.",
+              "Synthetic Player 039-1: 31.0 kills, 25.0 deaths, 9.0 assists, 74.3 adr, 83.8 kast.",
+              "Synthetic Player 039-2: 40.0 kills, 24.0 deaths, 8.0 assists, 96.7 adr, 85.4 kast."
+            ],
+            "title": [
+              "Synthetic Team 069 vs Synthetic Team 039 — Synthetic Tournament 057"
+            ],
+            "player_names": [
+              "Synthetic Player 039-1",
+              "Synthetic Player 039-2",
+              "Synthetic Player 039-3",
+              "Synthetic Player 039-4",
+              "Synthetic Player 039-5"
+            ]
+          },
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Synthetic Team 069",
+          "team2": "Synthetic Team 039",
+          "tournament": "Synthetic Tournament 057",
+          "played_at": "2024-08-28T15:55:05",
+          "source_id": "S000632:series",
+          "version": 1
+        },
+        {
+          "id": "a07b9ef0-806e-5ce1-b62a-9d94a7980e06",
+          "score": 16.379318,
+          "title": "Synthetic Team 002 vs Synthetic Team 039 — Synthetic Tournament 159",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 002 played Synthetic Team 039 at Synthetic Tournament 159 on 2024-08-27. Series score: 0-2. Synthetic Player 002-1: 25.0 kills, 29.0 deaths, 8.…",
+          "highlights": {
+            "team1": [
+              "Synthetic Team 002"
+            ],
+            "team2": [
+              "Synthetic Team 039"
+            ],
+            "tournament": [
+              "Synthetic Tournament 159"
+            ],
+            "text": [
+              "Synthetic Team 002 played Synthetic Team 039 at Synthetic Tournament 159 on 2024-08-27. Series score: 0-2.",
+              "Synthetic Player 039-1: 30.0 kills, 31.0 deaths, 10.0 assists, 67.5 adr, 72.3 kast.",
+              "Synthetic Player 039-5: 30.0 kills, 28.0 deaths, 8.0 assists, 67.2 adr, 66.1 kast."
+            ],
+            "title": [
+              "Synthetic Team 002 vs Synthetic Team 039 — Synthetic Tournament 159"
+            ],
+            "player_names": [
+              "Synthetic Player 039-1",
+              "Synthetic Player 039-2",
+              "Synthetic Player 039-3",
+              "Synthetic Player 039-4",
+              "Synthetic Player 039-5"
+            ]
+          },
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "series",
+          "map_name": null,
+          "team1": "Synthetic Team 002",
+          "team2": "Synthetic Team 039",
+          "tournament": "Synthetic Tournament 159",
+          "played_at": "2024-08-27T08:49:30",
+          "source_id": "S021450:series",
+          "version": 1
+        }
+      ],
+      "took_ms": 44,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [],
+        "corpus_scope": [
+          {
+            "value": "synthetic-cs",
+            "count": 1132
+          }
+        ],
+        "document_type": [
+          {
+            "value": "series",
+            "count": 1132
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "true",
+            "count": 1132
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "Synthetic Team 039",
+        "mode": "all",
+        "corpus_scope": "synthetic-cs",
+        "document_type": "series",
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 51.1
+    }
+  },
+  "synthetic_excluded": {
+    "request": {
+      "q": "Synthetic Team 039",
+      "include_synthetic": "false"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 0,
+      "total_relation": "eq",
+      "max_score": null,
+      "hits": [],
+      "took_ms": 11,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [],
+        "corpus_scope": [],
+        "document_type": [],
+        "is_synthetic": []
+      },
+      "index": "cs-documents",
+      "status": "empty",
+      "degraded": false,
+      "query": {
+        "q": "Synthetic Team 039",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": false
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 15.4
+    }
+  },
+  "empty_result": {
+    "request": {
+      "q": "qwxzvj nonexistent",
+      "mode": "all"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 0,
+      "total_relation": "eq",
+      "max_score": null,
+      "hits": [],
+      "took_ms": 5,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [],
+        "corpus_scope": [],
+        "document_type": [],
+        "is_synthetic": []
+      },
+      "index": "cs-documents",
+      "status": "empty",
+      "degraded": false,
+      "query": {
+        "q": "qwxzvj nonexistent",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": null,
+        "map_name": null,
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 9.2
+    }
+  },
+  "filters_only": {
+    "request": {
+      "q": "",
+      "corpus_scope": "all",
+      "document_type": "map",
+      "map_name": "Ancient"
+    },
+    "http_status": 200,
+    "response": {
+      "total": 15369,
+      "total_relation": "eq",
+      "max_score": 1.0,
+      "hits": [
+        {
+          "id": "005b6140-950b-5a48-ade4-edc03749451a",
+          "score": 1.0,
+          "title": "Synthetic Team 121 vs Synthetic Team 052 — Synthetic Tournament 137 — Ancient",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 121 played Synthetic Team 052 at Synthetic Tournament 137 on 2026-06-28. Map: Ancient. Map score: 13-10. Synthetic Player 121-1: 23.0 kills, 12…",
+          "highlights": {},
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "Synthetic Team 121",
+          "team2": "Synthetic Team 052",
+          "tournament": "Synthetic Tournament 137",
+          "played_at": "2026-06-28T20:00:00",
+          "source_id": "S022133:map:S022133-M2",
+          "version": 1
+        },
+        {
+          "id": "024ac7ea-cad8-5cf3-bac7-9129ea53b48f",
+          "score": 1.0,
+          "title": "Synthetic Team 016 vs Synthetic Team 094 — Synthetic Tournament 145 — Ancient",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 016 played Synthetic Team 094 at Synthetic Tournament 145 on 2026-06-28. Map: Ancient. Map score: 5-13. Synthetic Player 016-1: 5.0 kills, 14.0…",
+          "highlights": {},
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "Synthetic Team 016",
+          "team2": "Synthetic Team 094",
+          "tournament": "Synthetic Tournament 145",
+          "played_at": "2026-06-28T20:00:00",
+          "source_id": "S005476:map:S005476-M3",
+          "version": 1
+        },
+        {
+          "id": "038e0094-b1e6-5529-a840-a29e41aff9bc",
+          "score": 1.0,
+          "title": "Synthetic Team 016 vs Synthetic Team 041 — Synthetic Tournament 145 — Ancient",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 016 played Synthetic Team 041 at Synthetic Tournament 145 on 2026-06-28. Map: Ancient. Map score: 13-11. Synthetic Player 016-1: 22.0 kills, 17…",
+          "highlights": {},
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "Synthetic Team 016",
+          "team2": "Synthetic Team 041",
+          "tournament": "Synthetic Tournament 145",
+          "played_at": "2026-06-28T20:00:00",
+          "source_id": "S018351:map:S018351-M2",
+          "version": 1
+        },
+        {
+          "id": "04e2015f-2750-5765-9ae8-4fedaf2506d1",
+          "score": 1.0,
+          "title": "Synthetic Team 234 vs Synthetic Team 009 — Synthetic Tournament 238 — Ancient",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 234 played Synthetic Team 009 at Synthetic Tournament 238 on 2026-06-28. Map: Ancient. Map score: 13-8. Synthetic Player 234-1: 12.0 kills, 12.…",
+          "highlights": {},
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "Synthetic Team 234",
+          "team2": "Synthetic Team 009",
+          "tournament": "Synthetic Tournament 238",
+          "played_at": "2026-06-28T20:00:00",
+          "source_id": "S030213:map:S030213-M2",
+          "version": 1
+        },
+        {
+          "id": "07beb09d-b0e8-52bc-9d22-fee1a9b67e01",
+          "score": 1.0,
+          "title": "Synthetic Team 120 vs Synthetic Team 175 — Synthetic Tournament 195 — Ancient",
+          "snippet": "Synthetic load-test record generated with SDV; it does not describe a real match. Synthetic Team 120 played Synthetic Team 175 at Synthetic Tournament 195 on 2026-06-28. Map: Ancient. Map score: 13-6. Synthetic Player 120-1: 6.0 kills, 13.0…",
+          "highlights": {},
+          "corpus_scope": "synthetic-cs",
+          "is_synthetic": true,
+          "document_type": "map",
+          "map_name": "Ancient",
+          "team1": "Synthetic Team 120",
+          "team2": "Synthetic Team 175",
+          "tournament": "Synthetic Tournament 195",
+          "played_at": "2026-06-28T20:00:00",
+          "source_id": "S025597:map:S025597-M2",
+          "version": 1
+        }
+      ],
+      "took_ms": 18,
+      "timed_out": false,
+      "failed_shards": 0,
+      "facets": {
+        "map_name": [
+          {
+            "value": "Mirage",
+            "count": 20920
+          },
+          {
+            "value": "Ancient",
+            "count": 15369
+          },
+          {
+            "value": "Inferno",
+            "count": 9016
+          },
+          {
+            "value": "Nuke",
+            "count": 3077
+          },
+          {
+            "value": "Dust2",
+            "count": 2788
+          },
+          {
+            "value": "Anubis",
+            "count": 1248
+          },
+          {
+            "value": "Overpass",
+            "count": 612
+          },
+          {
+            "value": "Vertigo",
+            "count": 549
+          },
+          {
+            "value": "Train",
+            "count": 333
+          }
+        ],
+        "corpus_scope": [
+          {
+            "value": "synthetic-cs",
+            "count": 13517
+          },
+          {
+            "value": "kaggle-cs",
+            "count": 1852
+          }
+        ],
+        "document_type": [
+          {
+            "value": "map",
+            "count": 15369
+          }
+        ],
+        "is_synthetic": [
+          {
+            "value": "true",
+            "count": 13517
+          },
+          {
+            "value": "false",
+            "count": 1852
+          }
+        ]
+      },
+      "index": "cs-documents",
+      "status": "found",
+      "degraded": false,
+      "query": {
+        "q": "",
+        "mode": "all",
+        "corpus_scope": "all",
+        "document_type": "map",
+        "map_name": "Ancient",
+        "include_synthetic": true
+      },
+      "page": 1,
+      "page_size": 20,
+      "elapsed_ms": 25.0
+    }
+  }
+}

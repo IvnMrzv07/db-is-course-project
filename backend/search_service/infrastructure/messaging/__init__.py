@@ -1,0 +1,1 @@
+"""Coursework architecture package."""

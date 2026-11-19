@@ -1,0 +1,47 @@
+{
+  "scenario": "5 kaggle-cs documents deleted directly from Elasticsearch (kaggle-cs in index 20 675 -> 20 670), then a regular kaggle-cs replay through Ingestion -> corpus.store -> Content transaction + outbox -> search.index -> search_worker",
+  "deleted_ids": [
+    "0001e13d-ee53-573e-98bf-6d7d99cb03c8",
+    "00023169-da3e-5a14-938c-8aeafb1848d3",
+    "0002f06c-eef3-59fd-91df-d0113fc329eb",
+    "00077bc9-2476-57dc-aa2d-3157a7cab00d",
+    "0009aab1-8097-5cf7-a2d5-e95fda6ab499"
+  ],
+  "replay": {
+    "job_id": "8d1b6311-5adc-4f5d-a40d-947a6a8efca7",
+    "total": 20675,
+    "inserted": 0,
+    "duplicates": 20675,
+    "validation_rejected": 1,
+    "created_at": "2026-11-19T15:10:05.683Z",
+    "completed_at": "2026-11-19T15:11:36.113Z"
+  },
+  "search_index_events": {
+    "origin": "store",
+    "count": 207,
+    "first_indexed_at": "2026-11-19T15:10:06.626Z",
+    "last_indexed_at": "2026-11-19T15:11:36.142Z",
+    "stale": 0,
+    "failed": 0
+  },
+  "after": {
+    "index_documents": 100000,
+    "restored_ids_found": 5,
+    "restored_external_version": 1,
+    "content_outbox_search_rows_left": 0,
+    "queues": {
+      "search.index": 0,
+      "search.index.failed": 0,
+      "corpus.store.failed": 0,
+      "corpus.completed.failed": 0
+    }
+  },
+  "idempotency": {
+    "repeat_backfill_events": 1000,
+    "index_total_operations": 200000,
+    "documents_after": 100000,
+    "external_version_after": 1,
+    "note": "redelivery overwrites with version_type=external_gte; Mongo duplicates ($setOnInsert) still emit events, so a replay also repairs the index"
+  },
+  "caveat": "A direct DELETE bumps the ES version; within index.gc_deletes (60 s) a version-1 event would be reported as stale, so the replay was started 65 s after deleting."
+}

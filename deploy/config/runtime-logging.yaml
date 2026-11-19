@@ -11,3 +11,7 @@ handlers:
 root:
   level: INFO
   handlers: [console]
+loggers:
+  # One line per Elasticsearch request (search API, every bulk upsert) is noise; failures surface as exceptions.
+  httpx:
+    level: WARNING

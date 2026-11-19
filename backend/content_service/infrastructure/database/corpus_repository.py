@@ -3,6 +3,8 @@ import re
 from datetime import datetime, timezone, timedelta
 from uuid import UUID
 from content_service.application.dtos.document_query import DocumentQuery
+from content_service.application.services.commands.search_index_events import index_event
+from contracts.messages import SEARCH_INDEX_QUEUE
 
 
 def mongo_filter(query: DocumentQuery) -> dict:
@@ -36,9 +38,12 @@ def public(document):
 
 
 class MongoCorpusRepository:
-    def __init__(self, database):
+    def __init__(self, database, *, index_events: bool = False):
         self.db = database
         self.documents = database.source_documents
+        # When enabled (cs-sharded stand), every committed batch also stages a `search.index` event
+        # in the same transaction, so the search index can never miss a committed document.
+        self.index_events = index_events
 
     async def initialize(self):
         for fields in ([('corpus_scope', 1), ('publication_status', 1), ('_id', 1)],
@@ -60,7 +65,8 @@ class MongoCorpusRepository:
                 except OperationFailure as exc:
                     if exc.code != 48:
                         raise
-        await self.db.corpus_counters.update_one({'_id':'kaggle-cs'}, {'$setOnInsert':{'stored_documents':0}}, upsert=True)
+        for scope in ('kaggle-cs', 'synthetic-cs'):
+            await self.db.corpus_counters.update_one({'_id':scope}, {'$setOnInsert':{'stored_documents':0}}, upsert=True)
 
     async def browse(self, query):
         where = mongo_filter(query)
@@ -77,8 +83,9 @@ class MongoCorpusRepository:
             {'$match': {'committed_at': {'$gte': now - timedelta(seconds=10)}}},
             {'$group': {'_id': None, 'inserted': {'$sum': '$inserted'}}}], maxTimeMS=2000)
         rows = await samples.to_list()
-        counter = await self.db.corpus_counters.find_one({'_id':'kaggle-cs'}, max_time_ms=2000)
-        return {'stored_documents': counter['stored_documents'] if counter else 0,
+        # One counter document per corpus scope; the total keeps its stage 9-12 meaning for kaggle-only stacks.
+        counters = {row['_id']: row['stored_documents'] async for row in self.db.corpus_counters.find({}, max_time_ms=2000)}
+        return {'stored_documents': sum(counters.values()), 'stored_by_scope': counters,
                 'durable_documents_per_second': (rows[0]['inserted'] if rows else 0) / 10,
                 'sampled_at': now.isoformat()}
 
@@ -87,7 +94,7 @@ class MongoCorpusRepository:
             receipt = await self.db.committed_batches.find_one({'_id': batch['batch_id']}, session=session)
             if receipt:
                 return receipt['result']
-            inserted = 0
+            inserted, by_scope = 0, {}
             now = datetime.now(timezone.utc)
             for source in batch['documents']:
                 document = dict(source)
@@ -98,13 +105,22 @@ class MongoCorpusRepository:
                 if existing and any(existing['metadata'].get(k) != document['metadata'].get(k) for k in ('snapshot_sha256','template_version')):
                     raise ValueError('Existing document belongs to another snapshot/template; migration required')
                 result = await self.documents.update_one({'_id': document['_id']}, {'$setOnInsert': document}, upsert=True, session=session)
-                inserted += int(result.upserted_id is not None)
+                if result.upserted_id is not None:
+                    inserted += 1
+                    by_scope[document['corpus_scope']] = by_scope.get(document['corpus_scope'], 0) + 1
             result = {'job_id': batch['job_id'], 'batch_id': batch['batch_id'], 'checkpoint': batch['checkpoint'],
                       'inserted': inserted, 'duplicates': len(batch['documents']) - inserted, 'rejected': 0}
-            await self.db.corpus_counters.update_one({'_id':'kaggle-cs'}, {'$inc':{'stored_documents':inserted}}, session=session)
+            for scope, count in sorted(by_scope.items()):
+                await self.db.corpus_counters.update_one({'_id':scope}, {'$inc':{'stored_documents':count}}, upsert=True, session=session)
             await self.db.committed_batches.insert_one({'_id': batch['batch_id'], 'committed_at': now,
                 'inserted': inserted, 'result': result}, session=session)
             await self.db.outbox.insert_one({'_id': batch['batch_id'], 'payload': result, 'sent': False}, session=session)
+            if self.index_events:
+                # All batch documents (new and duplicate): indexing is idempotent by id + external version,
+                # so a replay of an already stored snapshot also repairs a lagging or rebuilt index.
+                await self.db.outbox.insert_one({'_id': 'index:' + batch['batch_id'], 'queue': SEARCH_INDEX_QUEUE,
+                                                 'payload': index_event(batch['batch_id'], batch['documents'], now=now),
+                                                 'sent': False}, session=session)
             return result
         async with self.db.client.start_session() as session:
             from pymongo.write_concern import WriteConcern

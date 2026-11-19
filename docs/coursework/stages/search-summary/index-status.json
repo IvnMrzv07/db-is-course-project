@@ -1,0 +1,26 @@
+{
+  "http_status": 200,
+  "status": "ok",
+  "cluster": {
+    "name": "docker-cluster",
+    "health": "green",
+    "nodes": 1
+  },
+  "alias": "cs-documents",
+  "indices": [
+    "cs-documents-v1"
+  ],
+  "documents": 100000,
+  "by_corpus_scope": {
+    "synthetic-cs": 79325,
+    "kaggle-cs": 20675
+  },
+  "by_document_type": {
+    "map": 53990,
+    "series": 46010
+  },
+  "by_is_synthetic": {
+    "true": 79325,
+    "false": 20675
+  }
+}

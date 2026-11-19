@@ -1,0 +1,111 @@
+[
+  {
+    "phase": "es_stopped",
+    "at": "2026-11-19T17:17:48",
+    "calls": [
+      {
+        "path": "/api/v1/search?q=Vitality+Mirage",
+        "http_status": 503,
+        "elapsed_ms": 4049.4,
+        "body": {
+          "status": "degraded",
+          "detail": "Пошуковий індекс тимчасово недоступний",
+          "reason": "Elasticsearch unreachable: ConnectError"
+        }
+      },
+      {
+        "path": "/api/v1/search/status",
+        "http_status": 503,
+        "elapsed_ms": 3841.3,
+        "body": {
+          "status": "degraded",
+          "detail": "Пошуковий індекс тимчасово недоступний",
+          "reason": "Elasticsearch unreachable: ConnectError"
+        }
+      },
+      {
+        "path": "/api/v1/documents?q=Vitality&corpus_scope=kaggle-cs",
+        "http_status": 200,
+        "elapsed_ms": 76.6,
+        "body": {
+          "total": 636,
+          "page": 1,
+          "page_size": 20
+        }
+      }
+    ]
+  },
+  {
+    "phase": "es_restarted",
+    "at": "2026-11-19T17:18:24",
+    "calls": [
+      {
+        "path": "/api/v1/search?q=Vitality+Mirage",
+        "http_status": 200,
+        "elapsed_ms": 1104.8,
+        "body": {
+          "total": 81,
+          "total_relation": "eq",
+          "max_score": 25.876076,
+          "took_ms": 904,
+          "timed_out": false,
+          "failed_shards": 0,
+          "index": "cs-documents",
+          "status": "found",
+          "degraded": false,
+          "query": {
+            "q": "Vitality Mirage",
+            "mode": "all",
+            "corpus_scope": "all",
+            "document_type": null,
+            "map_name": null,
+            "include_synthetic": true
+          },
+          "page": 1,
+          "page_size": 20,
+          "elapsed_ms": 1017.7
+        }
+      },
+      {
+        "path": "/api/v1/search/status",
+        "http_status": 200,
+        "elapsed_ms": 249.5,
+        "body": {
+          "status": "ok",
+          "cluster": {
+            "name": "docker-cluster",
+            "health": "green",
+            "nodes": 1
+          },
+          "alias": "cs-documents",
+          "indices": [
+            "cs-documents-v1"
+          ],
+          "documents": 100000,
+          "by_corpus_scope": {
+            "synthetic-cs": 79325,
+            "kaggle-cs": 20675
+          },
+          "by_document_type": {
+            "map": 53990,
+            "series": 46010
+          },
+          "by_is_synthetic": {
+            "true": 79325,
+            "false": 20675
+          }
+        }
+      },
+      {
+        "path": "/api/v1/documents?q=Vitality&corpus_scope=kaggle-cs",
+        "http_status": 200,
+        "elapsed_ms": 178.7,
+        "body": {
+          "total": 636,
+          "page": 1,
+          "page_size": 20
+        }
+      }
+    ]
+  }
+]

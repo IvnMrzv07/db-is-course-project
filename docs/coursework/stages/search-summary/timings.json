@@ -1,0 +1,82 @@
+{
+  "team_and_map_all_words": {
+    "status": "found",
+    "total": 81,
+    "es_took_ms_median": 24,
+    "end_to_end_ms_median": 39.5,
+    "end_to_end_ms_max": 57.3,
+    "runs": 7
+  },
+  "player_nickname": {
+    "status": "found",
+    "total": 142,
+    "es_took_ms_median": 14,
+    "end_to_end_ms_median": 28.1,
+    "end_to_end_ms_max": 37.0,
+    "runs": 7
+  },
+  "tournament_phrase": {
+    "status": "found",
+    "total": 302,
+    "es_took_ms_median": 24,
+    "end_to_end_ms_median": 39.6,
+    "end_to_end_ms_max": 44.7,
+    "runs": 7
+  },
+  "typo_tolerant": {
+    "status": "found",
+    "total": 77,
+    "es_took_ms_median": 193,
+    "end_to_end_ms_median": 213.8,
+    "end_to_end_ms_max": 251.3,
+    "runs": 7
+  },
+  "any_word": {
+    "status": "found",
+    "total": 1317,
+    "es_took_ms_median": 34,
+    "end_to_end_ms_median": 52.3,
+    "end_to_end_ms_max": 78.1,
+    "runs": 7
+  },
+  "map_filter_kaggle_only": {
+    "status": "found",
+    "total": 1,
+    "es_took_ms_median": 6,
+    "end_to_end_ms_median": 15.6,
+    "end_to_end_ms_max": 17.6,
+    "runs": 7
+  },
+  "synthetic_scope": {
+    "status": "found",
+    "total": 1132,
+    "es_took_ms_median": 44,
+    "end_to_end_ms_median": 67.4,
+    "end_to_end_ms_max": 80.2,
+    "runs": 7
+  },
+  "synthetic_excluded": {
+    "status": "empty",
+    "total": 0,
+    "es_took_ms_median": 11,
+    "end_to_end_ms_median": 20.3,
+    "end_to_end_ms_max": 44.1,
+    "runs": 7
+  },
+  "empty_result": {
+    "status": "empty",
+    "total": 0,
+    "es_took_ms_median": 6,
+    "end_to_end_ms_median": 15.0,
+    "end_to_end_ms_max": 27.2,
+    "runs": 7
+  },
+  "filters_only": {
+    "status": "found",
+    "total": 15369,
+    "es_took_ms_median": 15,
+    "end_to_end_ms_median": 28.8,
+    "end_to_end_ms_max": 46.8,
+    "runs": 7
+  }
+}
