@@ -1,0 +1,483 @@
+{
+ "schema": "partition_retention_demo",
+ "policy": {
+  "retention_days": 7,
+  "ahead_days": 1
+ },
+ "legacy_rows": {
+  "batches": 240,
+  "outbox": 240,
+  "outbox_bytes": 540672
+ },
+ "partitions_after_migration": [
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_default",
+   "bound": "DEFAULT",
+   "bytes": 32768,
+   "rows": 0,
+   "pending": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261107",
+   "bound": "FOR VALUES FROM ('2026-11-07 00:00:00+00') TO ('2026-11-08 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-07T13:41:55.044830+00:00",
+   "max_created": "2026-11-07T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261109",
+   "bound": "FOR VALUES FROM ('2026-11-09 00:00:00+00') TO ('2026-11-10 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-09T13:41:55.044830+00:00",
+   "max_created": "2026-11-09T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261110",
+   "bound": "FOR VALUES FROM ('2026-11-10 00:00:00+00') TO ('2026-11-11 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-10T13:41:55.044830+00:00",
+   "max_created": "2026-11-10T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261111",
+   "bound": "FOR VALUES FROM ('2026-11-11 00:00:00+00') TO ('2026-11-12 00:00:00+00')",
+   "bytes": 65536,
+   "rows": 40,
+   "pending": 1,
+   "min_created": "2026-11-11T13:41:55.044830+00:00",
+   "max_created": "2026-11-11T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261116",
+   "bound": "FOR VALUES FROM ('2026-11-16 00:00:00+00') TO ('2026-11-17 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-16T13:41:55.044830+00:00",
+   "max_created": "2026-11-16T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261119",
+   "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-19T13:41:55.044830+00:00",
+   "max_created": "2026-11-19T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261120",
+   "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+   "bytes": 32768,
+   "rows": 0,
+   "pending": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_default",
+   "bound": "DEFAULT",
+   "bytes": 24576,
+   "rows": 0,
+   "unsent": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261107",
+   "bound": "FOR VALUES FROM ('2026-11-07 00:00:00+00') TO ('2026-11-08 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-07T13:41:55.044830+00:00",
+   "max_created": "2026-11-07T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261109",
+   "bound": "FOR VALUES FROM ('2026-11-09 00:00:00+00') TO ('2026-11-10 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-09T13:41:55.044830+00:00",
+   "max_created": "2026-11-09T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261110",
+   "bound": "FOR VALUES FROM ('2026-11-10 00:00:00+00') TO ('2026-11-11 00:00:00+00')",
+   "bytes": 147456,
+   "rows": 40,
+   "unsent": 1,
+   "min_created": "2026-11-10T13:41:55.044830+00:00",
+   "max_created": "2026-11-10T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261111",
+   "bound": "FOR VALUES FROM ('2026-11-11 00:00:00+00') TO ('2026-11-12 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-11T13:41:55.044830+00:00",
+   "max_created": "2026-11-11T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261116",
+   "bound": "FOR VALUES FROM ('2026-11-16 00:00:00+00') TO ('2026-11-17 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-16T13:41:55.044830+00:00",
+   "max_created": "2026-11-16T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261119",
+   "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-19T13:41:55.044830+00:00",
+   "max_created": "2026-11-19T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261120",
+   "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+   "bytes": 24576,
+   "rows": 0,
+   "unsent": 0,
+   "min_created": null,
+   "max_created": null
+  }
+ ],
+ "cycle1_dry_run": {
+  "now": "2026-11-19T14:20:57.732088+00:00",
+  "retention_days": 7,
+  "dry_run": true,
+  "created": [],
+  "retention": [
+   {
+    "day": "2026-11-07",
+    "partitions": [
+     "replay_batches_p20261107",
+     "replay_outbox_p20261107"
+    ],
+    "bytes": 196608,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "would_drop"
+   },
+   {
+    "day": "2026-11-09",
+    "partitions": [
+     "replay_batches_p20261109",
+     "replay_outbox_p20261109"
+    ],
+    "bytes": 196608,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "would_drop"
+   },
+   {
+    "day": "2026-11-10",
+    "partitions": [
+     "replay_batches_p20261110",
+     "replay_outbox_p20261110"
+    ],
+    "bytes": 204800,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 1,
+    "pending": 0,
+    "action": "skipped",
+    "reason": "unsent outbox rows or pending batches"
+   },
+   {
+    "day": "2026-11-11",
+    "partitions": [
+     "replay_batches_p20261111",
+     "replay_outbox_p20261111"
+    ],
+    "bytes": 204800,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 1,
+    "action": "skipped",
+    "reason": "unsent outbox rows or pending batches"
+   }
+  ],
+  "default_rows": {
+   "replay_batches": 0,
+   "replay_outbox": 0
+  }
+ },
+ "cycle1": {
+  "now": "2026-11-19T14:20:57.768064+00:00",
+  "retention_days": 7,
+  "dry_run": false,
+  "created": [],
+  "retention": [
+   {
+    "day": "2026-11-07",
+    "partitions": [
+     "replay_batches_p20261107",
+     "replay_outbox_p20261107"
+    ],
+    "bytes": 196608,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "dropped"
+   },
+   {
+    "day": "2026-11-09",
+    "partitions": [
+     "replay_batches_p20261109",
+     "replay_outbox_p20261109"
+    ],
+    "bytes": 196608,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "dropped"
+   },
+   {
+    "day": "2026-11-10",
+    "partitions": [
+     "replay_batches_p20261110",
+     "replay_outbox_p20261110"
+    ],
+    "bytes": 204800,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 1,
+    "pending": 0,
+    "action": "skipped",
+    "reason": "unsent outbox rows or pending batches"
+   },
+   {
+    "day": "2026-11-11",
+    "partitions": [
+     "replay_batches_p20261111",
+     "replay_outbox_p20261111"
+    ],
+    "bytes": 204800,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 1,
+    "action": "skipped",
+    "reason": "unsent outbox rows or pending batches"
+   }
+  ],
+  "default_rows": {
+   "replay_batches": 0,
+   "replay_outbox": 0
+  }
+ },
+ "cycle2": {
+  "now": "2026-11-19T14:20:57.836259+00:00",
+  "retention_days": 7,
+  "dry_run": false,
+  "created": [],
+  "retention": [
+   {
+    "day": "2026-11-10",
+    "partitions": [
+     "replay_batches_p20261110",
+     "replay_outbox_p20261110"
+    ],
+    "bytes": 212992,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "dropped"
+   },
+   {
+    "day": "2026-11-11",
+    "partitions": [
+     "replay_batches_p20261111",
+     "replay_outbox_p20261111"
+    ],
+    "bytes": 204800,
+    "rows": {
+     "replay_batches": 40,
+     "replay_outbox": 40
+    },
+    "unsent": 0,
+    "pending": 0,
+    "action": "dropped"
+   }
+  ],
+  "default_rows": {
+   "replay_batches": 0,
+   "replay_outbox": 0
+  }
+ },
+ "cycle3_idempotent": {
+  "now": "2026-11-19T14:20:57.880676+00:00",
+  "retention_days": 7,
+  "dry_run": false,
+  "created": [],
+  "retention": [],
+  "default_rows": {
+   "replay_batches": 0,
+   "replay_outbox": 0
+  }
+ },
+ "partitions_final": [
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_default",
+   "bound": "DEFAULT",
+   "bytes": 32768,
+   "rows": 0,
+   "pending": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261116",
+   "bound": "FOR VALUES FROM ('2026-11-16 00:00:00+00') TO ('2026-11-17 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-16T13:41:55.044830+00:00",
+   "max_created": "2026-11-16T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261119",
+   "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+   "bytes": 57344,
+   "rows": 40,
+   "pending": 0,
+   "min_created": "2026-11-19T13:41:55.044830+00:00",
+   "max_created": "2026-11-19T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_batches",
+   "name": "replay_batches_p20261120",
+   "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+   "bytes": 32768,
+   "rows": 0,
+   "pending": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_default",
+   "bound": "DEFAULT",
+   "bytes": 24576,
+   "rows": 0,
+   "unsent": 0,
+   "min_created": null,
+   "max_created": null
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261116",
+   "bound": "FOR VALUES FROM ('2026-11-16 00:00:00+00') TO ('2026-11-17 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-16T13:41:55.044830+00:00",
+   "max_created": "2026-11-16T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261119",
+   "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+   "bytes": 139264,
+   "rows": 40,
+   "unsent": 0,
+   "min_created": "2026-11-19T13:41:55.044830+00:00",
+   "max_created": "2026-11-19T14:20:55.044830+00:00"
+  },
+  {
+   "parent": "replay_outbox",
+   "name": "replay_outbox_p20261120",
+   "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+   "bytes": 24576,
+   "rows": 0,
+   "unsent": 0,
+   "min_created": null,
+   "max_created": null
+  }
+ ],
+ "rows_final": {
+  "batches": 80,
+  "outbox": 80
+ },
+ "log": [
+  "2026-11-19T14:20:57.231195+00:00 INFO ingestion_service.infrastructure.database.partitioning Renamed legacy replay tables for partitioning migration",
+  "2026-11-19T14:20:57.351732+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-07: ['replay_batches_p20261107', 'replay_outbox_p20261107']",
+  "2026-11-19T14:20:57.397748+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-09: ['replay_batches_p20261109', 'replay_outbox_p20261109']",
+  "2026-11-19T14:20:57.448412+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-10: ['replay_batches_p20261110', 'replay_outbox_p20261110']",
+  "2026-11-19T14:20:57.492400+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-11: ['replay_batches_p20261111', 'replay_outbox_p20261111']",
+  "2026-11-19T14:20:57.538182+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-16: ['replay_batches_p20261116', 'replay_outbox_p20261116']",
+  "2026-11-19T14:20:57.588167+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-19: ['replay_batches_p20261119', 'replay_outbox_p20261119']",
+  "2026-11-19T14:20:57.649879+00:00 INFO ingestion_service.infrastructure.database.partitioning Migrated legacy replay rows into partitions: {'replay_batches': 240, 'replay_outbox': 240} days=['2026-11-07', '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-16', '2026-11-19']",
+  "2026-11-19T14:20:57.698535+00:00 INFO ingestion_service.infrastructure.database.partitioning Created partitions for 2026-11-20: ['replay_batches_p20261120', 'replay_outbox_p20261120']",
+  "2026-11-19T14:20:57.698636+00:00 INFO ingestion_service.infrastructure.database.replay_store Replay partitioning migration: {'converted': True, 'legacy': {'rows': {'replay_batches': 240, 'replay_outbox': 240}, 'days': ['2026-11-07', '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-16', '2026-11-19']}, 'created': ['2026-11-20']}",
+  "2026-11-19T14:20:57.752727+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-07 action=would_drop rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=196608",
+  "2026-11-19T14:20:57.757605+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-09 action=would_drop rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=196608",
+  "2026-11-19T14:20:57.761954+00:00 WARNING ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-10 action=skipped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=1 pending=0 bytes=204800 reason=unsent outbox rows or pending batches",
+  "2026-11-19T14:20:57.766457+00:00 WARNING ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-11 action=skipped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=1 bytes=204800 reason=unsent outbox rows or pending batches",
+  "2026-11-19T14:20:57.793710+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-07 action=dropped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=196608",
+  "2026-11-19T14:20:57.813871+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-09 action=dropped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=196608",
+  "2026-11-19T14:20:57.820321+00:00 WARNING ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-10 action=skipped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=1 pending=0 bytes=204800 reason=unsent outbox rows or pending batches",
+  "2026-11-19T14:20:57.826344+00:00 WARNING ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-11 action=skipped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=1 bytes=204800 reason=unsent outbox rows or pending batches",
+  "2026-11-19T14:20:57.859720+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-10 action=dropped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=212992",
+  "2026-11-19T14:20:57.878936+00:00 INFO ingestion_service.infrastructure.database.partitioning Partition retention day=2026-11-11 action=dropped rows={'replay_batches': 40, 'replay_outbox': 40} unsent=0 pending=0 bytes=204800"
+ ]
+}

@@ -1,0 +1,75 @@
+{
+  "cleanup": {
+    "now": "2026-11-19T14:22:14.805452+00:00",
+    "retention_days": 7,
+    "dry_run": false,
+    "created": [],
+    "retention": [],
+    "default_rows": {
+      "replay_batches": 0,
+      "replay_outbox": 0
+    }
+  },
+  "partitions": [
+    {
+      "parent": "replay_batches",
+      "name": "replay_batches_default",
+      "bound": "DEFAULT",
+      "bytes": 32768,
+      "rows": 0,
+      "pending": 0,
+      "min_created": null,
+      "max_created": null
+    },
+    {
+      "parent": "replay_batches",
+      "name": "replay_batches_p20261119",
+      "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+      "bytes": 368640,
+      "rows": 1208,
+      "pending": 0,
+      "min_created": "2026-11-19T13:56:11.379061+00:00",
+      "max_created": "2026-11-19T14:21:32.644193+00:00"
+    },
+    {
+      "parent": "replay_batches",
+      "name": "replay_batches_p20261120",
+      "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+      "bytes": 32768,
+      "rows": 0,
+      "pending": 0,
+      "min_created": null,
+      "max_created": null
+    },
+    {
+      "parent": "replay_outbox",
+      "name": "replay_outbox_default",
+      "bound": "DEFAULT",
+      "bytes": 24576,
+      "rows": 0,
+      "unsent": 0,
+      "min_created": null,
+      "max_created": null
+    },
+    {
+      "parent": "replay_outbox",
+      "name": "replay_outbox_p20261119",
+      "bound": "FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00')",
+      "bytes": 135127040,
+      "rows": 1208,
+      "unsent": 0,
+      "min_created": "2026-11-19T13:56:11.379061+00:00",
+      "max_created": "2026-11-19T14:21:32.644193+00:00"
+    },
+    {
+      "parent": "replay_outbox",
+      "name": "replay_outbox_p20261120",
+      "bound": "FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00')",
+      "bytes": 24576,
+      "rows": 0,
+      "unsent": 0,
+      "min_created": null,
+      "max_created": null
+    }
+  ]
+}

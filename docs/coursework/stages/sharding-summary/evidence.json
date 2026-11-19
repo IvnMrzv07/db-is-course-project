@@ -1,0 +1,1226 @@
+{
+ "collected_at": "2026-11-19T14:04:10.625Z",
+ "mongodb_version": "7.0.48",
+ "shards": [
+  {
+   "_id": "shard1RS",
+   "host": "shard1RS/shard1:27018"
+  },
+  {
+   "_id": "shard2RS",
+   "host": "shard2RS/shard2:27018"
+  },
+  {
+   "_id": "shard3RS",
+   "host": "shard3RS/shard3:27018"
+  }
+ ],
+ "shard_key": {
+  "_id": "hashed"
+ },
+ "chunk_size_mb": 2,
+ "balancer": {
+  "enabled": true,
+  "mode": "full",
+  "inBalancerRound": false,
+  "numBalancerRounds": 53
+ },
+ "total_documents": 100000,
+ "by_scope": [
+  {
+   "_id": "kaggle-cs",
+   "n": 20675
+  },
+  {
+   "_id": "synthetic-cs",
+   "n": 79325
+  }
+ ],
+ "by_scope_and_type": [
+  {
+   "_id": {
+    "scope": "kaggle-cs",
+    "type": "map"
+   },
+   "n": 10753
+  },
+  {
+   "_id": {
+    "scope": "kaggle-cs",
+    "type": "series"
+   },
+   "n": 9922
+  },
+  {
+   "_id": {
+    "scope": "synthetic-cs",
+    "type": "map"
+   },
+   "n": 43237
+  },
+  {
+   "_id": {
+    "scope": "synthetic-cs",
+    "type": "series"
+   },
+   "n": 36088
+  }
+ ],
+ "template_versions": [
+  "2"
+ ],
+ "corpus_counters": [
+  {
+   "_id": "kaggle-cs",
+   "stored_documents": 20675
+  },
+  {
+   "_id": "synthetic-cs",
+   "stored_documents": 79325
+  }
+ ],
+ "chunks_per_shard": [
+  {
+   "_id": "shard1RS",
+   "chunks": 4
+  },
+  {
+   "_id": "shard2RS",
+   "chunks": 4
+  },
+  {
+   "_id": "shard3RS",
+   "chunks": 4
+  }
+ ],
+ "storage_per_shard": [
+  {
+   "shard": "shard1RS",
+   "documents": 33457,
+   "data_bytes": 103645419,
+   "storage_bytes": 29237248,
+   "index_bytes": 26882048
+  },
+  {
+   "shard": "shard2RS",
+   "documents": 33123,
+   "data_bytes": 102636368,
+   "storage_bytes": 29200384,
+   "index_bytes": 26107904
+  },
+  {
+   "shard": "shard3RS",
+   "documents": 33420,
+   "data_bytes": 103597899,
+   "storage_bytes": 30134272,
+   "index_bytes": 27971584
+  }
+ ],
+ "explain_point_by_id": {
+  "filter": {
+   "_id": "0032b517-1424-5d59-82f9-8fe25790d542"
+  },
+  "summary": {
+   "mongos_stage": "SINGLE_SHARD",
+   "shards_targeted": [
+    "shard2RS"
+   ],
+   "per_shard": [
+    {
+     "shard": "shard2RS",
+     "plan": "IDHACK",
+     "returned": 1,
+     "keys_examined": 1,
+     "docs_examined": 1,
+     "ms": 0
+    }
+   ],
+   "n_returned": 1,
+   "total_keys_examined": 1,
+   "total_docs_examined": 1,
+   "execution_ms": 1
+  },
+  "raw": {
+   "queryPlanner": {
+    "mongosPlannerVersion": 1,
+    "winningPlan": {
+     "stage": "SINGLE_SHARD",
+     "shards": [
+      {
+       "shardName": "shard2RS",
+       "connectionString": "shard2RS/shard2:27018",
+       "serverInfo": {
+        "host": "d07cc6747050",
+        "port": 27018,
+        "version": "7.0.48",
+        "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+       },
+       "namespace": "content.source_documents",
+       "indexFilterSet": false,
+       "parsedQuery": {
+        "_id": {
+         "$eq": "0032b517-1424-5d59-82f9-8fe25790d542"
+        }
+       },
+       "queryHash": "869CED4F",
+       "planCacheKey": "3B5D4929",
+       "optimizationTimeMillis": 0,
+       "maxIndexedOrSolutionsReached": false,
+       "maxIndexedAndSolutionsReached": false,
+       "maxScansToExplodeReached": false,
+       "winningPlan": {
+        "stage": "IDHACK"
+       },
+       "rejectedPlans": []
+      }
+     ]
+    }
+   },
+   "executionStats": {
+    "nReturned": 1,
+    "executionTimeMillis": 1,
+    "totalKeysExamined": 1,
+    "totalDocsExamined": 1,
+    "executionStages": {
+     "stage": "SINGLE_SHARD",
+     "nReturned": 1,
+     "executionTimeMillis": 1,
+     "totalKeysExamined": 1,
+     "totalDocsExamined": 1,
+     "totalChildMillis": 0,
+     "shards": [
+      {
+       "shardName": "shard2RS",
+       "executionSuccess": true,
+       "nReturned": 1,
+       "executionTimeMillis": 0,
+       "totalKeysExamined": 1,
+       "totalDocsExamined": 1,
+       "executionStages": {
+        "stage": "IDHACK",
+        "nReturned": 1,
+        "executionTimeMillisEstimate": 0,
+        "works": 2,
+        "advanced": 1,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "keysExamined": 1,
+        "docsExamined": 1
+       }
+      }
+     ]
+    }
+   },
+   "serverInfo": {
+    "host": "0155f5a8a855",
+    "port": 27017,
+    "version": "7.0.48",
+    "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+   },
+   "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "forceClassicEngine"
+   },
+   "command": {
+    "find": "source_documents",
+    "filter": {
+     "_id": "0032b517-1424-5d59-82f9-8fe25790d542"
+    },
+    "lsid": {
+     "id": {
+      "$binary": {
+       "base64": "WeLQ5MWeSkS+ktdifSNU1Q==",
+       "subType": "04"
+      }
+     }
+    },
+    "$clusterTime": {
+     "clusterTime": {
+      "$timestamp": {
+       "t": 1795097049,
+       "i": 1
+      }
+     },
+     "signature": {
+      "hash": {
+       "$binary": {
+        "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "subType": "00"
+       }
+      },
+      "keyId": 0
+     }
+    },
+    "$db": "content"
+   },
+   "ok": 1,
+   "$clusterTime": {
+    "clusterTime": {
+     "$timestamp": {
+      "t": 1795097049,
+      "i": 1
+     }
+    },
+    "signature": {
+     "hash": {
+      "$binary": {
+       "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+       "subType": "00"
+      }
+     },
+     "keyId": 0
+    }
+   },
+   "operationTime": {
+    "$timestamp": {
+     "t": 1795097043,
+     "i": 1
+    }
+   }
+  }
+ },
+ "explain_scatter_scope_type": {
+  "filter": {
+   "corpus_scope": "synthetic-cs",
+   "metadata.document_type": "map"
+  },
+  "sort": {
+   "_id": 1
+  },
+  "limit": 20,
+  "summary": {
+   "mongos_stage": "SHARD_MERGE_SORT",
+   "shards_targeted": [
+    "shard2RS",
+    "shard3RS",
+    "shard1RS"
+   ],
+   "per_shard": [
+    {
+     "shard": "shard2RS",
+     "plan": "LIMIT > PROJECTION_SIMPLE > FETCH > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 20,
+     "keys_examined": 20,
+     "docs_examined": 20,
+     "ms": 1
+    },
+    {
+     "shard": "shard3RS",
+     "plan": "LIMIT > PROJECTION_SIMPLE > FETCH > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 20,
+     "keys_examined": 20,
+     "docs_examined": 20,
+     "ms": 1
+    },
+    {
+     "shard": "shard1RS",
+     "plan": "LIMIT > PROJECTION_SIMPLE > FETCH > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 20,
+     "keys_examined": 20,
+     "docs_examined": 20,
+     "ms": 1
+    }
+   ],
+   "n_returned": 60,
+   "total_keys_examined": 60,
+   "total_docs_examined": 60,
+   "execution_ms": 2
+  },
+  "raw": {
+   "queryPlanner": {
+    "mongosPlannerVersion": 1,
+    "winningPlan": {
+     "stage": "SHARD_MERGE_SORT",
+     "shards": [
+      {
+       "shardName": "shard2RS",
+       "connectionString": "shard2RS/shard2:27018",
+       "serverInfo": {
+        "host": "d07cc6747050",
+        "port": 27018,
+        "version": "7.0.48",
+        "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+       },
+       "namespace": "content.source_documents",
+       "indexFilterSet": false,
+       "parsedQuery": {
+        "$and": [
+         {
+          "corpus_scope": {
+           "$eq": "synthetic-cs"
+          }
+         },
+         {
+          "metadata.document_type": {
+           "$eq": "map"
+          }
+         }
+        ]
+       },
+       "queryHash": "CF19D991",
+       "planCacheKey": "BE999B51",
+       "optimizationTimeMillis": 0,
+       "maxIndexedOrSolutionsReached": false,
+       "maxIndexedAndSolutionsReached": false,
+       "maxScansToExplodeReached": false,
+       "winningPlan": {
+        "stage": "LIMIT",
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            }
+           }
+          }
+         }
+        }
+       },
+       "rejectedPlans": [
+        {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+           "_id": 1
+          },
+          "memLimit": 104857600,
+          "limitAmount": 20,
+          "type": "simple",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+             "metadata.document_type": {
+              "$eq": "map"
+             }
+            },
+            "inputStage": {
+             "stage": "IXSCAN",
+             "keyPattern": {
+              "corpus_scope": 1,
+              "publication_status": 1,
+              "_id": 1
+             },
+             "indexName": "corpus_scope_1_publication_status_1__id_1",
+             "isMultiKey": false,
+             "multiKeyPaths": {
+              "corpus_scope": [],
+              "publication_status": [],
+              "_id": []
+             },
+             "isUnique": false,
+             "isSparse": false,
+             "isPartial": false,
+             "indexVersion": 2,
+             "direction": "forward",
+             "indexBounds": {
+              "corpus_scope": [
+               "[\"synthetic-cs\", \"synthetic-cs\"]"
+              ],
+              "publication_status": [
+               "[MinKey, MaxKey]"
+              ],
+              "_id": [
+               "[MinKey, MaxKey]"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      },
+      {
+       "shardName": "shard3RS",
+       "connectionString": "shard3RS/shard3:27018",
+       "serverInfo": {
+        "host": "e60a879de743",
+        "port": 27018,
+        "version": "7.0.48",
+        "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+       },
+       "namespace": "content.source_documents",
+       "indexFilterSet": false,
+       "parsedQuery": {
+        "$and": [
+         {
+          "corpus_scope": {
+           "$eq": "synthetic-cs"
+          }
+         },
+         {
+          "metadata.document_type": {
+           "$eq": "map"
+          }
+         }
+        ]
+       },
+       "queryHash": "CF19D991",
+       "planCacheKey": "BE999B51",
+       "optimizationTimeMillis": 1,
+       "maxIndexedOrSolutionsReached": false,
+       "maxIndexedAndSolutionsReached": false,
+       "maxScansToExplodeReached": false,
+       "winningPlan": {
+        "stage": "LIMIT",
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            }
+           }
+          }
+         }
+        }
+       },
+       "rejectedPlans": [
+        {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+           "_id": 1
+          },
+          "memLimit": 104857600,
+          "limitAmount": 20,
+          "type": "simple",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+             "metadata.document_type": {
+              "$eq": "map"
+             }
+            },
+            "inputStage": {
+             "stage": "IXSCAN",
+             "keyPattern": {
+              "corpus_scope": 1,
+              "publication_status": 1,
+              "_id": 1
+             },
+             "indexName": "corpus_scope_1_publication_status_1__id_1",
+             "isMultiKey": false,
+             "multiKeyPaths": {
+              "corpus_scope": [],
+              "publication_status": [],
+              "_id": []
+             },
+             "isUnique": false,
+             "isSparse": false,
+             "isPartial": false,
+             "indexVersion": 2,
+             "direction": "forward",
+             "indexBounds": {
+              "corpus_scope": [
+               "[\"synthetic-cs\", \"synthetic-cs\"]"
+              ],
+              "publication_status": [
+               "[MinKey, MaxKey]"
+              ],
+              "_id": [
+               "[MinKey, MaxKey]"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      },
+      {
+       "shardName": "shard1RS",
+       "connectionString": "shard1RS/shard1:27018",
+       "serverInfo": {
+        "host": "3246e902db36",
+        "port": 27018,
+        "version": "7.0.48",
+        "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+       },
+       "namespace": "content.source_documents",
+       "indexFilterSet": false,
+       "parsedQuery": {
+        "$and": [
+         {
+          "corpus_scope": {
+           "$eq": "synthetic-cs"
+          }
+         },
+         {
+          "metadata.document_type": {
+           "$eq": "map"
+          }
+         }
+        ]
+       },
+       "queryHash": "CF19D991",
+       "planCacheKey": "BE999B51",
+       "optimizationTimeMillis": 1,
+       "maxIndexedOrSolutionsReached": false,
+       "maxIndexedAndSolutionsReached": false,
+       "maxScansToExplodeReached": false,
+       "winningPlan": {
+        "stage": "LIMIT",
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            }
+           }
+          }
+         }
+        }
+       },
+       "rejectedPlans": [
+        {
+         "stage": "PROJECTION_SIMPLE",
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+           "_id": 1
+          },
+          "memLimit": 104857600,
+          "limitAmount": 20,
+          "type": "simple",
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+             "metadata.document_type": {
+              "$eq": "map"
+             }
+            },
+            "inputStage": {
+             "stage": "IXSCAN",
+             "keyPattern": {
+              "corpus_scope": 1,
+              "publication_status": 1,
+              "_id": 1
+             },
+             "indexName": "corpus_scope_1_publication_status_1__id_1",
+             "isMultiKey": false,
+             "multiKeyPaths": {
+              "corpus_scope": [],
+              "publication_status": [],
+              "_id": []
+             },
+             "isUnique": false,
+             "isSparse": false,
+             "isPartial": false,
+             "indexVersion": 2,
+             "direction": "forward",
+             "indexBounds": {
+              "corpus_scope": [
+               "[\"synthetic-cs\", \"synthetic-cs\"]"
+              ],
+              "publication_status": [
+               "[MinKey, MaxKey]"
+              ],
+              "_id": [
+               "[MinKey, MaxKey]"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "executionStats": {
+    "nReturned": 60,
+    "executionTimeMillis": 2,
+    "totalKeysExamined": 60,
+    "totalDocsExamined": 60,
+    "executionStages": {
+     "stage": "SHARD_MERGE_SORT",
+     "nReturned": 60,
+     "executionTimeMillis": 2,
+     "totalKeysExamined": 60,
+     "totalDocsExamined": 60,
+     "totalChildMillis": 3,
+     "shards": [
+      {
+       "shardName": "shard2RS",
+       "executionSuccess": true,
+       "nReturned": 20,
+       "executionTimeMillis": 1,
+       "totalKeysExamined": 20,
+       "totalDocsExamined": 20,
+       "executionStages": {
+        "stage": "LIMIT",
+        "nReturned": 20,
+        "executionTimeMillisEstimate": 0,
+        "works": 21,
+        "advanced": 20,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "nReturned": 20,
+         "executionTimeMillisEstimate": 0,
+         "works": 20,
+         "advanced": 20,
+         "needTime": 0,
+         "needYield": 0,
+         "saveState": 0,
+         "restoreState": 0,
+         "isEOF": 0,
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "nReturned": 20,
+          "executionTimeMillisEstimate": 0,
+          "works": 20,
+          "advanced": 20,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 0,
+          "docsExamined": 20,
+          "alreadyHasObj": 0,
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "nReturned": 20,
+           "executionTimeMillisEstimate": 0,
+           "works": 20,
+           "advanced": 20,
+           "needTime": 0,
+           "needYield": 0,
+           "saveState": 0,
+           "restoreState": 0,
+           "isEOF": 0,
+           "chunkSkips": 0,
+           "inputStage": {
+            "stage": "IXSCAN",
+            "nReturned": 20,
+            "executionTimeMillisEstimate": 0,
+            "works": 20,
+            "advanced": 20,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            },
+            "keysExamined": 20,
+            "seeks": 1,
+            "dupsTested": 0,
+            "dupsDropped": 0
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "shardName": "shard3RS",
+       "executionSuccess": true,
+       "nReturned": 20,
+       "executionTimeMillis": 1,
+       "totalKeysExamined": 20,
+       "totalDocsExamined": 20,
+       "executionStages": {
+        "stage": "LIMIT",
+        "nReturned": 20,
+        "executionTimeMillisEstimate": 0,
+        "works": 21,
+        "advanced": 20,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "nReturned": 20,
+         "executionTimeMillisEstimate": 0,
+         "works": 20,
+         "advanced": 20,
+         "needTime": 0,
+         "needYield": 0,
+         "saveState": 0,
+         "restoreState": 0,
+         "isEOF": 0,
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "nReturned": 20,
+          "executionTimeMillisEstimate": 0,
+          "works": 20,
+          "advanced": 20,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 0,
+          "docsExamined": 20,
+          "alreadyHasObj": 0,
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "nReturned": 20,
+           "executionTimeMillisEstimate": 0,
+           "works": 20,
+           "advanced": 20,
+           "needTime": 0,
+           "needYield": 0,
+           "saveState": 0,
+           "restoreState": 0,
+           "isEOF": 0,
+           "chunkSkips": 0,
+           "inputStage": {
+            "stage": "IXSCAN",
+            "nReturned": 20,
+            "executionTimeMillisEstimate": 0,
+            "works": 20,
+            "advanced": 20,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            },
+            "keysExamined": 20,
+            "seeks": 1,
+            "dupsTested": 0,
+            "dupsDropped": 0
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "shardName": "shard1RS",
+       "executionSuccess": true,
+       "nReturned": 20,
+       "executionTimeMillis": 1,
+       "totalKeysExamined": 20,
+       "totalDocsExamined": 20,
+       "executionStages": {
+        "stage": "LIMIT",
+        "nReturned": 20,
+        "executionTimeMillisEstimate": 0,
+        "works": 21,
+        "advanced": 20,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "limitAmount": 20,
+        "inputStage": {
+         "stage": "PROJECTION_SIMPLE",
+         "nReturned": 20,
+         "executionTimeMillisEstimate": 0,
+         "works": 20,
+         "advanced": 20,
+         "needTime": 0,
+         "needYield": 0,
+         "saveState": 0,
+         "restoreState": 0,
+         "isEOF": 0,
+         "transformBy": {
+          "text": 0
+         },
+         "inputStage": {
+          "stage": "FETCH",
+          "nReturned": 20,
+          "executionTimeMillisEstimate": 0,
+          "works": 20,
+          "advanced": 20,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 0,
+          "docsExamined": 20,
+          "alreadyHasObj": 0,
+          "inputStage": {
+           "stage": "SHARDING_FILTER",
+           "nReturned": 20,
+           "executionTimeMillisEstimate": 0,
+           "works": 20,
+           "advanced": 20,
+           "needTime": 0,
+           "needYield": 0,
+           "saveState": 0,
+           "restoreState": 0,
+           "isEOF": 0,
+           "chunkSkips": 0,
+           "inputStage": {
+            "stage": "IXSCAN",
+            "nReturned": 20,
+            "executionTimeMillisEstimate": 0,
+            "works": 20,
+            "advanced": 20,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "keyPattern": {
+             "corpus_scope": 1,
+             "metadata.document_type": 1,
+             "_id": 1
+            },
+            "indexName": "corpus_scope_1_metadata.document_type_1__id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+             "corpus_scope": [],
+             "metadata.document_type": [],
+             "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+             "corpus_scope": [
+              "[\"synthetic-cs\", \"synthetic-cs\"]"
+             ],
+             "metadata.document_type": [
+              "[\"map\", \"map\"]"
+             ],
+             "_id": [
+              "[MinKey, MaxKey]"
+             ]
+            },
+            "keysExamined": 20,
+            "seeks": 1,
+            "dupsTested": 0,
+            "dupsDropped": 0
+           }
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   },
+   "serverInfo": {
+    "host": "0155f5a8a855",
+    "port": 27017,
+    "version": "7.0.48",
+    "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+   },
+   "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "forceClassicEngine"
+   },
+   "command": {
+    "find": "source_documents",
+    "filter": {
+     "corpus_scope": "synthetic-cs",
+     "metadata.document_type": "map"
+    },
+    "sort": {
+     "_id": 1
+    },
+    "projection": {
+     "text": 0
+    },
+    "limit": 20,
+    "lsid": {
+     "id": {
+      "$binary": {
+       "base64": "WeLQ5MWeSkS+ktdifSNU1Q==",
+       "subType": "04"
+      }
+     }
+    },
+    "$clusterTime": {
+     "clusterTime": {
+      "$timestamp": {
+       "t": 1795097049,
+       "i": 1
+      }
+     },
+     "signature": {
+      "hash": {
+       "$binary": {
+        "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "subType": "00"
+       }
+      },
+      "keyId": 0
+     }
+    },
+    "$db": "content"
+   },
+   "ok": 1,
+   "$clusterTime": {
+    "clusterTime": {
+     "$timestamp": {
+      "t": 1795097049,
+      "i": 1
+     }
+    },
+    "signature": {
+     "hash": {
+      "$binary": {
+       "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+       "subType": "00"
+      }
+     },
+     "keyId": 0
+    }
+   },
+   "operationTime": {
+    "$timestamp": {
+     "t": 1795097046,
+     "i": 1
+    }
+   }
+  }
+ },
+ "explain_scatter_count": {
+  "filter": {
+   "corpus_scope": "synthetic-cs",
+   "metadata.document_type": "map"
+  },
+  "summary": {
+   "mongos_stage": "SHARD_MERGE",
+   "shards_targeted": [
+    "shard2RS",
+    "shard3RS",
+    "shard1RS"
+   ],
+   "per_shard": [
+    {
+     "shard": "shard2RS",
+     "plan": "COUNT > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 0,
+     "keys_examined": 14339,
+     "docs_examined": 0,
+     "ms": 54
+    },
+    {
+     "shard": "shard3RS",
+     "plan": "COUNT > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 0,
+     "keys_examined": 14490,
+     "docs_examined": 0,
+     "ms": 54
+    },
+    {
+     "shard": "shard1RS",
+     "plan": "COUNT > SHARDING_FILTER > IXSCAN(corpus_scope_1_metadata.document_type_1__id_1)",
+     "returned": 0,
+     "keys_examined": 14408,
+     "docs_examined": 0,
+     "ms": 55
+    }
+   ],
+   "n_returned": 0,
+   "total_keys_examined": 43237,
+   "total_docs_examined": 0,
+   "execution_ms": 57
+  }
+ }
+}

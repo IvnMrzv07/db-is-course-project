@@ -9,15 +9,6 @@ CREATE TABLE IF NOT EXISTS replay_jobs (
  error text, next_at timestamptz NOT NULL DEFAULT now(),
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE TABLE IF NOT EXISTS replay_batches (
- id uuid PRIMARY KEY, job_id uuid NOT NULL REFERENCES replay_jobs(id),
- start_offset integer NOT NULL, end_offset integer NOT NULL,
- status text NOT NULL DEFAULT 'pending',
- UNIQUE(job_id, start_offset)
-);
-CREATE TABLE IF NOT EXISTS replay_outbox (
- id uuid PRIMARY KEY REFERENCES replay_batches(id), payload jsonb NOT NULL,
- sent boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS replay_outbox_pending ON replay_outbox(created_at) WHERE NOT sent;
-CREATE INDEX IF NOT EXISTS replay_batches_pending ON replay_batches(job_id,start_offset) WHERE status = 'pending';
+-- replay_batches and replay_outbox are partitioned by created_at: see 002_partitioning.sql.
+-- Databases created before that change had plain heap tables here; they are converted in place
+-- by ingestion_service.infrastructure.database.partitioning.migrate().

@@ -1,0 +1,63 @@
+                                               Partitioned table "public.replay_batches"
+    Column    |           Type           | Collation | Nullable |     Default     | Storage  | Compression | Stats target | Description 
+--------------+--------------------------+-----------+----------+-----------------+----------+-------------+--------------+-------------
+ id           | uuid                     |           | not null |                 | plain    |             |              | 
+ job_id       | uuid                     |           | not null |                 | plain    |             |              | 
+ start_offset | integer                  |           | not null |                 | plain    |             |              | 
+ end_offset   | integer                  |           | not null |                 | plain    |             |              | 
+ status       | text                     |           | not null | 'pending'::text | extended |             |              | 
+ created_at   | timestamp with time zone |           | not null | now()           | plain    |             |              | 
+Partition key: RANGE (created_at)
+Indexes:
+    "replay_batches_pk" PRIMARY KEY, btree (id, created_at)
+    "replay_batches_job_offset" btree (job_id, start_offset)
+    "replay_batches_pending" btree (job_id, start_offset) WHERE status = 'pending'::text
+Foreign-key constraints:
+    "replay_batches_job_id_fkey1" FOREIGN KEY (job_id) REFERENCES replay_jobs(id)
+Referenced by:
+    TABLE "replay_outbox" CONSTRAINT "replay_outbox_batch_fk" FOREIGN KEY (id, created_at) REFERENCES replay_batches(id, created_at)
+Partitions: replay_batches_p20261119 FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00'),
+            replay_batches_p20261120 FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00'),
+            replay_batches_default DEFAULT
+
+                                           Partitioned table "public.replay_outbox"
+   Column   |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ id         | uuid                     |           | not null |         | plain    |             |              | 
+ payload    | jsonb                    |           | not null |         | extended |             |              | 
+ sent       | boolean                  |           | not null | false   | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+Partition key: RANGE (created_at)
+Indexes:
+    "replay_outbox_pk" PRIMARY KEY, btree (id, created_at)
+    "replay_outbox_pending" btree (created_at) WHERE NOT sent
+Foreign-key constraints:
+    "replay_outbox_batch_fk" FOREIGN KEY (id, created_at) REFERENCES replay_batches(id, created_at)
+Partitions: replay_outbox_p20261119 FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00'),
+            replay_outbox_p20261120 FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00'),
+            replay_outbox_default DEFAULT
+
+     parent     |        partition         |                                  bound                                   |  size  |   bytes   
+----------------+--------------------------+--------------------------------------------------------------------------+--------+-----------
+ replay_batches | replay_batches_default   | DEFAULT                                                                  | 32 kB  |     32768
+ replay_batches | replay_batches_p20261119 | FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00') | 288 kB |    294912
+ replay_batches | replay_batches_p20261120 | FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00') | 32 kB  |     32768
+ replay_outbox  | replay_outbox_default    | DEFAULT                                                                  | 24 kB  |     24576
+ replay_outbox  | replay_outbox_p20261119  | FOR VALUES FROM ('2026-11-19 00:00:00+00') TO ('2026-11-20 00:00:00+00') | 106 MB | 111476736
+ replay_outbox  | replay_outbox_p20261120  | FOR VALUES FROM ('2026-11-20 00:00:00+00') TO ('2026-11-21 00:00:00+00') | 24 kB  |     24576
+(6 rows)
+
+ batches | outbox | unsent | jobs |           batches_md5            |            outbox_md5            
+---------+--------+--------+------+----------------------------------+----------------------------------
+    1001 |   1001 |      0 |    2 | b3050616c318257c845fdd9dc5462f08 | 93d7681bf548008184def51d4650d491
+(1 row)
+
+ fk_pairs_same_created_at 
+--------------------------
+                     1001
+(1 row)
+
+ relname 
+---------
+(0 rows)
+

@@ -1,0 +1,1 @@
+2026-11-19 14:22:15,296 INFO __main__ Partition retention day=2026-11-19 action=would_drop rows={'replay_batches': 1208, 'replay_outbox': 1208} unsent=0 pending=0 bytes=135495680

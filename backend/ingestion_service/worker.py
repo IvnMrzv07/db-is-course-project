@@ -19,14 +19,24 @@ async def run():
             try:
                 async with pool.acquire() as connection:
                     async with connection.transaction():
-                        rows = await connection.fetch('SELECT id,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT 50 FOR UPDATE SKIP LOCKED')
+                        rows = await connection.fetch('SELECT id,created_at,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT 50 FOR UPDATE SKIP LOCKED')
                         for row in rows:
                             await broker.publish('corpus.store',json.loads(row['payload']))
-                            await connection.execute('UPDATE replay_outbox SET sent=true WHERE id=$1',row['id'])
+                            # (id, created_at) is the partitioned primary key: the update touches one partition.
+                            await connection.execute('UPDATE replay_outbox SET sent=true WHERE id=$1 AND created_at=$2',row['id'],row['created_at'])
             except Exception:
                 logging.exception('Ingestion outbox dispatch failed; retained for retry')
             await asyncio.sleep(.05)
-    tasks = [asyncio.create_task(produce()),asyncio.create_task(dispatch()),asyncio.create_task(broker.consume('corpus.completed',store.complete))]
+    async def maintain_partitions():
+        # Creates upcoming day partitions and drops expired ones (retention); see partitioning.py.
+        while True:
+            try:
+                await store.maintain_partitions()
+            except Exception:
+                logging.exception('Partition maintenance failed; retried next cycle')
+            await asyncio.sleep(store.partition_policy.interval_seconds)
+    tasks = [asyncio.create_task(produce()),asyncio.create_task(dispatch()),asyncio.create_task(maintain_partitions()),
+             asyncio.create_task(broker.consume('corpus.completed',store.complete))]
     try:
         await asyncio.gather(*tasks)
     finally:

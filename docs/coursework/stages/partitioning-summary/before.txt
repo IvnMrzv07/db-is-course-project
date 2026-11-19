@@ -1,0 +1,44 @@
+                                             Table "public.replay_batches"
+    Column    |  Type   | Collation | Nullable |     Default     | Storage  | Compression | Stats target | Description 
+--------------+---------+-----------+----------+-----------------+----------+-------------+--------------+-------------
+ id           | uuid    |           | not null |                 | plain    |             |              | 
+ job_id       | uuid    |           | not null |                 | plain    |             |              | 
+ start_offset | integer |           | not null |                 | plain    |             |              | 
+ end_offset   | integer |           | not null |                 | plain    |             |              | 
+ status       | text    |           | not null | 'pending'::text | extended |             |              | 
+Indexes:
+    "replay_batches_pkey" PRIMARY KEY, btree (id)
+    "replay_batches_job_id_start_offset_key" UNIQUE CONSTRAINT, btree (job_id, start_offset)
+    "replay_batches_pending" btree (job_id, start_offset) WHERE status = 'pending'::text
+Foreign-key constraints:
+    "replay_batches_job_id_fkey" FOREIGN KEY (job_id) REFERENCES replay_jobs(id)
+Referenced by:
+    TABLE "replay_outbox" CONSTRAINT "replay_outbox_id_fkey" FOREIGN KEY (id) REFERENCES replay_batches(id)
+Access method: heap
+
+                                                 Table "public.replay_outbox"
+   Column   |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ id         | uuid                     |           | not null |         | plain    |             |              | 
+ payload    | jsonb                    |           | not null |         | extended |             |              | 
+ sent       | boolean                  |           | not null | false   | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+Indexes:
+    "replay_outbox_pkey" PRIMARY KEY, btree (id)
+    "replay_outbox_pending" btree (created_at) WHERE NOT sent
+Foreign-key constraints:
+    "replay_outbox_id_fkey" FOREIGN KEY (id) REFERENCES replay_batches(id)
+Access method: heap
+
+    relname     | relkind | total  |   bytes   
+----------------+---------+--------+-----------
+ replay_jobs    | r       | 48 kB  |     49152
+ replay_batches | r       | 320 kB |    327680
+ replay_outbox  | r       | 106 MB | 111493120
+(3 rows)
+
+ batches | outbox | unsent | jobs |           batches_md5            |            outbox_md5            
+---------+--------+--------+------+----------------------------------+----------------------------------
+    1001 |   1001 |      0 |    2 | b3050616c318257c845fdd9dc5462f08 | 93d7681bf548008184def51d4650d491
+(1 row)
+

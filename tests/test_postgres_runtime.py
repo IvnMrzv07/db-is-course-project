@@ -59,3 +59,89 @@ def test_postgres_jobs_outbox_reordering_and_restart():
             await admin.close()
     asyncio.run(scenario())
 
+
+
+LEGACY_DDL = """
+CREATE TABLE replay_jobs (id uuid PRIMARY KEY, idempotency_key text UNIQUE NOT NULL, request_hash text NOT NULL,
+ snapshot_id text NOT NULL, snapshot_hash text NOT NULL, total integer NOT NULL, status text NOT NULL,
+ target_rate integer NOT NULL, produced integer NOT NULL DEFAULT 0, checkpoint integer NOT NULL DEFAULT 0,
+ inserted integer NOT NULL DEFAULT 0, duplicates integer NOT NULL DEFAULT 0, rejected integer NOT NULL DEFAULT 0,
+ validation_rejected integer NOT NULL DEFAULT 0, error text, next_at timestamptz NOT NULL DEFAULT now(),
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE replay_batches (id uuid PRIMARY KEY, job_id uuid NOT NULL REFERENCES replay_jobs(id),
+ start_offset integer NOT NULL, end_offset integer NOT NULL, status text NOT NULL DEFAULT 'pending', UNIQUE(job_id, start_offset));
+CREATE TABLE replay_outbox (id uuid PRIMARY KEY REFERENCES replay_batches(id), payload jsonb NOT NULL,
+ sent boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX replay_outbox_pending ON replay_outbox(created_at) WHERE NOT sent;
+CREATE INDEX replay_batches_pending ON replay_batches(job_id,start_offset) WHERE status = 'pending';
+"""
+
+
+def test_partition_migration_default_rescue_and_retention(tmp_path):
+    """Legacy heap tables with 10..0-day-old rows -> partitioned tables -> retention with guards."""
+    from datetime import datetime, timedelta, timezone
+    from ingestion_service.infrastructure.database import partitioning
+    from ingestion_service.infrastructure.database.partitioning import PartitionPolicy, partition_name, utc_day
+
+    async def scenario():
+        url=os.environ['TEST_POSTGRES_URL']; schema='test_'+uuid4().hex
+        admin=await asyncpg.connect(url)
+        await admin.execute(f'CREATE SCHEMA {schema}')
+        pool=await asyncpg.create_pool(url,min_size=1,max_size=5,server_settings={'search_path':schema})
+        try:
+            now=datetime.now(timezone.utc); today=utc_day(now)
+            await pool.execute(LEGACY_DDL)
+            job=uuid4()
+            await pool.execute("INSERT INTO replay_jobs(id,idempotency_key,request_hash,snapshot_id,snapshot_hash,total,status,target_rate,created_at)"
+                               " VALUES($1,'k','h','kaggle-cs','x',100,'running',100,$2)",job,now-timedelta(days=12))
+            # age (days) -> (batch status, outbox sent)
+            plan={10:('completed',True),9:('completed',False),8:('pending',True),0:('completed',True)}
+            for index,(age,(status,sent)) in enumerate(plan.items()):
+                batch=uuid4()
+                await pool.execute('INSERT INTO replay_batches VALUES($1,$2,$3,$4,$5)',batch,job,index*10,index*10+10,status)
+                await pool.execute('INSERT INTO replay_outbox VALUES($1,$2,$3,$4)',batch,'{"documents":[]}',sent,now-timedelta(days=age))
+            # 1) migration of existing rows (twice: second start must be a no-op)
+            store=PostgresReplayStore(pool,tmp_path,PartitionPolicy(ahead_days=1,retention_days=7))
+            await asyncio.gather(store.initialize(),PostgresReplayStore(pool,tmp_path).initialize())
+            kinds=dict(await pool.fetch("SELECT relname,relkind::text FROM pg_class WHERE relnamespace=$1::regnamespace AND relname IN ('replay_batches','replay_outbox')",schema))
+            assert kinds=={'replay_batches':'p','replay_outbox':'p'}
+            assert await pool.fetchval("SELECT count(*) FROM pg_class WHERE relnamespace=$1::regnamespace AND relname LIKE '%legacy%'",schema)==0
+            assert await pool.fetchval('SELECT count(*) FROM replay_batches')==4==await pool.fetchval('SELECT count(*) FROM replay_outbox')
+            assert await pool.fetchval('SELECT count(*) FROM replay_batches b JOIN replay_outbox o ON o.id=b.id AND o.created_at=b.created_at')==4
+            names={row['name'] for row in await partitioning.list_partitions(pool)}
+            for age in (10,9,8,0,-1):
+                day=today-timedelta(days=age)
+                assert {partition_name('replay_batches',day),partition_name('replay_outbox',day)}<=names
+            assert {'replay_batches_default','replay_outbox_default'}<=names
+            # 2) a write for a day without partition lands in DEFAULT and is moved out by maintenance
+            future=now+timedelta(days=5); batch=uuid4()
+            await pool.execute('INSERT INTO replay_batches(id,job_id,start_offset,end_offset,status,created_at) VALUES($1,$2,1000,1010,$3,$4)',batch,job,'completed',future)
+            await pool.execute('INSERT INTO replay_outbox(id,payload,sent,created_at) VALUES($1,$2,true,$3)',batch,'{}',future)
+            assert await pool.fetchval('SELECT count(*) FROM replay_outbox_default')==1
+            created=await store.ensure_partitions()
+            assert created==[utc_day(future).isoformat()]
+            assert await pool.fetchval('SELECT count(*) FROM replay_outbox_default')==0==await pool.fetchval('SELECT count(*) FROM replay_batches_default')
+            assert await pool.fetchval(f"SELECT count(*) FROM {partition_name('replay_outbox',utc_day(future))}")==1
+            # 3) retention: 10d dropped; 9d has an unsent row; 8d has a pending batch; today kept
+            result=await store.maintain_partitions()
+            actions={entry['day']:entry['action'] for entry in result['retention']}
+            day=lambda age:(today-timedelta(days=age)).isoformat()
+            assert actions=={day(10):'dropped',day(9):'skipped',day(8):'skipped'}
+            names={row['name'] for row in await partitioning.list_partitions(pool)}
+            assert partition_name('replay_outbox',today-timedelta(days=10)) not in names
+            assert partition_name('replay_batches',today-timedelta(days=10)) not in names
+            assert partition_name('replay_outbox',today) in names
+            assert await pool.fetchval('SELECT count(*) FROM replay_outbox')==4
+            # 4) once the outbox row is sent and the batch completed, the next cycle drops them
+            await pool.execute('UPDATE replay_outbox SET sent=true'); await pool.execute("UPDATE replay_batches SET status='completed'")
+            assert [e['action'] for e in (await store.maintain_partitions(dry_run=True))['retention']]==['would_drop','would_drop']
+            actions=[e['action'] for e in (await store.maintain_partitions())['retention']]
+            assert actions==['dropped','dropped']
+            assert await pool.fetchval('SELECT count(*) FROM replay_outbox')==2
+            # 5) the partitioned tables still accept the normal produce/complete path after cleanup
+            assert (await store.maintain_partitions())['retention']==[]
+        finally:
+            await pool.close()
+            await admin.execute(f'DROP SCHEMA {schema} CASCADE')
+            await admin.close()
+    asyncio.run(scenario())

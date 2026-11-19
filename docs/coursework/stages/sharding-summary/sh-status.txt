@@ -1,0 +1,143 @@
+shardingVersion
+{ _id: 1, clusterId: ObjectId('6afeffc6bc32020f74c5b69e') }
+---
+shards
+[
+  {
+    _id: 'shard1RS',
+    host: 'shard1RS/shard1:27018',
+    state: 1,
+    topologyTime: Timestamp({ t: 1795096528, i: 2 })
+  },
+  {
+    _id: 'shard2RS',
+    host: 'shard2RS/shard2:27018',
+    state: 1,
+    topologyTime: Timestamp({ t: 1795096528, i: 6 })
+  },
+  {
+    _id: 'shard3RS',
+    host: 'shard3RS/shard3:27018',
+    state: 1,
+    topologyTime: Timestamp({ t: 1795096528, i: 19 })
+  }
+]
+---
+active mongoses
+[ { '7.0.48': 1 } ]
+---
+autosplit
+{ 'Currently enabled': 'yes' }
+---
+automerge
+{ 'Currently enabled': 'yes' }
+---
+balancer
+{
+  'Currently enabled': 'yes',
+  'Currently running': 'no',
+  'Failed balancer rounds in last 5 attempts': 0,
+  'Migration Results for the last 24 hours': 'No recent migrations'
+}
+---
+shardedDataDistribution
+[
+  {
+    ns: 'config.system.sessions',
+    shards: [
+      {
+        shardName: 'shard1RS',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 344,
+        ownedSizeBytes: 34056,
+        orphanedSizeBytes: 0
+      }
+    ]
+  },
+  {
+    ns: 'content.source_documents',
+    shards: [
+      {
+        shardName: 'shard3RS',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 33420,
+        ownedSizeBytes: 103568580,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'shard1RS',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 33457,
+        ownedSizeBytes: 103616329,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'shard2RS',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 33123,
+        ownedSizeBytes: 102615054,
+        orphanedSizeBytes: 0
+      }
+    ]
+  }
+]
+---
+databases
+[
+  {
+    database: { _id: 'config', primary: 'config', partitioned: true },
+    collections: {
+      'config.system.sessions': {
+        shardKey: { _id: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [ { shard: 'shard1RS', nChunks: 1 } ],
+        chunks: [
+          { min: { _id: MinKey() }, max: { _id: MaxKey() }, 'on shard': 'shard1RS', 'last modified': Timestamp({ t: 1, i: 0 }) }
+        ],
+        tags: []
+      }
+    }
+  },
+  {
+    database: {
+      _id: 'content',
+      primary: 'shard1RS',
+      partitioned: false,
+      version: {
+        uuid: UUID('73339511-817a-4747-8cf2-1e3cabbb1d4e'),
+        timestamp: Timestamp({ t: 1795096528, i: 22 }),
+        lastMod: 1
+      }
+    },
+    collections: {
+      'content.source_documents': {
+        shardKey: { _id: 'hashed' },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [
+          { shard: 'shard1RS', nChunks: 4 },
+          { shard: 'shard2RS', nChunks: 4 },
+          { shard: 'shard3RS', nChunks: 4 }
+        ],
+        chunks: [
+          { min: { _id: MinKey() }, max: { _id: Long('-7686143364045646500') }, 'on shard': 'shard3RS', 'last modified': Timestamp({ t: 1, i: 0 }) },
+          { min: { _id: Long('-7686143364045646500') }, max: { _id: Long('-6148914691236517200') }, 'on shard': 'shard3RS', 'last modified': Timestamp({ t: 1, i: 1 }) },
+          { min: { _id: Long('-6148914691236517200') }, max: { _id: Long('-4611686018427387900') }, 'on shard': 'shard3RS', 'last modified': Timestamp({ t: 1, i: 2 }) },
+          { min: { _id: Long('-4611686018427387900') }, max: { _id: Long('-3074457345618258600') }, 'on shard': 'shard3RS', 'last modified': Timestamp({ t: 1, i: 3 }) },
+          { min: { _id: Long('-3074457345618258600') }, max: { _id: Long('-1537228672809129300') }, 'on shard': 'shard1RS', 'last modified': Timestamp({ t: 1, i: 4 }) },
+          { min: { _id: Long('-1537228672809129300') }, max: { _id: Long('0') }, 'on shard': 'shard1RS', 'last modified': Timestamp({ t: 1, i: 5 }) },
+          { min: { _id: Long('0') }, max: { _id: Long('1537228672809129300') }, 'on shard': 'shard1RS', 'last modified': Timestamp({ t: 1, i: 6 }) },
+          { min: { _id: Long('1537228672809129300') }, max: { _id: Long('3074457345618258600') }, 'on shard': 'shard1RS', 'last modified': Timestamp({ t: 1, i: 7 }) },
+          { min: { _id: Long('3074457345618258600') }, max: { _id: Long('4611686018427387900') }, 'on shard': 'shard2RS', 'last modified': Timestamp({ t: 1, i: 8 }) },
+          { min: { _id: Long('4611686018427387900') }, max: { _id: Long('6148914691236517200') }, 'on shard': 'shard2RS', 'last modified': Timestamp({ t: 1, i: 9 }) },
+          { min: { _id: Long('6148914691236517200') }, max: { _id: Long('7686143364045646500') }, 'on shard': 'shard2RS', 'last modified': Timestamp({ t: 1, i: 10 }) },
+          { min: { _id: Long('7686143364045646500') }, max: { _id: MaxKey() }, 'on shard': 'shard2RS', 'last modified': Timestamp({ t: 1, i: 11 }) }
+        ],
+        tags: []
+      }
+    }
+  }
+]

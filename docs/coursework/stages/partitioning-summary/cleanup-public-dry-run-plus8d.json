@@ -1,0 +1,29 @@
+{
+  "cleanup": {
+    "now": "2026-11-27T12:00:00+00:00",
+    "retention_days": 7,
+    "dry_run": true,
+    "created": [],
+    "retention": [
+      {
+        "day": "2026-11-19",
+        "partitions": [
+          "replay_batches_p20261119",
+          "replay_outbox_p20261119"
+        ],
+        "bytes": 135495680,
+        "rows": {
+          "replay_batches": 1208,
+          "replay_outbox": 1208
+        },
+        "unsent": 0,
+        "pending": 0,
+        "action": "would_drop"
+      }
+    ],
+    "default_rows": {
+      "replay_batches": 0,
+      "replay_outbox": 0
+    }
+  }
+}
