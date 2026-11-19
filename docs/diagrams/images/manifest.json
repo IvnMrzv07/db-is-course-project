@@ -1,8 +1,8 @@
 [
   {
     "name": "analytics-classes",
-    "width": 6624,
-    "height": 1812
+    "width": 5794,
+    "height": 1536
   },
   {
     "name": "competition-classes",
@@ -52,6 +52,6 @@
   {
     "name": "target-modules",
     "width": 5388,
-    "height": 2486
+    "height": 2312
   }
 ]

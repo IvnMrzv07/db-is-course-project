@@ -79,6 +79,7 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [application/dtos/article_commands.py](../backend/content_service/application/dtos/article_commands.py) | `CreateArticle`, `UpdateArticle` |
 | [application/dtos/article_dto.py](../backend/content_service/application/dtos/article_dto.py) | `ArticleDTO` |
 | [application/dtos/corpus_statistics_dto.py](../backend/content_service/application/dtos/corpus_statistics_dto.py) | `CorpusStatisticsDTO` |
+| [application/dtos/distributed_query.py](../backend/content_service/application/dtos/distributed_query.py) | `DistributedAggregationQuery` |
 | [application/dtos/document_query.py](../backend/content_service/application/dtos/document_query.py) | `DocumentQuery` |
 | [application/dtos/extended_profile_commands.py](../backend/content_service/application/dtos/extended_profile_commands.py) | `CreateExtendedProfile`, `UpdateExtendedProfile` |
 | [application/dtos/extended_profile_dto.py](../backend/content_service/application/dtos/extended_profile_dto.py) | `ExtendedProfileDTO` |
@@ -93,6 +94,7 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [application/mappers/interview_dto_mapper.py](../backend/content_service/application/mappers/interview_dto_mapper.py) | `InterviewDTOMapper` |
 | [application/ports/corpus_statistics.py](../backend/content_service/application/ports/corpus_statistics.py) | `CorpusStatisticsReader` |
 | [application/ports/corpus_store.py](../backend/content_service/application/ports/corpus_store.py) | `CorpusStore` |
+| [application/ports/distributed_aggregation.py](../backend/content_service/application/ports/distributed_aggregation.py) | `DistributedAggregationReader` |
 | [application/ports/unit_of_work.py](../backend/content_service/application/ports/unit_of_work.py) | `UnitOfWork` |
 | [application/repositories/article_repository.py](../backend/content_service/application/repositories/article_repository.py) | `ArticleRepository` |
 | [application/repositories/crud_repository.py](../backend/content_service/application/repositories/crud_repository.py) | `CrudRepository` |
@@ -109,6 +111,7 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [application/services/queries/article_query_service.py](../backend/content_service/application/services/queries/article_query_service.py) | `ArticleQueryService` |
 | [application/services/queries/corpus_query_service.py](../backend/content_service/application/services/queries/corpus_query_service.py) | `CorpusQueryService` |
 | [application/services/queries/corpus_statistics_query_service.py](../backend/content_service/application/services/queries/corpus_statistics_query_service.py) | `CorpusStatisticsQueryService` |
+| [application/services/queries/distributed_aggregation_query_service.py](../backend/content_service/application/services/queries/distributed_aggregation_query_service.py) | `DistributedAggregationQueryService` |
 | [application/services/queries/extended_profile_query_service.py](../backend/content_service/application/services/queries/extended_profile_query_service.py) | `ExtendedProfileQueryService` |
 | [application/services/queries/highlight_query_service.py](../backend/content_service/application/services/queries/highlight_query_service.py) | `HighlightQueryService` |
 | [application/services/queries/interview_query_service.py](../backend/content_service/application/services/queries/interview_query_service.py) | `InterviewQueryService` |
@@ -123,6 +126,7 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [domain/services/publication_policy.py](../backend/content_service/domain/services/publication_policy.py) | `PublicationPolicy` |
 | [infrastructure/database/corpus_repository.py](../backend/content_service/infrastructure/database/corpus_repository.py) | `MongoCorpusRepository` |
 | [infrastructure/database/corpus_statistics_adapter.py](../backend/content_service/infrastructure/database/corpus_statistics_adapter.py) | `MongoCorpusStatisticsReader` |
+| [infrastructure/database/distributed_aggregation.py](../backend/content_service/infrastructure/database/distributed_aggregation.py) | `MongoDistributedAggregation` |
 | [infrastructure/database/mappers/source_document_persistence_mapper.py](../backend/content_service/infrastructure/database/mappers/source_document_persistence_mapper.py) | `SourceDocumentPersistenceMapper` |
 | [infrastructure/database/models/source_document_model.py](../backend/content_service/infrastructure/database/models/source_document_model.py) | `SourceDocumentModel` |
 | [infrastructure/database/repositories/mongo_article_repository.py](../backend/content_service/infrastructure/database/repositories/mongo_article_repository.py) | `MongoArticleRepository` |
@@ -135,6 +139,7 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [presentation/api/controllers/article_controller.py](../backend/content_service/presentation/api/controllers/article_controller.py) | `ArticleController` |
 | [presentation/api/controllers/corpus_controller.py](../backend/content_service/presentation/api/controllers/corpus_controller.py) | `CorpusController` |
 | [presentation/api/controllers/corpus_statistics_query_service_controller.py](../backend/content_service/presentation/api/controllers/corpus_statistics_query_service_controller.py) | `CorpusStatisticsQueryServiceController` |
+| [presentation/api/controllers/distributed_aggregation_controller.py](../backend/content_service/presentation/api/controllers/distributed_aggregation_controller.py) | `DistributedAggregationController` |
 | [presentation/api/controllers/extended_profile_controller.py](../backend/content_service/presentation/api/controllers/extended_profile_controller.py) | `ExtendedProfileController` |
 | [presentation/api/controllers/highlight_controller.py](../backend/content_service/presentation/api/controllers/highlight_controller.py) | `HighlightController` |
 | [presentation/api/controllers/interview_controller.py](../backend/content_service/presentation/api/controllers/interview_controller.py) | `InterviewController` |
@@ -151,13 +156,11 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [application/dtos/relationship_dto.py](../backend/analytics_service/application/dtos/relationship_dto.py) | `RelationshipDTO` |
 | [application/dtos/team_comparison_dto.py](../backend/analytics_service/application/dtos/team_comparison_dto.py) | `TeamComparisonDTO` |
 | [application/ports/comparison_cache.py](../backend/analytics_service/application/ports/comparison_cache.py) | `ComparisonCache` |
-| [application/ports/graph_projection.py](../backend/analytics_service/application/ports/graph_projection.py) | `GraphProjection` |
 | [application/ports/relationship_reader.py](../backend/analytics_service/application/ports/relationship_reader.py) | `RelationshipReader` |
 | [application/ports/statistics_projection.py](../backend/analytics_service/application/ports/statistics_projection.py) | `StatisticsProjection` |
 | [application/ports/statistics_reader.py](../backend/analytics_service/application/ports/statistics_reader.py) | `StatisticsReader` |
 | [application/ports/unit_of_work.py](../backend/analytics_service/application/ports/unit_of_work.py) | `UnitOfWork` |
 | [application/repositories/crud_repository.py](../backend/analytics_service/application/repositories/crud_repository.py) | `CrudRepository` |
-| [application/services/commands/graph_projection_service.py](../backend/analytics_service/application/services/commands/graph_projection_service.py) | `GraphProjectionService` |
 | [application/services/commands/statistics_projection_service.py](../backend/analytics_service/application/services/commands/statistics_projection_service.py) | `StatisticsProjectionService` |
 | [application/services/queries/comparison_service.py](../backend/analytics_service/application/services/queries/comparison_service.py) | `ComparisonService` |
 | [application/services/queries/recommendation_service.py](../backend/analytics_service/application/services/queries/recommendation_service.py) | `RecommendationService` |
@@ -168,15 +171,13 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [domain/exceptions.py](../backend/analytics_service/domain/exceptions.py) | `DomainError`, `VersionConflict` |
 | [domain/services/statistics_calculator.py](../backend/analytics_service/domain/services/statistics_calculator.py) | `StatisticsCalculator` |
 | [infrastructure/cache/comparison_cache_adapter.py](../backend/analytics_service/infrastructure/cache/comparison_cache_adapter.py) | `RedisComparisonCache` |
+| [infrastructure/database/relationship_reader_adapter.py](../backend/analytics_service/infrastructure/database/relationship_reader_adapter.py) | `PostgresRelationshipReader` |
 | [infrastructure/database/statistics_projection_adapter.py](../backend/analytics_service/infrastructure/database/statistics_projection_adapter.py) | `PostgresStatisticsProjection` |
 | [infrastructure/database/statistics_reader_adapter.py](../backend/analytics_service/infrastructure/database/statistics_reader_adapter.py) | `PostgresStatisticsReader` |
 | [infrastructure/database/unit_of_work_adapter.py](../backend/analytics_service/infrastructure/database/unit_of_work_adapter.py) | `PostgresUnitOfWork` |
-| [infrastructure/graph/graph_projection_adapter.py](../backend/analytics_service/infrastructure/graph/graph_projection_adapter.py) | `Neo4jGraphProjection` |
-| [infrastructure/graph/relationship_reader_adapter.py](../backend/analytics_service/infrastructure/graph/relationship_reader_adapter.py) | `Neo4jRelationshipReader` |
 | [presentation/api/controllers/comparison_service_controller.py](../backend/analytics_service/presentation/api/controllers/comparison_service_controller.py) | `ComparisonServiceController` |
 | [presentation/api/controllers/recommendation_service_controller.py](../backend/analytics_service/presentation/api/controllers/recommendation_service_controller.py) | `RecommendationServiceController` |
 | [presentation/api/controllers/relationship_service_controller.py](../backend/analytics_service/presentation/api/controllers/relationship_service_controller.py) | `RelationshipServiceController` |
-| [presentation/messaging/consumers/graph_event_consumer.py](../backend/analytics_service/presentation/messaging/consumers/graph_event_consumer.py) | `GraphEventConsumer` |
 | [presentation/messaging/consumers/statistics_event_consumer.py](../backend/analytics_service/presentation/messaging/consumers/statistics_event_consumer.py) | `StatisticsEventConsumer` |
 | [settings.py](../backend/analytics_service/settings.py) | `Settings` |
 
@@ -184,17 +185,21 @@ Generated from the current Python source. These are typed architecture stubs, no
 
 | Module | Declared classes |
 | --- | --- |
+| [application/dtos/full_text_query.py](../backend/search_service/application/dtos/full_text_query.py) | `FullTextQuery` |
 | [application/dtos/search_history_dto.py](../backend/search_service/application/dtos/search_history_dto.py) | `SearchHistoryDTO` |
 | [application/dtos/search_hit_dto.py](../backend/search_service/application/dtos/search_hit_dto.py) | `SearchHitDTO` |
 | [application/dtos/search_query_dto.py](../backend/search_service/application/dtos/search_query_dto.py) | `SearchQueryDTO` |
 | [application/dtos/search_result_dto.py](../backend/search_service/application/dtos/search_result_dto.py) | `SearchResultDTO` |
+| [application/ports/document_index.py](../backend/search_service/application/ports/document_index.py) | `SearchBackendUnavailable`, `DocumentIndex` |
 | [application/ports/search_cache.py](../backend/search_service/application/ports/search_cache.py) | `SearchCache` |
 | [application/ports/search_history.py](../backend/search_service/application/ports/search_history.py) | `SearchHistory` |
 | [application/ports/search_index.py](../backend/search_service/application/ports/search_index.py) | `SearchIndex` |
 | [application/ports/search_reader.py](../backend/search_service/application/ports/search_reader.py) | `SearchReader` |
 | [application/ports/unit_of_work.py](../backend/search_service/application/ports/unit_of_work.py) | `UnitOfWork` |
 | [application/repositories/crud_repository.py](../backend/search_service/application/repositories/crud_repository.py) | `CrudRepository` |
+| [application/services/commands/document_indexing_service.py](../backend/search_service/application/services/commands/document_indexing_service.py) | `DocumentIndexingService` |
 | [application/services/commands/indexing_service.py](../backend/search_service/application/services/commands/indexing_service.py) | `IndexingService` |
+| [application/services/queries/full_text_search_service.py](../backend/search_service/application/services/queries/full_text_search_service.py) | `FullTextSearchService` |
 | [application/services/queries/search_service.py](../backend/search_service/application/services/queries/search_service.py) | `SearchService` |
 | [application/services/queries/search_statistics_query_service.py](../backend/search_service/application/services/queries/search_statistics_query_service.py) | `SearchStatisticsQueryService` |
 | [bootstrap.py](../backend/search_service/bootstrap.py) | `Container` |
@@ -203,11 +208,15 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [domain/services/query_normalization_policy.py](../backend/search_service/domain/services/query_normalization_policy.py) | `QueryNormalizationPolicy` |
 | [infrastructure/cache/search_cache_adapter.py](../backend/search_service/infrastructure/cache/search_cache_adapter.py) | `RedisSearchCache` |
 | [infrastructure/database/unit_of_work_adapter.py](../backend/search_service/infrastructure/database/unit_of_work_adapter.py) | `PostgresUnitOfWork` |
+| [infrastructure/messaging/index_broker.py](../backend/search_service/infrastructure/messaging/index_broker.py) | `IndexBroker` |
+| [infrastructure/search/elasticsearch_documents.py](../backend/search_service/infrastructure/search/elasticsearch_documents.py) | `ElasticsearchDocumentIndex` |
 | [infrastructure/search/search_history_adapter.py](../backend/search_service/infrastructure/search/search_history_adapter.py) | `ElasticsearchHistory` |
 | [infrastructure/search/search_index_adapter.py](../backend/search_service/infrastructure/search/search_index_adapter.py) | `ElasticsearchIndex` |
 | [infrastructure/search/search_reader_adapter.py](../backend/search_service/infrastructure/search/search_reader_adapter.py) | `ElasticsearchReader` |
+| [presentation/api/controllers/full_text_search_controller.py](../backend/search_service/presentation/api/controllers/full_text_search_controller.py) | `FullTextSearchController` |
 | [presentation/api/controllers/search_service_controller.py](../backend/search_service/presentation/api/controllers/search_service_controller.py) | `SearchServiceController` |
 | [presentation/api/controllers/search_statistics_query_service_controller.py](../backend/search_service/presentation/api/controllers/search_statistics_query_service_controller.py) | `SearchStatisticsQueryServiceController` |
+| [presentation/messaging/consumers/document_index_consumer.py](../backend/search_service/presentation/messaging/consumers/document_index_consumer.py) | `DocumentIndexConsumer` |
 | [presentation/messaging/consumers/indexing_event_consumer.py](../backend/search_service/presentation/messaging/consumers/indexing_event_consumer.py) | `IndexingEventConsumer` |
 | [settings.py](../backend/search_service/settings.py) | `Settings` |
 
@@ -287,7 +296,8 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [domain/services/entity_resolver.py](../backend/ingestion_service/domain/services/entity_resolver.py) | `EntityResolver` |
 | [infrastructure/database/mappers/import_job_persistence_mapper.py](../backend/ingestion_service/infrastructure/database/mappers/import_job_persistence_mapper.py) | `ImportJobPersistenceMapper` |
 | [infrastructure/database/models/import_job_model.py](../backend/ingestion_service/infrastructure/database/models/import_job_model.py) | `ImportJobModel` |
-| [infrastructure/database/replay_store.py](../backend/ingestion_service/infrastructure/database/replay_store.py) | `Conflict`, `PostgresReplayStore` |
+| [infrastructure/database/partitioning.py](../backend/ingestion_service/infrastructure/database/partitioning.py) | `PartitionPolicy` |
+| [infrastructure/database/replay_store.py](../backend/ingestion_service/infrastructure/database/replay_store.py) | `Conflict`, `PreparedSnapshot`, `PostgresReplayStore` |
 | [infrastructure/database/repositories/postgres_enrichment_job_repository.py](../backend/ingestion_service/infrastructure/database/repositories/postgres_enrichment_job_repository.py) | `PostgresEnrichmentJobRepository` |
 | [infrastructure/database/repositories/postgres_identity_candidate_repository.py](../backend/ingestion_service/infrastructure/database/repositories/postgres_identity_candidate_repository.py) | `PostgresIdentityCandidateRepository` |
 | [infrastructure/database/repositories/postgres_import_job_repository.py](../backend/ingestion_service/infrastructure/database/repositories/postgres_import_job_repository.py) | `PostgresImportJobRepository` |
@@ -295,6 +305,8 @@ Generated from the current Python source. These are typed architecture stubs, no
 | [infrastructure/database/repositories/postgres_validation_issue_repository.py](../backend/ingestion_service/infrastructure/database/repositories/postgres_validation_issue_repository.py) | `PostgresValidationIssueRepository` |
 | [infrastructure/database/unit_of_work_adapter.py](../backend/ingestion_service/infrastructure/database/unit_of_work_adapter.py) | `PostgresUnitOfWork` |
 | [infrastructure/datasets/dataset_reader_adapter.py](../backend/ingestion_service/infrastructure/datasets/dataset_reader_adapter.py) | `KaggleAndTextFileReader` |
+| [infrastructure/datasets/prepare_corpus.py](../backend/ingestion_service/infrastructure/datasets/prepare_corpus.py) | `CorpusSource` |
+| [infrastructure/datasets/synthetic_rules.py](../backend/ingestion_service/infrastructure/datasets/synthetic_rules.py) | `Pseudonyms` |
 | [infrastructure/messaging/command_publisher_adapter.py](../backend/ingestion_service/infrastructure/messaging/command_publisher_adapter.py) | `RabbitMQCommandPublisher` |
 | [infrastructure/messaging/runtime_broker.py](../backend/ingestion_service/infrastructure/messaging/runtime_broker.py) | `Broker` |
 | [infrastructure/pacing/rate_controller_adapter.py](../backend/ingestion_service/infrastructure/pacing/rate_controller_adapter.py) | `AsyncioRateController` |
@@ -315,4 +327,4 @@ Generated from the current Python source. These are typed architecture stubs, no
 
 | Module | Declared classes |
 | --- | --- |
-| [messages.py](../backend/contracts/messages.py) | `MessageHeaders`, `ChangeNotification`, `BatchCompleted`, `SourceDocumentRecord`, `StoreSourceDocumentBatch`, `PlayerStatRecord`, `MatchRecord`, `ImportMatchBatch`, `ScheduleJob` |
+| [messages.py](../backend/contracts/messages.py) | `MessageHeaders`, `ChangeNotification`, `BatchCompleted`, `SourceDocumentRecord`, `StoreSourceDocumentBatch`, `PlayerStatRecord`, `MatchRecord`, `ImportMatchBatch`, `ScheduleJob`, `IndexableSourceDocument`, `IndexSourceDocuments` |

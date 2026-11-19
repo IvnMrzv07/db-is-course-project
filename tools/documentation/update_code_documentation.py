@@ -39,7 +39,7 @@ def main():
                  '| `application/mappers` | Entity-to-DTO conversions. |',
                  '| `presentation/api/controllers` | Named HTTP adapter classes; FastAPI routes remain to be registered. |',
                  '| `presentation/messaging/consumers` | Inbound message handlers delegating to application services. |',
-                 '| `infrastructure` | Database, provider, graph, search, cache, and broker adapter stubs. |',
+                 '| `infrastructure` | Database, provider, search, cache, and broker adapters (stubs except in implemented slices). |',
                  '| `bootstrap.py` | Typed dependency composition, without opening connections. |', '',
                  'See [Skeleton guide](skeleton-guide.md) for scope and verification, [Code inventory](code-inventory.md) for class links, and [Diagrams](diagrams.md) for interactions.', '']
     for service in (*SERVICES, 'contracts'):

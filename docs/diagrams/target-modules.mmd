@@ -30,10 +30,8 @@ flowchart LR
             direction TB
             Analytics[analytics_service]
             AnalyticsDB[(Analytics PostgreSQL)]
-            Neo4j[(Neo4j)]
             AnalyticsCache[(Redis: analytics namespace)]
             Analytics --> AnalyticsDB
-            Analytics --> Neo4j
             Analytics --> AnalyticsCache
         end
         subgraph SearchGroup[Search]

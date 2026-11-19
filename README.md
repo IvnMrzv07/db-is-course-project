@@ -4,7 +4,7 @@ Stages 9–12 implement a local corpus browser and background import pipeline:
 
 **combined CSV → prepared JSONL → Ingestion/PostgreSQL outbox → RabbitMQ → Content/MongoDB → FastAPI → React.**
 
-MongoDB runs as one single-member replica set for transactions. There is **no sharding, partitioning, Elasticsearch, Redis or Neo4j in the running stack**. Those remain later-stage architecture decisions. Competition, Identity, Analytics and Search retain their existing skeletons.
+The default stack runs MongoDB as one single-member replica set for transactions. The optional `cs-sharded` stand (below) adds MongoDB sharding over 3 shards, map-reduce aggregation across shards and Elasticsearch full-text search; Ingestion's replay tables are partitioned by day on both stacks. The full corpus is 100,000 documents (`kaggle-cs` 20,675 + `synthetic-cs` 79,325). **Redis and graph databases are not used** (relationship queries are planned on PostgreSQL). Competition, Identity and Analytics retain their skeletons.
 
 ## Start with Docker Compose
 
@@ -13,6 +13,7 @@ MongoDB runs as one single-member replica set for transactions. There is **no sh
 3. Run `docker compose up --build -d` from this directory.
 4. Open http://localhost:8080. On **Імпорт та моніторинг**, enter the token, select `kaggle-cs`, and start a replay.
 5. Browse documents on **Корпус документів**. The prepared snapshot contains **20,675 accepted records** and **one rejected source row** (CSV line 20100, missing `team1`).
+6. Optional load test: select `synthetic-cs · синтетичні (навантажувальні)` to import 79,325 SDV-generated, pseudonymized documents (20,675 + 79,325 = 100,000). They are stored under `corpus_scope=synthetic-cs` and never shown as real matches.
 
 The preparation container creates the JSONL volume automatically. Database initialization is repeatable and preserves existing data. Only the web port is published, bound to localhost. `docker compose down` preserves volumes; do not add `-v` when testing persistence. The single MongoDB member does not provide failover. The stack is a local coursework environment, not a public deployment.
 
@@ -40,6 +41,17 @@ npm ci --prefix frontend
 npm run build --prefix frontend
 ```
 
+The synthetic snapshot `data/synthetic/synthetic-cs.csv.gz` is committed input; `prepare_corpus` converts it automatically. To regenerate it (offline, CPU, about 13 minutes):
+
+```sh
+python -m venv .venv-synth
+.venv-synth/Scripts/python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+.venv-synth/Scripts/python -m pip install -r requirements-synthetic.txt
+PYTHONPATH=backend .venv-synth/Scripts/python -m ingestion_service.infrastructure.datasets.synthesize_corpus
+```
+
+See `docs/stages9-12-runtime.md` (section *Synthetic load corpus*) for constraints and `data/synthetic/synthetic-cs.quality.json` for SDMetrics results.
+
 The ordinary tests do not start databases. Real-stack acceptance is opt-in: set `RUN_STACK_TESTS=1` and `OPERATOR_TOKEN`, then run `python -m pytest -m integration -v` from the repository root. It creates replay jobs and restarts the local Compose workers/databases. Allow up to ten minutes per import. It never removes volumes.
 
 On Windows, open a new terminal after installing Docker Desktop so its credential helper is on PATH. Shell scripts must keep LF line endings (enforced by `.gitattributes`).
@@ -57,9 +69,43 @@ Frontend development: `npm run dev --prefix frontend`; Vite proxies Content to p
 - [Stage 9 decisions](docs/coursework/stages/stage9-summary/decisions.md)
 - [Stages 10–11 data and checks](docs/coursework/stages/stage10-11-summary/results.md)
 - [Stage 12 UI and demonstration](docs/coursework/stages/stage12-summary/results.md)
+- [Sharded MongoDB cluster evidence](docs/coursework/stages/sharding-summary/results.md)
+- [PostgreSQL outbox partitioning and retention evidence](docs/coursework/stages/partitioning-summary/results.md)
 - [Target architecture](docs/architecture.md) and [decision register](docs/project-decisions.md)
 
 The existing `bootstrap.py` graphs remain importable without connections for skeleton inspection. The new `runtime.py` composition roots explicitly construct the implemented corpus/replay slices with live infrastructure. Application ports remain standard-library-only; controllers delegate through services to repositories.
+
+## Sharded MongoDB variant (optional)
+
+`deploy/docker-compose.sharded.yml` runs the whole stack as a separate Compose project, `cs-sharded`, with its own volumes. MongoDB runs as a config server replica set, three shard replica sets and a `mongos` router. `content.source_documents` is sharded by `{_id: "hashed"}`. Stop the main stack first with `docker compose stop` (never `down -v`):
+
+```sh
+docker compose -f deploy/docker-compose.sharded.yml --env-file .env up --build -d   # UI: http://localhost:8082
+```
+
+Importing both snapshots yields 100,000 documents spread about 33 % per shard. Evidence (`getShardDistribution`, targeted vs. scatter-gather `explain`) is in [docs/coursework/stages/sharding-summary/](docs/coursework/stages/sharding-summary/results.md).
+
+### Full-text search (Elasticsearch)
+
+The sharded stand also runs Elasticsearch 8 (single node, 512 MB heap, no auth/TLS), `search_worker` and `search_api`. Every batch committed by Content stages a `search.index` event in its transactional outbox; the worker upserts the documents idempotently (document id + external version). The UI tab «Повнотекстовий пошук» (`/#search`) calls `GET /api/v1/search` (modes `all|any|phrase|fuzzy`, filters `corpus_scope`, `document_type`, `map_name`, `include_synthetic`; `_score` and highlights). To index an already loaded corpus:
+
+```sh
+docker compose -f deploy/docker-compose.sharded.yml --env-file .env run --rm --no-deps -T content_worker python -m content_service.reindex
+docker compose -f deploy/docker-compose.sharded.yml --env-file .env run --rm --no-deps -T search_api python -m search_service.manage status --wait-count 100000
+```
+
+Evidence (100,000 indexed documents, event path, examples, timings, degraded state): [docs/coursework/stages/search-summary/](docs/coursework/stages/search-summary/results.md).
+
+## Partitioned Ingestion outbox
+
+`replay_batches` and `replay_outbox` in the Ingestion PostgreSQL database are partitioned by `created_at`. There is one partition per UTC day plus a `DEFAULT` fallback. Services convert an existing database in place on start. The ingestion worker creates upcoming partitions and drops day partitions older than `REPLAY_PARTITION_RETENTION_DAYS` (default 7), but only when they hold no unsent outbox rows and no pending batches. Inspect or clean up manually inside the ingestion container:
+
+```sh
+python -m ingestion_service.infrastructure.database.partitioning --report
+python -m ingestion_service.infrastructure.database.partitioning --cleanup --dry-run
+```
+
+Details: [runtime rules](docs/stages9-12-runtime.md). Evidence: [docs/coursework/stages/partitioning-summary/](docs/coursework/stages/partitioning-summary/results.md).
 
 ## Additional acceptance and UI review
 

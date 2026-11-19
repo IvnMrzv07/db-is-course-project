@@ -1,6 +1,6 @@
 # Coursework Requirements and Acceptance Plan
 
-> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+> Current scope (stages 9–15): the default stack runs one MongoDB node, PostgreSQL and RabbitMQ. The optional `cs-sharded` stand adds MongoDB sharding (3 shards, config server, `mongos`), map-reduce over shards and Elasticsearch full-text search; Ingestion's `replay_batches`/`replay_outbox` are partitioned by day. The corpus holds 100,000 documents (`kaggle-cs` 20,675 + `synthetic-cs` 79,325, `template_version = "2"`). Redis is not implemented (Elasticsearch is the third technology). No graph database is planned: player/team relationships are bounded joins over match lineups and are served by PostgreSQL (see D66). See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
 
 ## Authority and interpretation
 

@@ -1,6 +1,6 @@
 # System Architecture
 
-> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+> Current scope (stages 9–15): the default stack runs one MongoDB node, PostgreSQL and RabbitMQ. The optional `cs-sharded` stand adds MongoDB sharding (3 shards, config server, `mongos`), map-reduce over shards and Elasticsearch full-text search; Ingestion's `replay_batches`/`replay_outbox` are partitioned by day. The corpus holds 100,000 documents (`kaggle-cs` 20,675 + `synthetic-cs` 79,325, `template_version = "2"`). Redis is not implemented (Elasticsearch is the third technology). No graph database is planned: player/team relationships are bounded joins over match lineups and are served by PostgreSQL (see D66). See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
 
 ## Purpose and status
 
@@ -72,7 +72,7 @@ Unknown values remain unknown; for example, an unknown prize pool is not zero. M
 | --- | --- | --- |
 | `competition_service` | Players, teams, tournaments, matches, maps, player statistics, lineups, verified memberships, accepted competition identity mappings. | PostgreSQL. |
 | `content_service` | Primary raw text/metadata corpus, extended profiles, biographies, articles, interviews, highlight metadata, drafts, publication state, and persisted corpus counts. | MongoDB with the high-volume corpus distributed over three shards. |
-| `analytics_service` | Derived statistical tables, relationship graph, and processing checkpoints. | Its own PostgreSQL database, Neo4j, and Redis cache. |
+| `analytics_service` | Derived statistical tables, player/team relationship queries (recursive SQL over lineups), and processing checkpoints. | Its own PostgreSQL database and an optional Redis cache (not implemented). |
 | `search_service` | Derived search documents, indexing progress, and bounded recent-query telemetry. | Elasticsearch and Redis search-result cache. |
 | `identity_service` | Accounts, roles, and bookmarks. | Its own PostgreSQL database. |
 | `ingestion_service` | Import/enrichment/replay jobs, live rate configuration, checkpoints, validation issues, and unresolved identity candidates. | Its own PostgreSQL database and source snapshot file storage. |
@@ -83,7 +83,7 @@ PostgreSQL owns the canonical player identity and competition facts. MongoDB own
 
 Ingestion proposes identity matches; competition accepts and owns the resulting identity mappings. An enrichment job submits changes to the service that owns each fact rather than writing directly to all databases.
 
-Search indexes, analytical projections, graph relationships, and caches are rebuildable. Rebuilding must include publication and removal state so that outdated or unpublished content is not reintroduced.
+Search indexes, analytical projections, and caches are rebuildable. Rebuilding must include publication and removal state so that outdated or unpublished content is not reintroduced.
 
 ## Domain model
 
@@ -117,7 +117,7 @@ The same dependency rules apply to all six services:
 - `application` contains DTOs, application services, repository interfaces, other ports, and application-level mappers.
 - Application services are divided into `commands` and `queries`. Commands change authoritative state; queries read local state or projections. Query repositories may return DTOs directly. CQRS does not require event sourcing or separate physical databases inside every service.
 - `presentation` contains inbound HTTP and messaging adapters.
-- `infrastructure` contains outbound database, provider, broker, search, graph, and cache adapters.
+- `infrastructure` contains outbound database, provider, broker, search, and cache adapters.
 - `bootstrap.py` constructs implementations and injects them into application services.
 
 Repository interfaces are outbound ports even though their folder is named `repositories`. Concrete repositories live in infrastructure. Domain services implement business rules; application services coordinate operations and transactions. API schemas, application DTOs, database models, and domain entities have separate responsibilities.
@@ -181,7 +181,7 @@ Use publisher confirms and acknowledge consumed messages only after successful d
 
 Retries are bounded. Persistently failing messages move to a failed-message queue with enough context for inspection and replay. RabbitMQ confirmations do not imply that every downstream service has completed processing. See [RabbitMQ reliability](https://www.rabbitmq.com/docs/reliability).
 
-There is no transaction spanning PostgreSQL, MongoDB, Elasticsearch, Neo4j, and Redis. Authoritative writes are locally transactional; derived data converges asynchronously. Statistical and graph projections have independent checkpoints. The UI distinguishes imported records from fully updated search and analytics.
+There is no transaction spanning PostgreSQL, MongoDB, Elasticsearch, and Redis. Authoritative writes are locally transactional; derived data converges asynchronously. Statistical projections and the search index have independent checkpoints. The UI distinguishes imported records from fully updated search and analytics.
 
 ## Processing flows
 

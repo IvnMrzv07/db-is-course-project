@@ -15,7 +15,7 @@ Domain code depends only on the standard library and its own domain. Application
 | `application/mappers` | Entity-to-DTO conversions. |
 | `presentation/api/controllers` | Named HTTP adapter classes; FastAPI routes remain to be registered. |
 | `presentation/messaging/consumers` | Inbound message handlers delegating to application services. |
-| `infrastructure` | Database, provider, graph, search, cache, and broker adapter stubs. |
+| `infrastructure` | Database, provider, search, cache, and broker adapters (stubs except in implemented slices). |
 | `bootstrap.py` | Typed dependency composition, without opening connections. |
 
 See [Skeleton guide](skeleton-guide.md) for scope and verification, [Code inventory](code-inventory.md) for class links, and [Diagrams](diagrams.md) for interactions.
@@ -124,6 +124,7 @@ content_service/
             article_commands.py
             article_dto.py
             corpus_statistics_dto.py
+            distributed_query.py
             document_query.py
             extended_profile_commands.py
             extended_profile_dto.py
@@ -140,6 +141,7 @@ content_service/
         ports/
             corpus_statistics.py
             corpus_store.py
+            distributed_aggregation.py
             unit_of_work.py
         repositories/
             article_repository.py
@@ -155,11 +157,13 @@ content_service/
                 extended_profile_command_service.py
                 highlight_command_service.py
                 interview_command_service.py
+                search_index_events.py
                 source_document_command_service.py
             queries/
                 article_query_service.py
                 corpus_query_service.py
                 corpus_statistics_query_service.py
+                distributed_aggregation_query_service.py
                 extended_profile_query_service.py
                 highlight_query_service.py
                 interview_query_service.py
@@ -188,6 +192,7 @@ content_service/
                 mongo_source_document_repository.py
             corpus_repository.py
             corpus_statistics_adapter.py
+            distributed_aggregation.py
             unit_of_work_adapter.py
         messaging/
             runtime_broker.py
@@ -197,6 +202,7 @@ content_service/
                 article_controller.py
                 corpus_controller.py
                 corpus_statistics_query_service_controller.py
+                distributed_aggregation_controller.py
                 extended_profile_controller.py
                 highlight_controller.py
                 interview_controller.py
@@ -207,6 +213,7 @@ content_service/
                 source_document_batch_consumer.py
     bootstrap.py
     logging.yaml
+    reindex.py
     runtime.py
     settings.py
     worker.py
@@ -224,7 +231,6 @@ analytics_service/
             team_comparison_dto.py
         ports/
             comparison_cache.py
-            graph_projection.py
             relationship_reader.py
             statistics_projection.py
             statistics_reader.py
@@ -233,7 +239,6 @@ analytics_service/
             crud_repository.py
         services/
             commands/
-                graph_projection_service.py
                 statistics_projection_service.py
             queries/
                 comparison_service.py
@@ -250,12 +255,10 @@ analytics_service/
         cache/
             comparison_cache_adapter.py
         database/
+            relationship_reader_adapter.py
             statistics_projection_adapter.py
             statistics_reader_adapter.py
             unit_of_work_adapter.py
-        graph/
-            graph_projection_adapter.py
-            relationship_reader_adapter.py
     presentation/
         api/
             controllers/
@@ -264,7 +267,6 @@ analytics_service/
                 relationship_service_controller.py
         messaging/
             consumers/
-                graph_event_consumer.py
                 statistics_event_consumer.py
     bootstrap.py
     logging.yaml
@@ -277,11 +279,13 @@ analytics_service/
 search_service/
     application/
         dtos/
+            full_text_query.py
             search_history_dto.py
             search_hit_dto.py
             search_query_dto.py
             search_result_dto.py
         ports/
+            document_index.py
             search_cache.py
             search_history.py
             search_index.py
@@ -291,14 +295,17 @@ search_service/
             crud_repository.py
         services/
             commands/
+                document_indexing_service.py
                 indexing_service.py
             queries/
+                full_text_search_service.py
                 search_service.py
                 search_statistics_query_service.py
     domain/
         entities/
             searchable_document.py
         services/
+            index_projection.py
             query_normalization_policy.py
         exceptions.py
     infrastructure/
@@ -306,21 +313,30 @@ search_service/
             search_cache_adapter.py
         database/
             unit_of_work_adapter.py
+        messaging/
+            index_broker.py
         search/
+            elasticsearch_documents.py
             search_history_adapter.py
             search_index_adapter.py
             search_reader_adapter.py
     presentation/
         api/
             controllers/
+                full_text_search_controller.py
                 search_service_controller.py
                 search_statistics_query_service_controller.py
+            app.py
         messaging/
             consumers/
+                document_index_consumer.py
                 indexing_event_consumer.py
     bootstrap.py
     logging.yaml
+    manage.py
+    runtime.py
     settings.py
+    worker.py
 ```
 
 ## Identity service
@@ -439,11 +455,14 @@ ingestion_service/
                 postgres_import_job_repository.py
                 postgres_replay_job_repository.py
                 postgres_validation_issue_repository.py
+            partitioning.py
             replay_store.py
             unit_of_work_adapter.py
         datasets/
             dataset_reader_adapter.py
             prepare_corpus.py
+            synthesize_corpus.py
+            synthetic_rules.py
         messaging/
             command_publisher_adapter.py
             redrive.py

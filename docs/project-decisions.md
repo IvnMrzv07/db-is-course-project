@@ -26,7 +26,7 @@ The architecture task requires layered and hexagonal architecture and a diagram 
 | D14 | Use PostgreSQL for canonical competition data and relational service state. | Competition, Identity, Ingestion, and Analytics have separate databases as needed. |
 | D15 | Use MongoDB for extended profiles and editorial content. | Canonical player identity remains in Competition; MongoDB documents reference internal IDs. |
 | D16 | Use Elasticsearch for required full-text search. | Index published content and selected competition data; rebuild from authoritative sources. |
-| D17 | Use Neo4j for relationship exploration. | Maintain a derived graph of players, teams, matches, and supported connections. |
+| D17 | ~~Use Neo4j for relationship exploration.~~ Superseded by D66. | Relationship exploration uses bounded recursive SQL over lineups in PostgreSQL; no graph database. |
 | D18 | Use Redis as a cache. | Cache repeated reads and expensive comparisons; do not use it as the sole authoritative store. |
 | D19 | Permit shared PostgreSQL infrastructure in development with separate service databases and credentials. | Prohibit cross-service table access and shared database ownership. |
 | D20 | Use HTTP for immediate requests and RabbitMQ for background commands/events. | Long-running work returns job IDs; events update downstream projections. |
@@ -35,8 +35,8 @@ The architecture task requires layered and hexagonal architecture and a diagram 
 | D23 | Use bounded concurrency and independent scaling. | Respect provider rate limits, database pools, and measured worker capacity. |
 | D24 | Use transactional outbox delivery for committed changes. | Persist pending events atomically with authoritative writes and dispatch them separately. |
 | D25 | Assume at-least-once message delivery. | Handle duplicate commands/events, stale versions, bounded retries, and failed-message recovery. |
-| D26 | Accept eventual consistency for derived data. | Search, analytics, graphs, and caches can lag; expose relevant progress and timestamps. |
-| D27 | Rebuild derived stores from authoritative data. | Search, analytical tables, graphs, and caches are not independent sources of truth. |
+| D26 | Accept eventual consistency for derived data. | Search, analytics, and caches can lag; expose relevant progress and timestamps. |
+| D27 | Rebuild derived stores from authoritative data. | Search, analytical tables, and caches are not independent sources of truth. |
 | D28 | Use Kaggle as the initial match dataset. | Import the inspected snapshot with validation, deduplication, and identity resolution. |
 | D29 | Prioritize automated supplementary acquisition. | Use manual curation only when practical automated sources are insufficient or ambiguity requires review. |
 | D30 | Start enrichment with PandaScore; consider Liquipedia API as a second source. | Actual field coverage and account access must be validated; Liquipedia integration is conditional on access. |
@@ -81,7 +81,7 @@ D55–D58 record the subsequent skeleton work. React, a cookie-based authenticat
 | Content | Primary raw text corpus, extended profiles, sourced/editorial content, publication state, and persisted corpus counts. |
 | Identity | Accounts, roles, and bookmarks. |
 | Ingestion | Import/enrichment/replay jobs, dynamic rate configuration, review issues, source snapshots, and job progress. |
-| Analytics | Rebuildable statistical and graph projections and their progress. |
+| Analytics | Rebuildable statistical projections, relationship queries and their progress. |
 | Search | Rebuildable search documents, indexing progress, normalized result caching, and bounded recent-query telemetry. |
 
 ## Decisions not yet finalized
@@ -92,7 +92,7 @@ The following are open design work, not implied commitments:
 - Exact API routes, request/response fields, pagination conventions, API versions, and error formats.
 - Authentication mechanism, credential lifetime, detailed role/permission matrix, and account recovery behavior.
 - Final event schemas, routing keys, queue topology, ordering/gap handling, and removal/correction contracts.
-- Metric formulas, weighted aggregation rules, incomplete-match handling, and graph query limits.
+- Metric formulas, weighted aggregation rules, incomplete-match handling, and relationship traversal depth limits.
 - Source precedence, identity-matching thresholds, provider coverage, refresh intervals, and review rules.
 - External accounts and credentials. No paid subscription is authorized by selecting a candidate provider.
 - Whether match summaries use deterministic templates or an LLM, and whether generation requires editorial approval.
@@ -126,3 +126,11 @@ These decisions supersede earlier implementation timing, not the long-term owner
 - D63: Local operator bearer-token access; full Identity and other domain capabilities remain skeletons. No paid providers or LLM generation.
 - D64: Distinguish prepared records, attempted delivery, unique committed records and duplicate deliveries. Current bundled input prepares 20,675 documents and rejects one row without team1.
 - D65: Existing `bootstrap.py` stays connection-free for architecture inspection; runtime composition is in each implemented service's `runtime.py`. Tests use production repositories for real DB checks and explicitly named doubles for offline contract checks.
+
+## Stages 13–15 decisions (2026-11-19)
+
+- D66: No graph database. Relationships (teammates, opponents, roster history) are a few thousand players linked through match lineups; queries are bounded to depth 2–3 and are answered with joins and `WITH RECURSIVE` in PostgreSQL. A separate graph store would be a derived copy with its own projection pipeline and no requirement it alone satisfies. Neo4j stubs were removed from `analytics_service`; `RelationshipReader` is implemented by `PostgresRelationshipReader` (stub).
+- D67: The corpus is extended to 100,000 documents: `kaggle-cs` 20,675 real + `synthetic-cs` 79,325 generated offline with SDV TVAE, all `template_version = "2"`. Synthetic records are flagged (`is_synthetic`, separate `corpus_scope`) and never presented as real.
+- D68: Partitioning is applied to Ingestion PostgreSQL `replay_batches`/`replay_outbox` (daily `RANGE (created_at)`, retention 7 days, never dropping unsent/pending rows). Sharding is applied to the largest store, MongoDB `content.source_documents`, `{_id: "hashed"}` over 3 shards (`cs-sharded`).
+- D69: Cross-shard collection uses MongoDB's native distributed aggregation; `mapReduce` is kept as a comparison engine in `GET /api/v1/distributed/map-reduce`. Spark is not introduced.
+- D70: Elasticsearch is the third technology (full-text search, highlighting, `_score`), fed by a `search.index` outbox event through RabbitMQ. Redis is not implemented.

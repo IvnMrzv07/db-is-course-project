@@ -28,3 +28,13 @@ node_modules/
 .npm-cache/
 
 /artifacts/
+.venv-synth/
+
+# Тимчасові файли редакторів/ОС і локальні нотатки поза проєктом
+*.bak
+*.tmp
+*.orig
+*.swp
+.DS_Store
+Thumbs.db
+/defense-notes/

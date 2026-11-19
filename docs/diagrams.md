@@ -1,8 +1,8 @@
 # Module and Class Diagrams
 
-The class docs/diagrams reference classes in the current skeleton. Interface realization arrows represent nominal or structural Python protocol implementation. Method execution, HTTP route registration, database topology, and broker operation are planned, not deployed.
+The class diagrams reference classes in the current skeleton. Interface realization arrows represent nominal or structural Python protocol implementation. Method execution, HTTP route registration, database topology, and broker operation are planned, not deployed.
 
-Each diagram is also stored as an editable `.mmd` source. The docs/diagrams select representative interactions rather than placing every DTO on one unreadable page; [Code inventory](code-inventory.md) lists the complete class set.
+Each diagram is also stored as an editable `.mmd` source. The diagrams select representative interactions rather than placing every DTO on one unreadable page; [Code inventory](code-inventory.md) lists the complete class set.
 
 ## Modules
 
@@ -30,7 +30,7 @@ flowchart TB
 
 The module overview flows from left to right. Each group keeps a service near its storage. Solid arrows show routing, storage access, and labeled broker traffic; dashed arrows show direct owner-API reads or enrichment submissions. The two Redis symbols are namespaces that may share one deployment. MongoDB represents three data shards plus separate configuration infrastructure.
 
-Files include Kaggle and prepared corpora; provider APIs include PandaScore and optional Liquipedia. Elasticsearch includes corpus and telemetry indexes. All infrastructure remains planned. Class docs/diagrams below show selected fields from the actual Python declarations; optional markers and some collection details are abbreviated for readability. The code inventory contains the full definitions.
+Files include Kaggle and prepared corpora; provider APIs include PandaScore and optional Liquipedia. Elasticsearch includes corpus and telemetry indexes. All infrastructure remains planned. Class diagrams below show selected fields from the actual Python declarations; optional markers and some collection details are abbreviated for readability. The code inventory contains the full definitions.
 
 ## Competition Classes
 
@@ -309,7 +309,7 @@ classDiagram
         <<interface>>
         find_connections(player_id, max_depth)
     }
-    class Neo4jRelationshipReader {
+    class PostgresRelationshipReader {
         str connection_url
     }
     class RecommendationService {
@@ -329,34 +329,17 @@ classDiagram
     class PostgresStatisticsProjection {
         str connection_url
     }
-    class GraphEventConsumer {
-        GraphProjectionService service
-    }
-    class GraphProjectionService {
-        GraphProjection projection
-    }
-    class GraphProjection {
-        <<interface>>
-        apply(event)
-        rebuild()
-    }
-    class Neo4jGraphProjection {
-        str connection_url
-    }
     ComparisonServiceController --> ComparisonService
     ComparisonService --> StatisticsReader
     ComparisonService --> ComparisonCache
     PostgresStatisticsReader ..|> StatisticsReader
     RedisComparisonCache ..|> ComparisonCache
     RelationshipService --> RelationshipReader
-    Neo4jRelationshipReader ..|> RelationshipReader
+    PostgresRelationshipReader ..|> RelationshipReader
     RecommendationService --> StatisticsReader
     StatisticsEventConsumer --> StatisticsProjectionService
     StatisticsProjectionService --> StatisticsProjection
     PostgresStatisticsProjection ..|> StatisticsProjection
-    GraphEventConsumer --> GraphProjectionService
-    GraphProjectionService --> GraphProjection
-    Neo4jGraphProjection ..|> GraphProjection
     class ComparisonQuery {
         UUID team1_id
         UUID team2_id

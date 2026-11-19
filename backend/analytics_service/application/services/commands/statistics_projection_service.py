@@ -11,7 +11,7 @@ from analytics_service.application.ports.statistics_projection import Statistics
 
 @dataclass(kw_only=True)
 class StatisticsProjectionService:
-    """Independent projection command handler; never spans graph and SQL transactions."""
+    """Independent projection command handler with its own checkpoint."""
 
     projection: StatisticsProjection
 

@@ -12,5 +12,5 @@ class RelationshipReader(Protocol):
     """Outbound port owned by this application."""
 
     async def find_connections(self, player_id: UUID, max_depth: int) -> tuple[RelationshipDTO, ...]:
-        """Traverse bounded graph with participation evidence"""
+        """Traverse bounded player-team relationships with participation evidence"""
         ...

@@ -1,6 +1,6 @@
 # Architecture Skeleton Guide
 
-> Stages 9–12 scope update: the running slice uses one MongoDB node, PostgreSQL and RabbitMQ. Sharding, partitioning, Elasticsearch, Redis and Neo4j are deferred. See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
+> Current scope (stages 9–15): the default stack runs one MongoDB node, PostgreSQL and RabbitMQ. The optional `cs-sharded` stand adds MongoDB sharding (3 shards, config server, `mongos`), map-reduce over shards and Elasticsearch full-text search; Ingestion's `replay_batches`/`replay_outbox` are partitioned by day. The corpus holds 100,000 documents (`kaggle-cs` 20,675 + `synthetic-cs` 79,325, `template_version = "2"`). Redis is not implemented (Elasticsearch is the third technology). No graph database is planned: player/team relationships are bounded joins over match lineups and are served by PostgreSQL (see D66). See [current runtime](stages9-12-runtime.md). Earlier full-system requirements below describe the target architecture.
 
 ## Deliverable
 
@@ -66,7 +66,7 @@ These checks do not satisfy the later database/sharding, marker-search, or perfo
 
 ## Changes from the planning trees
 
-The code uses explicit `controllers` folders instead of route-only examples, separates CRUD command/query DTOs, and supplies nominal or structural typed ports. Supporting match entities have persistence ports, while public operations are organized around the primary records. Search and graph integrations are represented by focused query/projection adapters. Some previously proposed filenames have been consolidated; the code inventory and current service-structure document reflect the files that actually exist.
+The code uses explicit `controllers` folders instead of route-only examples, separates CRUD command/query DTOs, and supplies nominal or structural typed ports. Supporting match entities have persistence ports, while public operations are organized around the primary records. Search and relationship queries are represented by focused query/projection adapters. Some previously proposed filenames have been consolidated; the code inventory and current service-structure document reflect the files that actually exist.
 
 The initial boilerplate was produced by one-time scaffolding scripts, which are excluded from the shared repository because source has been refined after generation. Edit the service files directly. The retained maintenance tools update documentation and diagram exports; see [Maintenance tools](../tools/README.md).
 

@@ -29,7 +29,7 @@ classDiagram
         <<interface>>
         find_connections(player_id, max_depth)
     }
-    class Neo4jRelationshipReader {
+    class PostgresRelationshipReader {
         str connection_url
     }
     class RecommendationService {
@@ -49,34 +49,17 @@ classDiagram
     class PostgresStatisticsProjection {
         str connection_url
     }
-    class GraphEventConsumer {
-        GraphProjectionService service
-    }
-    class GraphProjectionService {
-        GraphProjection projection
-    }
-    class GraphProjection {
-        <<interface>>
-        apply(event)
-        rebuild()
-    }
-    class Neo4jGraphProjection {
-        str connection_url
-    }
     ComparisonServiceController --> ComparisonService
     ComparisonService --> StatisticsReader
     ComparisonService --> ComparisonCache
     PostgresStatisticsReader ..|> StatisticsReader
     RedisComparisonCache ..|> ComparisonCache
     RelationshipService --> RelationshipReader
-    Neo4jRelationshipReader ..|> RelationshipReader
+    PostgresRelationshipReader ..|> RelationshipReader
     RecommendationService --> StatisticsReader
     StatisticsEventConsumer --> StatisticsProjectionService
     StatisticsProjectionService --> StatisticsProjection
     PostgresStatisticsProjection ..|> StatisticsProjection
-    GraphEventConsumer --> GraphProjectionService
-    GraphProjectionService --> GraphProjection
-    Neo4jGraphProjection ..|> GraphProjection
     class ComparisonQuery {
         UUID team1_id
         UUID team2_id

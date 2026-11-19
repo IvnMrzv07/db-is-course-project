@@ -105,7 +105,7 @@ class ArchitectureTests(unittest.TestCase):
         for path in source_files():
             declared.update(n.name for n in ast.parse(path.read_text(encoding='utf-8')).body
                             if isinstance(n, ast.ClassDef))
-        for path in (ROOT / 'docs/diagrams').glob('*-classes.mmd'):
+        for path in (ROOT.parent / 'docs/diagrams').glob('*-classes.mmd'):
             text = path.read_text(encoding='utf-8')
             names = re.findall(r'^\s*class\s+(\w+)', text, flags=re.MULTILINE)
             with self.subTest(diagram=path.name):
@@ -116,7 +116,7 @@ class ArchitectureTests(unittest.TestCase):
         pairs = [
             ('analytics', 'statistics_reader', 'StatisticsReader', 'database', 'PostgresStatisticsReader'),
             ('analytics', 'comparison_cache', 'ComparisonCache', 'cache', 'RedisComparisonCache'),
-            ('analytics', 'relationship_reader', 'RelationshipReader', 'graph', 'Neo4jRelationshipReader'),
+            ('analytics', 'relationship_reader', 'RelationshipReader', 'database', 'PostgresRelationshipReader'),
             ('search', 'search_reader', 'SearchReader', 'search', 'ElasticsearchReader'),
             ('search', 'search_cache', 'SearchCache', 'cache', 'RedisSearchCache'),
             ('search', 'search_history', 'SearchHistory', 'search', 'ElasticsearchHistory'),

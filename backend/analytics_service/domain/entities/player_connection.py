@@ -7,7 +7,7 @@ from uuid import UUID
 
 @dataclass(frozen=True, kw_only=True)
 class PlayerConnection:
-    """Graph evidence, not an inferred permanent contract or exact transfer date."""
+    """Relationship evidence from match lineups, not an inferred permanent contract or exact transfer date."""
 
     player1_id: UUID
     player2_id: UUID
