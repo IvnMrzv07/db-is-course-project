@@ -96,6 +96,21 @@ docker compose -f deploy/docker-compose.sharded.yml --env-file .env run --rm --n
 
 Evidence (100,000 indexed documents, event path, examples, timings, degraded state): [docs/coursework/stages/search-summary/](docs/coursework/stages/search-summary/results.md).
 
+## High-load runs
+
+The stand can write generated documents (`load-cs`) at full speed for as long as the disk lasts, survive the loss of a shard, and be emptied partly or completely:
+
+```sh
+python tools/ops/cs_ops.py up                      # three shards, http://localhost:8082 (--shards 1: one shard)
+python tools/ops/cs_ops.py start --rate 0          # 0 = MAX; prints the job ID
+python tools/ops/cs_ops.py shard kill 2            # and later: shard start 2
+python tools/ops/cs_ops.py verify --job <ID>       # recomputes every expected document ID
+python tools/ops/cs_ops.py purge --percent 50 --yes
+python tools/ops/cs_ops.py reset --yes             # empties every store of the stand
+```
+
+`WT_CACHE_GB`, `OPLOG_MB` and `LOAD_DOCUMENTS` in `.env` size the stand. Rules: [runtime](docs/stages9-12-runtime.md); measurements: [tools/load](tools/load/README.md); plan: [docs/coursework/high-load-plan.md](docs/coursework/high-load-plan.md).
+
 ## Partitioned Ingestion outbox
 
 `replay_batches` and `replay_outbox` in the Ingestion PostgreSQL database are partitioned by `created_at`. There is one partition per UTC day plus a `DEFAULT` fallback. Services convert an existing database in place on start. The ingestion worker creates upcoming partitions and drops day partitions older than `REPLAY_PARTITION_RETENTION_DAYS` (default 7), but only when they hold no unsent outbox rows and no pending batches. Inspect or clean up manually inside the ingestion container:

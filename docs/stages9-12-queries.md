@@ -2,11 +2,11 @@
 
 ## MongoDB queries
 
-All queries target Content-owned collections, use sessions for batch writes and bounded execution for public reads. `_id` is a stable UUID string. The services issue no sharding or partitioning commands; in the optional sharded variant, sharding is configured by `deploy/mongo-sharded-init.sh`, not by Content.
+All queries target Content-owned collections, use sessions for batch writes and bounded execution for public reads. `_id` is a stable UUID string. The services issue no sharding or partitioning commands; in the optional sharded variant, sharding is configured by `deploy/mongo-sharded-init.sh`, not by Content. The only exception is the operator command `content_service.manage reset`, which drops and reshards the collection.
 
 ### Public reads and filters
 
-`GET /documents?q=Alpha&document_type=map&page=1&page_size=20` returns `{items, total, page, page_size}`. `GET /documents/{id}` returns the full document or 404. Literal search is escaped before `$regex` with option `i`. Dates include the full end date. Exact team matching covers both team fields. Every list query is restricted to one `corpus_scope` (`kaggle-cs` by default; `&corpus_scope=synthetic-cs` selects the generated load corpus), so factual and synthetic documents are never mixed in one result. `GET /corpus/statistics` returns `stored_documents` (sum over scopes) and `stored_by_scope`.
+`GET /documents?q=Alpha&document_type=map&page=1&page_size=20` returns `{items, total, page, page_size, degraded}`; `degraded: true` means a shard did not answer and the list is partial. `GET /documents/{id}` returns the full document or 404. Literal search is escaped before `$regex` with option `i`. Dates include the full end date. Exact team matching covers both team fields. Every list query is restricted to one `corpus_scope` (`kaggle-cs` by default; `&corpus_scope=synthetic-cs` selects the generated load corpus), so factual and synthetic documents are never mixed in one result. `GET /corpus/statistics` returns `stored_documents` (sum over scopes) and `stored_by_scope`.
 
 ### Distributed map-reduce (`GET /distributed/map-reduce`)
 
@@ -26,6 +26,7 @@ Read-only aggregation over `metadata.template_version = "2"` documents of both s
 - Derived indicators (averages, shares, K/D) are computed once in the application layer from the raw sums.
 - Response: `rows`, `matched_documents` (`countDocuments` with the same filter), `coverage` (Σ group counter = matched), `comparison` (`aggregate` vs `mapreduce`, field by field; floats with `rel_tol 1e-9`), `executions[]` (`elapsed_ms`, `groups_returned`, `plan` = per-shard summary of `explain` with `executionStats`), `topology` (`$collStats {count: {}}` per shard).
 - Limits: `maxTimeMS = 60000`; nginx allows 90 s on `/api/v1/distributed/`. `explain=true` executes the query a second time.
+
 
 
 
@@ -64,15 +65,18 @@ def mongo_filter(query: DocumentQuery) -> dict:
 ### content_service/infrastructure/database/corpus_repository.py — initialize
 
 ```python
-async def initialize(self):
-        for fields in ([('corpus_scope', 1), ('publication_status', 1), ('_id', 1)],
-                       [('corpus_scope', 1), ('metadata.document_type', 1), ('_id', 1)],
-                       [('metadata.tournament', 1), ('_id', 1)],
-                       [('metadata.team1', 1), ('_id', 1)], [('metadata.team2', 1), ('_id', 1)],
-                       [('metadata.played_at', 1), ('_id', 1)]):
-            await self.documents.create_index(fields)
+async def initialize(self, *, lean_indexes: bool | None = None):
+        if lean_indexes is None:  # services keep whichever profile the store was created with
+            lean_indexes = any(name.endswith(LEAN_SUFFIX) for name in await self.documents.index_information())
+        for fields in BASE_INDEXES:
+            await self.documents.create_index(list(fields))
+        for fields in DOMAIN_INDEXES:
+            options = {'name': '_'.join(f'{field}_{order}' for field, order in fields) + LEAN_SUFFIX,
+                       'partialFilterExpression': {'corpus_scope': {'$in': list(INDEXED_SCOPES)}}} if lean_indexes else {}
+            await self.documents.create_index(list(fields), **options)
         await self.db.committed_batches.create_index([('committed_at', 1)])
         await self.db.outbox.create_index([('sent', 1)])
+        await self.db.outbox.create_index([('sent_at', 1)], expireAfterSeconds=OUTBOX_SENT_TTL_SECONDS)
         # Pre-create collections before the first transaction.
         for name in ('source_documents', 'committed_batches', 'outbox', 'corpus_counters'):
             if name not in await self.db.list_collection_names():
@@ -84,7 +88,7 @@ async def initialize(self):
                 except OperationFailure as exc:
                     if exc.code != 48:
                         raise
-        for scope in ('kaggle-cs', 'synthetic-cs'):
+        for scope in CORPUS_SCOPES:
             await self.db.corpus_counters.update_one({'_id':scope}, {'$setOnInsert':{'stored_documents':0}}, upsert=True)
 ```
 
@@ -93,9 +97,34 @@ async def initialize(self):
 ```python
 async def browse(self, query):
         where = mongo_filter(query)
-        total = await self.documents.count_documents(where, maxTimeMS=2000)
-        cursor = self.documents.find(where, {'text': 0}).sort('_id', 1).skip((query.page - 1) * query.page_size).limit(query.page_size).max_time_ms(2000)
-        return {'items': [public(d) async for d in cursor], 'total': total, 'page': query.page, 'page_size': query.page_size}
+        offset = (query.page - 1) * query.page_size
+        # With a shard absent the others still answer; mongos reports the gap instead of failing the list.
+        reply = await self.db.command({'find': 'source_documents', 'filter': where, 'projection': {'text': 0},
+            'sort': {'_id': 1}, 'skip': offset, 'limit': query.page_size, 'singleBatch': True,
+            'allowPartialResults': True, 'maxTimeMS': 2000})
+        items = [public(d) for d in reply['cursor']['firstBatch']]
+        degraded = bool(reply['cursor'].get('partialResultsReturned'))
+        total = await self._degraded_total(query, offset + len(items)) if degraded else await self._total(query, where)
+        return {'items': items, 'total': total, 'page': query.page, 'page_size': query.page_size, 'degraded': degraded}
+```
+
+### content_service/infrastructure/database/corpus_repository.py — _counters
+
+```python
+async def _counters(self):
+        return counters_by_scope([row async for row in self.db.corpus_counters.find({}, max_time_ms=2000)])
+```
+
+### content_service/infrastructure/database/corpus_repository.py — _total
+
+```python
+async def _total(self, query, where):
+        """Counting millions of load documents does not fit the read time limit: use counters or a bounded count."""
+        if query.corpus_scope != LOAD_SCOPE:
+            return await self.documents.count_documents(where, maxTimeMS=2000)
+        if query.is_whole_scope:
+            return (await self._counters()).get(LOAD_SCOPE, 0)
+        return await self.documents.count_documents(where, limit=LOAD_COUNT_LIMIT, maxTimeMS=2000)
 ```
 
 ### content_service/infrastructure/database/corpus_repository.py — read
@@ -114,8 +143,8 @@ async def statistics(self):
             {'$match': {'committed_at': {'$gte': now - timedelta(seconds=10)}}},
             {'$group': {'_id': None, 'inserted': {'$sum': '$inserted'}}}], maxTimeMS=2000)
         rows = await samples.to_list()
-        # One counter document per corpus scope; the total keeps its stage 9-12 meaning for kaggle-only stacks.
-        counters = {row['_id']: row['stored_documents'] async for row in self.db.corpus_counters.find({}, max_time_ms=2000)}
+        # Slots are summed per corpus scope; the total keeps its stage 9-12 meaning for kaggle-only stacks.
+        counters = await self._counters()
         return {'stored_documents': sum(counters.values()), 'stored_by_scope': counters,
                 'durable_documents_per_second': (rows[0]['inserted'] if rows else 0) / 10,
                 'sampled_at': now.isoformat()}
@@ -129,57 +158,231 @@ async def persist_batch(self, batch):
             receipt = await self.db.committed_batches.find_one({'_id': batch['batch_id']}, session=session)
             if receipt:
                 return receipt['result']
-            inserted, by_scope = 0, {}
             now = datetime.now(timezone.utc)
+            unique: dict[str, dict] = {}
             for source in batch['documents']:
                 document = dict(source)
                 document['_id'] = document.pop('id')
                 document['retrieved_at'] = batch['prepared_at']
                 document['stored_at'] = now
-                existing = await self.documents.find_one({'_id':document['_id']}, {'metadata.snapshot_sha256':1,'metadata.template_version':1}, session=session)
-                if existing and any(existing['metadata'].get(k) != document['metadata'].get(k) for k in ('snapshot_sha256','template_version')):
-                    raise ValueError('Existing document belongs to another snapshot/template; migration required')
-                result = await self.documents.update_one({'_id': document['_id']}, {'$setOnInsert': document}, upsert=True, session=session)
-                if result.upserted_id is not None:
-                    inserted += 1
-                    by_scope[document['corpus_scope']] = by_scope.get(document['corpus_scope'], 0) + 1
+                # The same ID twice in one batch is a duplicate, exactly as if the first copy was already stored.
+                require_same_snapshot(unique.setdefault(document['_id'], document), document)
+            # One read and one bulk insert per batch. Two statements per document cost ~200 round trips through
+            # mongos per 100 documents and limited a writer to ~1,000 documents/s.
+            stored = set()
+            async for existing in self.documents.find({'_id': {'$in': list(unique)}},
+                                                      {f'metadata.{field}': 1 for field in SNAPSHOT_FIELDS}, session=session):
+                require_same_snapshot(existing, unique[existing['_id']])
+                stored.add(existing['_id'])
+            new = [document for key, document in unique.items() if key not in stored]
+            if new:
+                await self.documents.insert_many(new, ordered=False, session=session)
+            by_scope: dict[str, int] = {}
+            for document in new:
+                by_scope[document['corpus_scope']] = by_scope.get(document['corpus_scope'], 0) + 1
+            inserted = len(new)
             result = {'job_id': batch['job_id'], 'batch_id': batch['batch_id'], 'checkpoint': batch['checkpoint'],
                       'inserted': inserted, 'duplicates': len(batch['documents']) - inserted, 'rejected': 0}
             for scope, count in sorted(by_scope.items()):
-                await self.db.corpus_counters.update_one({'_id':scope}, {'$inc':{'stored_documents':count}}, upsert=True, session=session)
+                await self.db.corpus_counters.update_one({'_id': counter_id(scope, batch['batch_id'])},
+                    {'$inc': {'stored_documents': count}}, upsert=True, session=session)
             await self.db.committed_batches.insert_one({'_id': batch['batch_id'], 'committed_at': now,
                 'inserted': inserted, 'result': result}, session=session)
             await self.db.outbox.insert_one({'_id': batch['batch_id'], 'payload': result, 'sent': False}, session=session)
-            if self.index_events:
+            indexable = [d for d in batch['documents'] if d['corpus_scope'] in self.index_scopes] if self.index_events else []
+            if indexable:
                 # All batch documents (new and duplicate): indexing is idempotent by id + external version,
                 # so a replay of an already stored snapshot also repairs a lagging or rebuilt index.
                 await self.db.outbox.insert_one({'_id': 'index:' + batch['batch_id'], 'queue': SEARCH_INDEX_QUEUE,
-                                                 'payload': index_event(batch['batch_id'], batch['documents'], now=now),
+                                                 'payload': index_event(batch['batch_id'], indexable, now=now),
                                                  'sent': False}, session=session)
             return result
-        async with self.db.client.start_session() as session:
-            from pymongo.write_concern import WriteConcern
-            from pymongo.read_concern import ReadConcern
-            return await session.with_transaction(transaction, read_concern=ReadConcern('snapshot'), write_concern=WriteConcern('majority'))
+        from pymongo.write_concern import WriteConcern
+        from pymongo.read_concern import ReadConcern
+        try:
+            async with asyncio.timeout(self.commit_timeout):
+                async with self.db.client.start_session() as session:
+                    return await session.with_transaction(transaction, read_concern=ReadConcern('snapshot'), write_concern=WriteConcern('majority'))
+        except TimeoutError as exc:
+            # The commit may still have succeeded: the retry then finds the receipt and repeats its result.
+            raise StoreUnavailable(f'No commit within {self.commit_timeout} s') from exc
+        except PyMongoError as exc:
+            if is_unavailable(exc):
+                raise StoreUnavailable(f'{type(exc).__name__}: {str(exc)[:200]}') from exc
+            raise
 ```
 
-### content_service/worker.py — dispatch
+### content_service/infrastructure/database/corpus_repository.py — unsent
 
 ```python
-async def dispatch():
-        while True:
+async def unsent(self, limit):
+        return [row async for row in self.db.outbox.find({'sent': False}).limit(limit)]
+```
+
+### content_service/infrastructure/database/corpus_repository.py — mark_sent
+
+```python
+async def mark_sent(self, rows):
+        """Confirmed by the broker: completions are marked, index events (they carry document text) are removed."""
+        finished = [row['_id'] for row in rows if row.get('queue') == SEARCH_INDEX_QUEUE]
+        marked = [row['_id'] for row in rows if row.get('queue') != SEARCH_INDEX_QUEUE]
+        if finished:
+            await self.db.outbox.delete_many({'_id': {'$in': finished}})
+        if marked:
+            await self.db.outbox.update_many({'_id': {'$in': marked}},
+                                             {'$set': {'sent': True, 'sent_at': datetime.now(timezone.utc)}})
+```
+
+### content_service/infrastructure/database/cluster_status.py — status
+
+```python
+async def status(self) -> dict:
+        now = datetime.now(timezone.utc).isoformat()
+        hello = await self.client.admin.command('hello')
+        if hello.get('msg') != 'isdbgrid':
+            return {'topology': 'single', 'shards': [], 'available': bool(hello.get('isWritablePrimary')), 'sampled_at': now}
+        shards = (await self.client.admin.command('listShards'))['shards']
+        pools = (await self.client.admin.command('connPoolStats')).get('replicaSets', {})
+        views = [shard_view(shard, pools) for shard in sorted(shards, key=lambda shard: shard['_id'])]
+        primary = await self.client.config.databases.find_one({'_id': self.database}, {'primary': 1})
+        available = all(view['available'] for view in views)
+        counts = {}
+        if available:  # $collStats needs every shard; during an outage only availability is reported
             try:
-                async for row in repository.db.outbox.find({'sent':False}).limit(100):
-                    queue = row.get('queue', 'corpus.completed')
-                    await broker.publish(queue, row['payload'])
-                    if queue == SEARCH_INDEX_QUEUE:
-                        # Index events carry document text; once confirmed by the broker they are not kept.
-                        await repository.db.outbox.delete_one({'_id':row['_id']})
-                    else:
-                        await repository.db.outbox.update_one({'_id':row['_id']},{'$set':{'sent':True}})
-            except Exception:
-                logging.exception('Content outbox dispatch failed; retained for retry')
-            await asyncio.sleep(.1)
+                cursor = await self.client[self.database].source_documents.aggregate(
+                    [{'$collStats': {'count': {}}}], maxTimeMS=COUNT_TIMEOUT_MS)
+                counts = {row['shard']: row['count'] async for row in cursor}
+            except PyMongoError:
+                pass
+        for view in views:
+            # Collection metadata: after an unclean stop (SIGKILL) WiredTiger reports too few documents until
+            # `validate` runs, although nothing is lost. Never use it as proof; `content_service.manage verify` is.
+            view['documents_estimate'] = counts.get(view['id'])
+            # Receipts, counters and the outbox are unsharded: without this shard nothing can commit.
+            view['database_primary'] = bool(primary) and primary['primary'] == view['id']
+        return {'topology': 'sharded', 'shards': views, 'available': available, 'sampled_at': now}
+```
+
+### content_service/infrastructure/database/corpus_maintenance.py — verify
+
+```python
+async def verify(self, job: LoadJob, confirmed: int, produced: int) -> dict:
+        """Look up every expected ID. Documents below `confirmed` must exist; up to `produced` they may be in flight."""
+        if not 0 <= confirmed <= produced:
+            raise ValueError('Expected 0 <= confirmed <= produced')
+        limit, found, in_flight, missing = asyncio.Semaphore(PARALLEL), 0, 0, []
+
+        async def check(start: int, end: int):
+            nonlocal found, in_flight
+            async with limit:
+                identifiers = job.identifiers(start, end)
+                present = {row['_id'] async for row in self.documents.find({'_id': {'$in': identifiers}}, {'_id': 1})}
+            for offset, identifier in enumerate(identifiers, start):
+                if identifier in present:
+                    found, in_flight = found + (offset < confirmed), in_flight + (offset >= confirmed)
+                elif offset < confirmed:
+                    missing.append((offset, identifier))
+        # One group of chunks at a time: millions of IDs are never in memory together.
+        for group in range(0, produced, CHUNK * PARALLEL):
+            await asyncio.gather(*(check(start, min(start + CHUNK, produced))
+                                   for start in range(group, min(group + CHUNK * PARALLEL, produced), CHUNK)))
+        missing.sort()
+        unexpected = None
+        if job.bounds:
+            first, last = job.bounds
+            unexpected = await self.documents.count_documents({'_id': {'$gte': first, '$lte': last}}) - found - in_flight
+        return {'job_id': str(job.job_id), 'confirmed': confirmed, 'found': found, 'missing': len(missing),
+                'missing_sample': [{'index': index, 'id': identifier} for index, identifier in missing[:SAMPLE]],
+                'in_flight_found': in_flight, 'unexpected': unexpected, 'ok': not missing and not unexpected}
+```
+
+### content_service/infrastructure/database/corpus_maintenance.py — stats
+
+```python
+async def stats(self, *, exact: bool = True) -> dict:
+        counters = counters_by_scope([row async for row in self.db.corpus_counters.find({})])
+        shards = []
+        async for row in await self.documents.aggregate([{'$collStats': {'storageStats': {}}}]):
+            storage = row['storageStats']
+            # `count` and `size` are metadata and stay too low after an unclean stop of a shard, until `validate`.
+            shards.append({'shard': row.get('shard', 'single'), 'documents_estimate': storage['count'], 'data_bytes': storage['size'],
+                           'storage_bytes': storage['storageSize'], 'index_bytes': storage['totalIndexSize'],
+                           'reusable_bytes': storage.get('freeStorageSize', 0)})
+        shards.sort(key=lambda row: row['shard'])
+        return {'counters': counters, 'documents_exact': await self.documents.count_documents({}) if exact else None,
+                'documents_estimate': sum(row['documents_estimate'] for row in shards), 'shards': shards,
+                'receipts': await self.db.committed_batches.estimated_document_count(),
+                'outbox': await self.db.outbox.estimated_document_count()}
+```
+
+### content_service/infrastructure/database/corpus_maintenance.py — _delete
+
+```python
+async def _delete(self, identifiers: list[str]) -> int:
+        """Documents and their counter change in one transaction, so the dashboard total stays exact."""
+        slot = counter_id(LOAD_SCOPE, str(uuid4()))
+
+        async def transaction(session):
+            result = await self.documents.delete_many({'_id': {'$in': identifiers}, 'corpus_scope': LOAD_SCOPE}, session=session)
+            if result.deleted_count:
+                await self.db.corpus_counters.update_one({'_id': slot}, {'$inc': {'stored_documents': -result.deleted_count}},
+                                                         upsert=True, session=session)
+            return result.deleted_count
+        async with self.client.start_session() as session:
+            return await session.with_transaction(transaction, read_concern=ReadConcern('snapshot'),
+                                                  write_concern=WriteConcern('majority'))
+```
+
+### content_service/infrastructure/database/corpus_maintenance.py — _pages
+
+```python
+async def _pages(self, total: int):
+        """Load document IDs in ID order (for ordered IDs: the oldest first)."""
+        last, remaining = '', total
+        while remaining > 0:
+            rows = self.documents.find({'corpus_scope': LOAD_SCOPE, 'publication_status': 'published', '_id': {'$gt': last}},
+                                       {'_id': 1}).sort('_id', 1).limit(min(CHUNK * PARALLEL, remaining))
+            page = [row['_id'] async for row in rows]
+            if not page:
+                return
+            last, remaining = page[-1], remaining - len(page)
+            yield page
+```
+
+### content_service/infrastructure/database/corpus_maintenance.py — reset
+
+```python
+async def reset(self, *, lean_indexes: bool = False) -> dict:
+        """Drop all corpus collections (disk space returns at once) and recreate them, sharded behind mongos."""
+        before = await self.stats()
+        for name in COLLECTIONS:
+            await self.db.drop_collection(name)
+        shards = 0
+        if (await self.client.admin.command('hello')).get('msg') == 'isdbgrid':
+            shards = len((await self.client.admin.command('listShards'))['shards'])
+            await self.client.admin.command('enableSharding', self.name)
+            await self.documents.create_index([('_id', 'hashed')])
+            await self.client.admin.command({'shardCollection': f'{self.name}.source_documents', 'key': {'_id': 'hashed'},
+                                             'numInitialChunks': CHUNKS_PER_SHARD * shards})
+        await MongoCorpusRepository(self.db).initialize(lean_indexes=lean_indexes)
+        return {'dropped_documents': before['documents_exact'], 'shards': shards, 'after': await self.stats()}
+```
+
+### content_service/worker.py — dispatch_once
+
+```python
+async def dispatch_once(repository, publish, limit=DISPATCH_BATCH) -> int:
+    """Publish unsent rows concurrently; rows without a broker confirm stay unsent for the next cycle."""
+    rows = await repository.unsent(limit)
+    outcomes = await asyncio.gather(*(publish(row.get('queue', 'corpus.completed'), row['payload']) for row in rows),
+                                    return_exceptions=True)
+    confirmed = [row for row, outcome in zip(rows, outcomes) if not isinstance(outcome, BaseException)]
+    if confirmed:
+        await repository.mark_sent(confirmed)
+    failures = [outcome for outcome in outcomes if isinstance(outcome, BaseException)]
+    if failures:
+        raise failures[0]
+    return len(confirmed)
 ```
 
 ### content_service/infrastructure/database/distributed_aggregation.py — build_match
@@ -404,35 +607,41 @@ def backfill_filter(scope: str) -> dict:
 
 ## PostgreSQL queries
 
-DDL and constraints: `ingestion_service/infrastructure/database/migrations/001_replay.sql` (`replay_jobs`) and `002_partitioning.sql` (`replay_batches`, `replay_outbox`: `PARTITION BY RANGE (created_at)`, daily UTC partitions `<table>_pYYYYMMDD` plus a `DEFAULT` partition; keys `(id, created_at)`; composite FK `replay_outbox(id, created_at) -> replay_batches(id, created_at)`). Parameters are bound by asyncpg.
+DDL and constraints: `ingestion_service/infrastructure/database/migrations/001_replay.sql` (`replay_jobs`) and `003_high_load.sql` (rate and status constraints), `002_partitioning.sql` (`replay_batches`, `replay_outbox`: `PARTITION BY RANGE (created_at)`, daily UTC partitions `<table>_pYYYYMMDD` plus a `DEFAULT` partition; keys `(id, created_at)`; composite FK `replay_outbox(id, created_at) -> replay_batches(id, created_at)`). Parameters are bound by asyncpg.
 
 Partition DDL is issued by `ingestion_service/infrastructure/database/partitioning.py`; identifiers are built only from the fixed table names and dates. Creation: `CREATE TABLE <table>_pYYYYMMDD PARTITION OF <table> FOR VALUES FROM (day 00:00 UTC) TO (next day 00:00 UTC)`; rows stranded in `DEFAULT` are moved with `CREATE TABLE ... (LIKE ...)`, `INSERT ... SELECT`, `DELETE` and `ALTER TABLE ... ATTACH PARTITION`. Retention: `LOCK TABLE replay_batches, replay_outbox IN ACCESS EXCLUSIVE MODE` (with `lock_timeout`), `count(*)` of `NOT sent` / `status = 'pending'` rows in the expired partitions, then `DROP TABLE replay_outbox_pD`, `ALTER TABLE replay_batches DETACH PARTITION replay_batches_pD`, `DROP TABLE replay_batches_pD`.
 
-### ingestion_service/infrastructure/database/replay_store.py:112
+### ingestion_service/infrastructure/database/replay_store.py:193
+
+```sql
+Delete the whole replay history; refused while a job could still produce or publish.
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:158
 
 ```sql
 SELECT * FROM replay_jobs ORDER BY created_at DESC,id LIMIT $1 OFFSET $2
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:109
+### ingestion_service/infrastructure/database/replay_store.py:155
 
 ```sql
 SELECT * FROM replay_jobs WHERE id=$1
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:113
+### ingestion_service/infrastructure/database/replay_store.py:159
 
 ```sql
 SELECT count(*) FROM replay_jobs
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:58
+### ingestion_service/infrastructure/database/replay_store.py:102
 
 ```sql
 SELECT pg_advisory_xact_lock($1)
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:98
+### ingestion_service/infrastructure/database/replay_store.py:144
 
 ```sql
 INSERT INTO replay_jobs
@@ -440,117 +649,166 @@ INSERT INTO replay_jobs
                   VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(idempotency_key) DO NOTHING
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:103
+### ingestion_service/infrastructure/database/replay_store.py:149
 
 ```sql
 SELECT * FROM replay_jobs WHERE idempotency_key=$1
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:118
+### ingestion_service/infrastructure/database/replay_store.py:164
 
 ```sql
 SELECT * FROM replay_jobs WHERE id=$1 FOR UPDATE
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:126
+### ingestion_service/infrastructure/database/replay_store.py:172
 
 ```sql
 UPDATE replay_jobs SET status=$2,target_rate=$3,next_at=now(),updated_at=now() WHERE id=$1 RETURNING *
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:135
-
-```sql
-SELECT pg_advisory_xact_lock($1)
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:156
-
-```sql
-SELECT * FROM replay_jobs WHERE status='running' AND produced<total
-                    AND next_at<=now() AND produced-inserted-duplicates-rejected<1000
-                    ORDER BY next_at LIMIT 1 FOR UPDATE SKIP LOCKED
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:173
-
-```sql
-INSERT INTO replay_batches(id,job_id,start_offset,end_offset) VALUES($1,$2,$3,$4) RETURNING created_at
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:175
-
-```sql
-INSERT INTO replay_outbox(id,payload,created_at) VALUES($1,$2::jsonb,$3)
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:176
-
-```sql
-UPDATE replay_jobs SET produced=$2,next_at=$3,updated_at=now() WHERE id=$1
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:185
+### ingestion_service/infrastructure/database/replay_store.py:180
 
 ```sql
 SELECT * FROM replay_jobs WHERE id=$1 FOR UPDATE
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:189
+### ingestion_service/infrastructure/database/replay_store.py:185
 
 ```sql
-SELECT * FROM replay_batches WHERE id=$1 AND job_id=$2 AND created_at>=$3 FOR UPDATE
+UPDATE replay_outbox SET sent=true WHERE NOT sent AND created_at>=$2
+                    AND id IN (SELECT id FROM replay_batches WHERE job_id=$1 AND created_at>=$2 AND status='pending') RETURNING id,created_at
 ```
 
-### ingestion_service/infrastructure/database/replay_store.py:202
+### ingestion_service/infrastructure/database/replay_store.py:188
 
 ```sql
-UPDATE replay_batches SET status='completed' WHERE id=$1 AND created_at=$2
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:203
-
-```sql
-SELECT min(start_offset) FROM replay_batches WHERE job_id=$1 AND created_at>=$2 AND status!='completed'
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:207
-
-```sql
-UPDATE replay_jobs SET inserted=inserted+$2,duplicates=duplicates+$3,rejected=rejected+$4,checkpoint=$5,status=$6,updated_at=now() WHERE id=$1
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:163
-
-```sql
-UPDATE replay_jobs SET status='failed',error='Snapshot changed',updated_at=now() WHERE id=$1
-```
-
-### ingestion_service/infrastructure/database/replay_store.py:196
-
-```sql
-UPDATE replay_batches SET status='failed' WHERE id=$1 AND created_at=$2
+UPDATE replay_batches SET status='cancelled' WHERE id=$1 AND created_at=$2
 ```
 
 ### ingestion_service/infrastructure/database/replay_store.py:197
 
 ```sql
-UPDATE replay_jobs SET status='failed',error=$2,updated_at=now() WHERE id=$1
+SELECT count(*) FROM replay_jobs WHERE status IN ('running','paused')
 ```
 
-### ingestion_service/worker.py:22
+### ingestion_service/infrastructure/database/replay_store.py:200
 
 ```sql
-SELECT id,created_at,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT 50 FOR UPDATE SKIP LOCKED
+SELECT count(*) FROM replay_jobs
 ```
 
-### ingestion_service/worker.py:26
+### ingestion_service/infrastructure/database/replay_store.py:209
+
+```sql
+SELECT pg_advisory_xact_lock($1)
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:230
+
+```sql
+SELECT * FROM replay_jobs WHERE status='running' AND produced<total
+                    AND next_at<=now() AND produced-inserted-duplicates-rejected<$1
+                    ORDER BY next_at LIMIT 1 FOR UPDATE SKIP LOCKED
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:247
+
+```sql
+INSERT INTO replay_batches(id,job_id,start_offset,end_offset) VALUES($1,$2,$3,$4) RETURNING created_at
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:249
+
+```sql
+INSERT INTO replay_outbox(id,payload,created_at) VALUES($1,$2::jsonb,$3)
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:250
+
+```sql
+UPDATE replay_jobs SET produced=$2,next_at=$3,updated_at=now() WHERE id=$1
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:277
+
+```sql
+SELECT id,created_at,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT $1 FOR UPDATE SKIP LOCKED
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:297
+
+```sql
+SELECT * FROM replay_jobs WHERE id=$1 FOR UPDATE
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:301
+
+```sql
+SELECT * FROM replay_batches WHERE id=$1 AND job_id=$2 AND created_at>=$3 FOR UPDATE
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:314
+
+```sql
+UPDATE replay_batches SET status='completed' WHERE id=$1 AND created_at=$2
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:315
+
+```sql
+SELECT min(start_offset) FROM replay_batches WHERE job_id=$1 AND created_at>=$2 AND status!='completed'
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:319
+
+```sql
+UPDATE replay_jobs SET inserted=inserted+$2,duplicates=duplicates+$3,rejected=rejected+$4,checkpoint=$5,status=$6,updated_at=now() WHERE id=$1
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:190
+
+```sql
+UPDATE replay_jobs SET status='cancelled',updated_at=now() WHERE id=$1 RETURNING *
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:236
+
+```sql
+UPDATE replay_jobs SET status='failed',error='Snapshot changed',updated_at=now() WHERE id=$1
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:290
 
 ```sql
 UPDATE replay_outbox SET sent=true WHERE id=$1 AND created_at=$2
 ```
 
-### ingestion_service/presentation/api/app.py:56
+### ingestion_service/infrastructure/database/replay_store.py:308
+
+```sql
+UPDATE replay_batches SET status='failed' WHERE id=$1 AND created_at=$2
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:309
+
+```sql
+UPDATE replay_jobs SET status='failed',error=$2,updated_at=now() WHERE id=$1
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:285
+
+```sql
+UPDATE replay_jobs SET status='failed',error='Snapshot changed',updated_at=now() WHERE id=$1 AND status IN ('running','paused')
+```
+
+### ingestion_service/infrastructure/database/replay_store.py:286
+
+```sql
+UPDATE replay_batches SET status='failed' WHERE id=$1 AND created_at=$2
+```
+
+### ingestion_service/presentation/api/app.py:63
 
 ```sql
 SELECT 1
@@ -693,15 +951,14 @@ SELECT count(*) FROM
 ```
 ## Outcomes and indexes
 
-Batch completion returns `{job_id, batch_id, checkpoint, inserted, duplicates, rejected}`. The sum of counts must match the batch size. Failed batches carry `error` instead of successful counts. Job idempotency keys are unique. `replay_batches`/`replay_outbox` are partitioned, so their primary keys are `(id, created_at)`. `id = uuid5(job_id, start_offset)` stays globally unique by construction: `start_offset` is the job's `produced` value, advanced under the job row lock. `replay_batches(job_id,start_offset)` has a plain index. Pending batches/outbox entries have partial indexes, created on every partition. Completion lookups add `created_at >= job.created_at`, and outbox/batch updates use the full `(id, created_at)` key, so partitions are pruned. MongoDB has unique `_id`, filter indexes, a committed-time index and an outbox sent-state index.
+Batch completion returns `{job_id, batch_id, checkpoint, inserted, duplicates, rejected}`. The sum of counts must match the batch size. Failed batches carry `error` instead of successful counts. Job idempotency keys are unique. `replay_batches`/`replay_outbox` are partitioned, so their primary keys are `(id, created_at)`. `id = uuid5(job_id, start_offset)` stays globally unique by construction: `start_offset` is the job's `produced` value, advanced under the job row lock. `replay_batches(job_id,start_offset)` has a plain index. Unfinished batches (`status <> 'completed'`, the predicate of the checkpoint query) and unsent outbox entries have partial indexes, created on every partition; outbox payloads are references `{snapshot_id, snapshot_hash, start, end}`, not documents. Completion lookups add `created_at >= job.created_at`, and outbox/batch updates use the full `(id, created_at)` key, so partitions are pruned. MongoDB has unique `_id`, filter indexes, a committed-time index, an outbox sent-state index and a TTL index on `outbox.sent_at` (one day). Counters are kept in 64 slots per scope (`<scope>#NN`) plus the scope document; the stored total is their sum.
 
 ## Manual reconciliation
 
 ```javascript
 db.source_documents.countDocuments({corpus_scope:"kaggle-cs"})
-db.corpus_counters.findOne({_id:"kaggle-cs"})
+db.corpus_counters.aggregate([{$group:{_id:{$first:{$split:["$_id","#"]}},stored:{$sum:"$stored_documents"}}}])
 db.source_documents.countDocuments({corpus_scope:"synthetic-cs"})
-db.corpus_counters.findOne({_id:"synthetic-cs"})
 db.source_documents.countDocuments({corpus_scope:"synthetic-cs", is_synthetic:{$ne:true}})  // must be 0
 db.committed_batches.find({}, {result:1}).limit(5)
 ```

@@ -28,6 +28,7 @@ Full stack: copy `.env.example` → `.env`, set `OPERATOR_TOKEN` (≥24 chars), 
 - Opt-in real-stack tests: `RUN_STACK_TESTS=1` + `OPERATOR_TOKEN`, then `python -m pytest -m integration -v` (restarts Compose workers/DBs; slow).
 - `TEST_MONGO_URL` (replica set required) / `TEST_POSTGRES_URL` enable the real-DB tests in `test_mongo_runtime.py` / `test_postgres_runtime.py`; otherwise they skip.
 - Destructive resilience checks run only against the isolated `cs-acceptance` Compose project on port 8081 (`deploy/docker-compose.acceptance.yml`, scripts in `tests/acceptance/`). **Never run `docker compose down -v` against the main project**; its volumes hold the demo corpus.
+- High-load stand: `python tools/ops/cs_ops.py --help` (up, start, shard kill/start, verify, purge, reset); measurements in `tools/load/`. `purge` deletes only `load-cs`; `reset` empties every store of the stand, so never run it against a stand whose corpus matters.
 - Run APIs/workers manually: `uvicorn content_service.presentation.api.app:app --port 8000`, `uvicorn ingestion_service.presentation.api.app:app --port 8001`, `python -m content_service.worker`, `python -m ingestion_service.worker` (need `MONGO_URL`, `INGESTION_DATABASE_URL`, `BROKER_URL`, `CORPUS_DIR`, `OPERATOR_TOKEN`).
 
 ## Architecture
@@ -47,7 +48,7 @@ Data ownership: Content owns MongoDB `content` (`source_documents`, `committed_b
 
 Search (cs-sharded only): with `SEARCH_INDEX_EVENTS=1` Content stages a `search.index` event (projection of the batch documents, `contracts.IndexSourceDocuments`) in the same Mongo transaction as the batch; `search_worker` bulk-upserts into ES alias `cs-documents` with `_id` = document id and `version_type=external_gte` (idempotent). ES outage → event requeued, never quarantined. Full reindex: `python -m content_service.reindex` (Content reads its own Mongo, publishes through the broker); index maintenance: `python -m search_service.manage ensure|recreate|status`.
 
-Corpus invariants (see `docs/stages9-12-runtime.md`): document IDs are UUIDv5 over source-scoped keys (`match_id:series` or `match_id:map:game_id`); series and map documents are distinct types and must not be summed together; snapshot CSV SHA-256 and template version are stored per document, and a mismatch for an existing ID is rejected. Expected full import: 20,675 documents, 1 rejected row (CSV line 20100); plus the separate `synthetic-cs` load snapshot (79,325 SDV documents, total 100,000).
+Corpus invariants (see `docs/stages9-12-runtime.md`): document IDs are UUIDv5 over source-scoped keys (`match_id:series` or `match_id:map:game_id`); series and map documents are distinct types and must not be summed together; snapshot CSV SHA-256 and template version are stored per document, and a mismatch for an existing ID is rejected. Expected full import: 20,675 documents, 1 rejected row (CSV line 20100); plus the separate `synthetic-cs` load snapshot (79,325 SDV documents, total 100,000). `load-cs`/`load-cs-random` are unbounded generated snapshots (scope `load-cs`); keep them out of default reads, search and map-reduce.
 
 Operator endpoints need `Authorization: Bearer <OPERATOR_TOKEN>`; starting a replay requires `Idempotency-Key`.
 
