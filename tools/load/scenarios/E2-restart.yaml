@@ -1,0 +1,8 @@
+# Q2: restart of all shards in the middle: the data stays, the caches are cold.
+name: E2-restart
+snapshot: load-cs-random
+steps:
+  - run: 1800
+  - restart_shards: true
+  - run: 600
+probe_rps: 10

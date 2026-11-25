@@ -1,0 +1,2 @@
+# Charts of tools/load/report.py (not installed in the Docker image; use a separate virtualenv).
+matplotlib==3.10.8
