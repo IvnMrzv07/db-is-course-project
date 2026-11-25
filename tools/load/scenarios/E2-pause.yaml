@@ -1,0 +1,8 @@
+# Q2: after the slowdown: does a five-minute pause bring the speed back (checkpoints, cooling), or not (data volume)?
+name: E2-pause
+snapshot: load-cs-random
+steps:
+  - run: 1800
+  - pause: 300
+  - run: 600
+probe_rps: 10

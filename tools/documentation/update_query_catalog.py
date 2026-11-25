@@ -6,10 +6,10 @@ old=path.read_text(encoding='utf-8')
 intro=old.split('### content_service/')[0]
 footer=old[old.index('## Outcomes and indexes'):]
 chunks=[intro]
-for filename in ['content_service/infrastructure/database/corpus_repository.py','content_service/worker.py']:
+for filename in ['content_service/infrastructure/database/corpus_repository.py','content_service/infrastructure/database/cluster_status.py','content_service/infrastructure/database/corpus_maintenance.py','content_service/worker.py']:
     source=(root/'backend'/filename).read_text(encoding='utf-8')
     for item in ast.walk(ast.parse(source)):
-        if isinstance(item,(ast.FunctionDef,ast.AsyncFunctionDef)) and item.name in ('mongo_filter','initialize','browse','read','statistics','persist_batch','dispatch'):
+        if isinstance(item,(ast.FunctionDef,ast.AsyncFunctionDef)) and item.name in ('mongo_filter','initialize','browse','_total','_counters','read','statistics','persist_batch','unsent','mark_sent','status','verify','stats','_delete','_pages','reset','dispatch_once'):
             chunks.append(f'### {filename} — {item.name}\n\n```python\n{ast.get_source_segment(source,item)}\n```\n')
 distributed='content_service/infrastructure/database/distributed_aggregation.py'
 source=(root/'backend'/distributed).read_text(encoding='utf-8')
@@ -34,7 +34,7 @@ source=(root/'backend'/reindex).read_text(encoding='utf-8')
 for node in ast.parse(source).body:
     if isinstance(node,ast.FunctionDef) and node.name=='backfill_filter':
         chunks.append(f'### {reindex} — {node.name}\n\n```python\n{ast.get_source_segment(source,node)}\n```\n')
-chunks.append('## PostgreSQL queries\n\nDDL and constraints: `ingestion_service/infrastructure/database/migrations/001_replay.sql` (`replay_jobs`) and `002_partitioning.sql` (`replay_batches`, `replay_outbox`: `PARTITION BY RANGE (created_at)`, daily UTC partitions `<table>_pYYYYMMDD` plus a `DEFAULT` partition; keys `(id, created_at)`; composite FK `replay_outbox(id, created_at) -> replay_batches(id, created_at)`). Parameters are bound by asyncpg.\n\n'
+chunks.append('## PostgreSQL queries\n\nDDL and constraints: `ingestion_service/infrastructure/database/migrations/001_replay.sql` (`replay_jobs`) and `003_high_load.sql` (rate and status constraints), `002_partitioning.sql` (`replay_batches`, `replay_outbox`: `PARTITION BY RANGE (created_at)`, daily UTC partitions `<table>_pYYYYMMDD` plus a `DEFAULT` partition; keys `(id, created_at)`; composite FK `replay_outbox(id, created_at) -> replay_batches(id, created_at)`). Parameters are bound by asyncpg.\n\n'
     'Partition DDL is issued by `ingestion_service/infrastructure/database/partitioning.py`; identifiers are built only from the fixed table names and dates. '
     'Creation: `CREATE TABLE <table>_pYYYYMMDD PARTITION OF <table> FOR VALUES FROM (day 00:00 UTC) TO (next day 00:00 UTC)`; rows stranded in `DEFAULT` are moved with `CREATE TABLE ... (LIKE ...)`, `INSERT ... SELECT`, `DELETE` and `ALTER TABLE ... ATTACH PARTITION`. '
     "Retention: `LOCK TABLE replay_batches, replay_outbox IN ACCESS EXCLUSIVE MODE` (with `lock_timeout`), `count(*)` of `NOT sent` / `status = 'pending'` rows in the expired partitions, then `DROP TABLE replay_outbox_pD`, `ALTER TABLE replay_batches DETACH PARTITION replay_batches_pD`, `DROP TABLE replay_batches_pD`.\n")

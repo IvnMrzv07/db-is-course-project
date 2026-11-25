@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 from pymongo.errors import PyMongoError
-from content_service.runtime import build_runtime, build_distributed_controller
+from content_service.runtime import build_runtime, build_cluster_controller, build_distributed_controller
 from content_service.application.dtos.document_query import DocumentQuery
 from content_service.application.dtos.distributed_query import DistributedAggregationQuery
 
@@ -12,6 +12,7 @@ async def lifespan(app):
     client, repository, controller, commands = await build_runtime()
     app.state.controller = controller
     app.state.distributed = build_distributed_controller(client)
+    app.state.cluster = build_cluster_controller(client)
     app.state.client = client
     yield
     await client.close()
@@ -51,6 +52,11 @@ async def document(document_id: UUID):
 @app.get('/api/v1/corpus/statistics')
 async def statistics():
     return await app.state.controller.statistics()
+
+@app.get('/api/v1/cluster/status')
+async def cluster_status():
+    """Shard availability seen by mongos (and documents per shard while all shards are up)."""
+    return await app.state.cluster.status()
 
 @app.get('/api/v1/distributed/map-reduce')
 async def distributed_map_reduce(metric: str = Query('map_pool', max_length=32),

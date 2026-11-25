@@ -5,8 +5,9 @@ from uuid import UUID
 import asyncpg
 from fastapi import FastAPI, Header, HTTPException, Depends, Query
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from ingestion_service.runtime import build_runtime
+from ingestion_service.application.services.commands.replay_operations import ReplayOperations
 from ingestion_service.infrastructure.database.replay_store import Conflict
 
 @asynccontextmanager
@@ -44,12 +45,18 @@ async def missing(request, exc):
 async def unavailable(request, exc):
     return JSONResponse(status_code=503,content={'detail':'Import database unavailable'})
 
-class StartBody(BaseModel):
-    snapshot_id: str = 'kaggle-cs'
-    target_rate: int = Field(100,ge=10,le=5000)
-
 class RateBody(BaseModel):
-    target_rate: int = Field(ge=10,le=5000)
+    target_rate: int = Field(description='Documents per second, 10-100000; 0 = unlimited (MAX)')
+
+    @field_validator('target_rate')
+    @classmethod
+    def supported(cls, value):
+        ReplayOperations.validate_rate(value)
+        return value
+
+class StartBody(RateBody):
+    snapshot_id: str = 'kaggle-cs'
+    target_rate: int = 100
 
 @app.get('/health')
 async def health():
@@ -86,3 +93,7 @@ async def pause(job_id: UUID):
 @app.post('/api/v1/replays/{job_id}/resume',dependencies=[Depends(operator)])
 async def resume(job_id: UUID):
     return await app.state.controller.change(str(job_id),'resume')
+
+@app.post('/api/v1/replays/{job_id}/cancel',dependencies=[Depends(operator)])
+async def cancel(job_id: UUID):
+    return await app.state.controller.change(str(job_id),'cancel')

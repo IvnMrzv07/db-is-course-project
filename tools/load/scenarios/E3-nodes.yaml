@@ -1,0 +1,6 @@
+# Q3: one node against three. Run on `cs_ops.py --shards 1` (WT_CACHE_GB=1 and 3) and `--shards 3` (WT_CACHE_GB=1).
+name: E3-nodes
+snapshot: load-cs
+steps:
+  - run: 1800
+probe_rps: 10

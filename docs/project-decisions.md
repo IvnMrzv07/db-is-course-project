@@ -134,3 +134,13 @@ These decisions supersede earlier implementation timing, not the long-term owner
 - D68: Partitioning is applied to Ingestion PostgreSQL `replay_batches`/`replay_outbox` (daily `RANGE (created_at)`, retention 7 days, never dropping unsent/pending rows). Sharding is applied to the largest store, MongoDB `content.source_documents`, `{_id: "hashed"}` over 3 shards (`cs-sharded`).
 - D69: Cross-shard collection uses MongoDB's native distributed aggregation; `mapReduce` is kept as a comparison engine in `GET /api/v1/distributed/map-reduce`. Spark is not introduced.
 - D70: Elasticsearch is the third technology (full-text search, highlighting, `_score`), fed by a `search.index` outbox event through RabbitMQ. Redis is not implemented.
+
+## High-load decisions (2026-11-25)
+
+- D71: Generated high-load documents live in `content.source_documents` under their own scope `load-cs` (`is_synthetic = true`, provider `cs_load_generator`). Default browsing, map-reduce `all`, reindexing and Elasticsearch exclude them.
+- D72: A load document is a pure function of `(job, index)`: no file on disk, identical on redelivery. Its ID is a UUIDv8 that grows with the index (`load-cs`) or a UUIDv5 (`load-cs-random`, comparison). Losses are found by recomputing every expected ID.
+- D73: Batches are written with one read and one bulk insert inside the same majority transaction; counters use 64 slots per scope. Durability and idempotency guarantees are unchanged.
+- D74: The PostgreSQL outbox stores references to immutable input; the dispatcher rebuilds documents when it publishes. A reference to changed input fails its job.
+- D75: Infrastructure failures (`StoreUnavailable`) requeue a batch without spending an attempt, for an outage of any length. Only invalid messages are quarantined after five attempts.
+- D76: Deletion is an operator action. Partial deletion touches only `load-cs` and keeps batch receipts; factual documents can only be removed by the full `reset`, which requires `--yes`.
+- D77: Bonus items of the November brief (update workload, replica sets, several hosts) are not planned.

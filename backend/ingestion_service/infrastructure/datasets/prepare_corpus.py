@@ -192,4 +192,6 @@ if __name__ == "__main__":
         with (args.output / "kaggle-cs.jsonl").open(encoding="utf-8") as lines:
             base_ids = {json.loads(line)["id"] for line in lines}
         reports.append(prepare_synthetic(args.synthetic, args.output, base_ids))
+        from ingestion_service.infrastructure.datasets.load_generator import prepare_load_base
+        prepare_load_base(args.synthetic, args.output)
     print(json.dumps([{k: v for k, v in r.items() if k != "issues"} | {"issues": r["issues"][:5]} for r in reports], indent=2))

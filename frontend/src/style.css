@@ -35,3 +35,4 @@ mark{background:#f4e27a;color:#1d2b1f;padding:0 2px;border-radius:2px}
 .block{display:block}.muted{color:#6e7b66}
 @media(max-width:1100px){.search-filters{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:720px){.search-filters{grid-template-columns:1fr 1fr}.score{width:64px}.score strong{font-size:16px}.fragments{grid-template-columns:1fr}.badge{display:inline-block;margin:6px 0 0}}
+.rate-max{display:flex;align-items:center;gap:6px;align-self:end;padding-bottom:10px;white-space:nowrap}.rate-max input{width:auto}

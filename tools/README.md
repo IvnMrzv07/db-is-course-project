@@ -59,3 +59,8 @@ The current frontend screenshots under `docs/coursework/stages/stage12-summary/`
 Backups used for the acceptance run are retained under ignored `artifacts/test-results/`; restored copies live in the isolated project's `restore_acceptance` databases. They are not published with the repository.
 
 - `verify_failed_job.py`: on the isolated stack, injects one invalid correlated batch and verifies failed-job reporting followed by successful fresh replay. Its retained dead letter is intentional evidence, not a main-demo error.
+
+## High load
+
+- `tools/ops/cs_ops.py`: operator console of a Compose stand (start, shard outage, verify, purge, reset). Standard library only.
+- `tools/load/`: scenario runner, report generator and host probe. See `tools/load/README.md`.

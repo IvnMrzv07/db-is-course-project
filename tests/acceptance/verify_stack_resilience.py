@@ -96,7 +96,7 @@ async def run():
   from ingestion_service.runtime import build_runtime
   pool,store,_=await build_runtime();await store.produce()
   row=await pool.fetchrow('SELECT id,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT 1')
-  await b.publish('corpus.store',json.loads(row['payload']));await pool.execute('UPDATE replay_outbox SET sent=true WHERE id=$1',row['id']);await pool.close()
+  await b.publish('corpus.store',store.materialize(json.loads(row['payload'])));await pool.execute('UPDATE replay_outbox SET sent=true WHERE id=$1',row['id']);await pool.close()
   for _ in range(30):
    await asyncio.sleep(.2);m=await q.get(fail=False)
    if m:break

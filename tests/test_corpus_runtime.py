@@ -14,7 +14,7 @@ from content_service.application.dtos.document_query import DocumentQuery
 from content_service.application.services.commands.corpus_command_service import CorpusCommandService
 from content_service.application.services.queries.corpus_query_service import CorpusQueryService
 from content_service.presentation.api.controllers.corpus_controller import CorpusController
-from content_service.infrastructure.database.corpus_repository import mongo_filter, MongoCorpusRepository
+from content_service.infrastructure.database.corpus_repository import counters_by_scope, mongo_filter, MongoCorpusRepository
 from content_service.presentation.api.app import app as content_app
 from ingestion_service.presentation.api.app import app as ingestion_app
 from ingestion_service.application.services.commands.replay_operations import ReplayOperations
@@ -120,7 +120,10 @@ def test_operator_auth_and_rate_bounds(monkeypatch):
     assert client.post('/api/v1/replays',json={}).status_code==401
     headers={'Authorization':'Bearer '+'x'*32,'Idempotency-Key':'test'}
     assert client.post('/api/v1/replays',headers=headers,json={'target_rate':9}).status_code==422
-    assert client.post('/api/v1/replays',headers=headers,json={'target_rate':5001}).status_code==422
+    for rate in (-1,100_001):
+        assert client.post('/api/v1/replays',headers=headers,json={'target_rate':rate}).status_code==422
+    for rate in (0,10,5001,100_000):  # 0 = MAX
+        assert client.post('/api/v1/replays',headers=headers,json={'target_rate':rate}).status_code==202
     assert client.post('/api/v1/replays',headers=headers,json={}).status_code==202
 
 
@@ -151,6 +154,14 @@ class Collection:
         if self.fail:
             raise RuntimeError('Injected outbox failure')
         self.rows[document['_id']]=copy.deepcopy(document)
+    async def insert_many(self,documents,**kwargs):
+        for document in documents:
+            assert document['_id'] not in self.rows, 'duplicate key'
+            await self.insert_one(document)
+    async def find(self,where,*args,**kwargs):
+        for key in where['_id']['$in']:
+            if key in self.rows:
+                yield copy.deepcopy(self.rows[key])
 
 class Session:
     def __init__(self,db): self.db=db
@@ -167,8 +178,12 @@ class Database:
     def __init__(self):
         for name in ('source_documents','committed_batches','corpus_counters','outbox'):
             setattr(self,name,Collection())
-        self.corpus_counters.rows['kaggle-cs']={'stored_documents':0}
+        self.corpus_counters.rows['kaggle-cs']={'_id':'kaggle-cs','stored_documents':0}
         self.client=SimpleNamespace(start_session=lambda:Session(self))
+
+
+def stored(db,scope='kaggle-cs'):
+    return counters_by_scope(db.corpus_counters.rows.values()).get(scope,0)
 
 
 def batch():
@@ -185,7 +200,7 @@ def test_batch_idempotency_and_new_job_duplicates():
         repeated={**command,'batch_id':str(uuid4()),'job_id':str(uuid4())}
         result=await service.store(repeated)
         assert result['inserted']==0 and result['duplicates']==1
-        assert db.corpus_counters.rows['kaggle-cs']['stored_documents']==1
+        assert stored(db)==1
         assert len(db.outbox.rows)==2
     asyncio.run(scenario())
 
@@ -197,7 +212,7 @@ def test_batch_rollback_if_outbox_write_fails():
         with pytest.raises(RuntimeError): await service.store(batch())
         assert db.source_documents.rows=={}
         assert db.committed_batches.rows=={}
-        assert db.corpus_counters.rows['kaggle-cs']['stored_documents']==0
+        assert stored(db)==0
     asyncio.run(scenario())
 
 
@@ -208,5 +223,5 @@ def test_reject_replacing_immutable_snapshot():
         command['batch_id']=str(uuid4())
         command['documents'][0]['metadata']['snapshot_sha256']='changed'
         with pytest.raises(ValueError): await service.store(command)
-        assert db.corpus_counters.rows['kaggle-cs']['stored_documents']==1
+        assert stored(db)==1
     asyncio.run(scenario())

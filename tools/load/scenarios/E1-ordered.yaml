@@ -1,0 +1,6 @@
+# Q1: does the write speed fall with time? Ordered IDs, all indexes.
+name: E1-ordered
+snapshot: load-cs
+steps:
+  - run: 2700
+probe_rps: 10

@@ -9,6 +9,7 @@ import asyncpg
 import httpx
 from pymongo import AsyncMongoClient
 from ingestion_service.infrastructure.messaging.runtime_broker import Broker
+from ingestion_service.runtime import build_runtime
 
 
 async def main():
@@ -17,7 +18,9 @@ async def main():
     broker = await Broker().connect()
     try:
         assert await pool.fetchval("SELECT count(*) FROM replay_jobs WHERE status IN ('running','paused')") == 0
-        payload = json.loads(await pool.fetchval('SELECT payload FROM replay_outbox ORDER BY created_at LIMIT 1'))
+        store_pool, store, _ = await build_runtime()
+        payload = store.materialize(json.loads(await pool.fetchval('SELECT payload FROM replay_outbox ORDER BY created_at LIMIT 1')))
+        await store_pool.close()
         receipt = await mongo.content.committed_batches.find_one({'_id': payload['batch_id']})
         before_jobs = await pool.fetch('SELECT id,inserted,duplicates,rejected,checkpoint,status FROM replay_jobs ORDER BY id')
         before_count = await mongo.content.source_documents.count_documents({})

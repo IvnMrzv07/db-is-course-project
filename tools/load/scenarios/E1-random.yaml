@@ -1,0 +1,6 @@
+# Q1: the same volume with random IDs: every insert lands on a random page of each index.
+name: E1-random
+snapshot: load-cs-random
+steps:
+  - run: 2700
+probe_rps: 10

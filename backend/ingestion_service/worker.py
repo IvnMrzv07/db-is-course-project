@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 from ingestion_service.runtime import build_runtime
 from ingestion_service.infrastructure.messaging.runtime_broker import Broker
@@ -9,24 +8,20 @@ async def run():
     broker = await Broker().connect()
     async def produce():
         while True:
+            produced = False
             try:
-                await store.produce()
+                produced = await store.produce()
             except Exception:
                 logging.exception('Producer failed; checkpoint retained')
-            await asyncio.sleep(.01)
+            await asyncio.sleep(0 if produced else .01)
     async def dispatch():
         while True:
+            published = 0
             try:
-                async with pool.acquire() as connection:
-                    async with connection.transaction():
-                        rows = await connection.fetch('SELECT id,created_at,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT 50 FOR UPDATE SKIP LOCKED')
-                        for row in rows:
-                            await broker.publish('corpus.store',json.loads(row['payload']))
-                            # (id, created_at) is the partitioned primary key: the update touches one partition.
-                            await connection.execute('UPDATE replay_outbox SET sent=true WHERE id=$1 AND created_at=$2',row['id'],row['created_at'])
+                published = await store.dispatch(broker.publish)
             except Exception:
                 logging.exception('Ingestion outbox dispatch failed; retained for retry')
-            await asyncio.sleep(.05)
+            await asyncio.sleep(0 if published else .05)
     async def maintain_partitions():
         # Creates upcoming day partitions and drops expired ones (retention); see partitioning.py.
         while True:

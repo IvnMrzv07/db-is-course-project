@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Idempotent initialisation of the sharded MongoDB cluster used by deploy/docker-compose.sharded.yml.
-# cfgRS (config server) + shard1RS/shard2RS/shard3RS (single-member replica sets) + mongos.
+# cfgRS (config server) + <shard>RS single-member replica sets (SHARDS, default three) + mongos.
 set -euo pipefail
 
-CHUNK_SIZE_MB="${CHUNK_SIZE_MB:-2}"
-INITIAL_CHUNKS="${INITIAL_CHUNKS:-12}"
+read -r -a SHARD_NAMES <<< "${SHARDS:-shard1 shard2 shard3}"
+CHUNK_SIZE_MB="${CHUNK_SIZE_MB:-128}"
+INITIAL_CHUNKS="${INITIAL_CHUNKS:-$((4 * ${#SHARD_NAMES[@]}))}"
 
 wait_ping() {
   until mongosh --host "$1" --quiet --eval 'db.adminCommand({ping:1}).ok' >/dev/null 2>&1; do sleep 1; done
@@ -20,24 +21,26 @@ init_rs() { # host:port rsName configsvr(true|false)
 }
 
 init_rs cfg1:27019 cfgRS true
-init_rs shard1:27018 shard1RS false
-init_rs shard2:27018 shard2RS false
-init_rs shard3:27018 shard3RS false
+SHARD_LIST=""
+for name in "${SHARD_NAMES[@]}"; do
+  init_rs "$name:27018" "${name}RS" false
+  SHARD_LIST="$SHARD_LIST['${name}RS', '${name}RS/$name:27018'],"
+done
 
 wait_ping mongos:27017
 mongosh --host mongos:27017 --quiet --eval "
   const existing = db.adminCommand({listShards: 1}).shards.map(s => s._id);
-  for (const [id, host] of [['shard1RS', 'shard1RS/shard1:27018'], ['shard2RS', 'shard2RS/shard2:27018'], ['shard3RS', 'shard3RS/shard3:27018']]) {
+  for (const [id, host] of [$SHARD_LIST]) {
     if (!existing.includes(id)) printjson(sh.addShard(host));
   }
-  // Small chunks so that 100k documents (~350 MB) span many chunks on every shard.
+  // Data is spread by the pre-split below; the chunk size only decides when the balancer starts migrations.
   db.getSiblingDB('config').settings.updateOne({_id: 'chunksize'}, {\$set: {value: $CHUNK_SIZE_MB}}, {upsert: true});
   sh.enableSharding('content');
   const content = db.getSiblingDB('content');
   const coll = db.getSiblingDB('config').collections.findOne({_id: 'content.source_documents'});
   if (!coll) {
     content.source_documents.createIndex({_id: 'hashed'});
-    // Hashed key on an empty collection: chunks are pre-split and spread over all 3 shards before any insert.
+    // Hashed key on an empty collection: chunks are pre-split and spread over all shards before any insert.
     printjson(db.adminCommand({shardCollection: 'content.source_documents', key: {_id: 'hashed'}, numInitialChunks: $INITIAL_CHUNKS}));
   } else {
     print('content.source_documents already sharded');

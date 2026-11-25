@@ -1,0 +1,8 @@
+# Q2: half of the documents deleted in the middle: is it the amount of data that slows writing down?
+name: E2-purge
+snapshot: load-cs-random
+steps:
+  - run: 1800
+  - purge_percent: 50
+  - run: 600
+probe_rps: 10

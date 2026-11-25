@@ -27,5 +27,7 @@ CREATE TABLE IF NOT EXISTS replay_outbox (
 CREATE TABLE IF NOT EXISTS replay_batches_default PARTITION OF replay_batches DEFAULT;
 CREATE TABLE IF NOT EXISTS replay_outbox_default PARTITION OF replay_outbox DEFAULT;
 CREATE INDEX IF NOT EXISTS replay_batches_job_offset ON replay_batches(job_id, start_offset);
-CREATE INDEX IF NOT EXISTS replay_batches_pending ON replay_batches(job_id, start_offset) WHERE status = 'pending';
+-- Predicate identical to the checkpoint query in complete(): only unfinished batches are read, so completing a
+-- batch costs the same at the end of a 9-million-document job as at its start.
+CREATE INDEX IF NOT EXISTS replay_batches_unfinished ON replay_batches(job_id, start_offset) WHERE status <> 'completed';
 CREATE INDEX IF NOT EXISTS replay_outbox_pending ON replay_outbox(created_at) WHERE NOT sent;
