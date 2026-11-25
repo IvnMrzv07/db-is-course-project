@@ -21,7 +21,7 @@ from ingestion_service.infrastructure.datasets.prepare_corpus import KAGGLE, SYN
 from ingestion_service.infrastructure.datasets.synthetic_rules import (
     MAP_COLUMNS, Pseudonyms, assemble, map_issue, relation_report, series_issue, valid_map_score,
     write_csv_gz)
-from tests.test_corpus_runtime import Database
+from tests.test_corpus_runtime import Database, stored
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "data" / "synthetic" / "synthetic-cs.csv.gz"
@@ -178,8 +178,7 @@ def test_content_enforces_scope_flag_and_counts_per_scope():
         batch = {"job_id": str(uuid4()), "batch_id": str(uuid4()), "checkpoint": 1,
                  "prepared_at": "2026-01-01T00:00:00+00:00", "documents": [synthetic]}
         assert (await service.store(batch))["inserted"] == 1
-        assert db.corpus_counters.rows["synthetic-cs"]["stored_documents"] == 1
-        assert db.corpus_counters.rows["kaggle-cs"]["stored_documents"] == 0
+        assert stored(db, "synthetic-cs") == 1 and stored(db, "kaggle-cs") == 0
         for wrong in ({**synthetic, "is_synthetic": False}, {**synthetic, "corpus_scope": "kaggle-cs"},
                       {**synthetic, "corpus_scope": "other"}):
             with pytest.raises(ValueError):

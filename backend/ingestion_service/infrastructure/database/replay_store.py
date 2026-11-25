@@ -1,16 +1,56 @@
 import hashlib
 import json
 import logging
+import os
+from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4, uuid5, UUID
 from datetime import datetime, timezone, timedelta
 from ingestion_service.infrastructure.database import partitioning
+from ingestion_service.infrastructure.datasets.load_generator import load_snapshots
 
 class Conflict(Exception):
     pass
 
+
+class SnapshotChanged(Exception):
+    """A staged reference points at input that is no longer available unchanged."""
+
+
+@dataclass(frozen=True)
+class ProductionLimits:
+    """Batch size and how many documents of one job may be in flight (backpressure for slow or absent shards)."""
+
+    batch_size: int = 500
+    max_outstanding: int = 20_000
+    load_documents: int = 20_000_000  # size of one `load-cs` job
+
+    def __post_init__(self):
+        # Content rejects batches above 1,000 documents; job counters are 32-bit integers.
+        if not 1 <= self.batch_size <= 1000 or self.max_outstanding < self.batch_size \
+                or not 1 <= self.load_documents < 2**31:
+            raise ValueError('Invalid replay production limits')
+
+    @classmethod
+    def from_env(cls, env=os.environ):
+        return cls(batch_size=int(env.get('REPLAY_BATCH_SIZE', cls.batch_size)),
+                   max_outstanding=int(env.get('REPLAY_MAX_OUTSTANDING', cls.max_outstanding)),
+                   load_documents=int(env.get('LOAD_DOCUMENTS', cls.load_documents)))
+
+    def size_for(self, target_rate: int) -> int:
+        """About ten batches per second for paced jobs; the full batch size at MAX (rate 0)."""
+        return self.batch_size if target_rate == 0 else min(self.batch_size, max(1, target_rate // 10))
+
 # Explicit allowlist of prepared snapshots; clients only choose among these IDs, never paths.
 SNAPSHOTS = ('kaggle-cs', 'synthetic-cs')
+
+
+def next_production(scheduled, now, documents, target_rate):
+    """Schedule from the previous slot, not from now: otherwise the time spent staging each batch lowers the rate.
+    A producer that fell behind catches up by at most one second."""
+    if not target_rate:
+        return now
+    return max(scheduled, now - timedelta(seconds=1)) + timedelta(seconds=documents / target_rate)
 
 
 class PreparedSnapshot:
@@ -30,6 +70,9 @@ class PreparedSnapshot:
             source.seek(self.offsets[start])
             return [json.loads(line) for line in source.read(self.offsets[stop] - self.offsets[start]).splitlines()]
 
+    def window(self, job_id, job_created_at, start, end):
+        return self[start:end]
+
     @classmethod
     def load(cls, path, manifest):
         digest, offsets = hashlib.sha256(), [0]
@@ -45,10 +88,11 @@ class PreparedSnapshot:
         return snapshot
 
 class PostgresReplayStore:
-    def __init__(self, pool, data_dir, partition_policy=None):
+    def __init__(self, pool, data_dir, partition_policy=None, limits=None):
         self.pool = pool
         self.data_dir = Path(data_dir)
         self.catalog = {}
+        self.limits = limits or ProductionLimits()
         self.partition_policy = partition_policy or partitioning.PartitionPolicy()
         self._ready_days = frozenset()
 
@@ -59,6 +103,7 @@ class PostgresReplayStore:
                 await connection.execute(Path(__file__).with_name('migrations').joinpath('001_replay.sql').read_text())
                 now = datetime.now(timezone.utc)
                 report = await partitioning.migrate(connection, partitioning.migration_sql(), now, self.partition_policy.ahead_days)
+                await connection.execute(Path(__file__).with_name('migrations').joinpath('003_high_load.sql').read_text())
                 if report['converted'] or report['created']:
                     logging.getLogger(__name__).info('Replay partitioning migration: %s', report)
         self._ready_days = frozenset(partitioning.days_to_ensure(now, self.partition_policy.ahead_days))
@@ -70,6 +115,7 @@ class PostgresReplayStore:
                 if manifest.get('snapshot_id', name) != name:
                     raise ValueError('Prepared manifest does not match its snapshot')
                 self.catalog[name] = (manifest, PreparedSnapshot.load(self.data_dir / f'{name}.jsonl', manifest))
+        self.catalog.update(load_snapshots(self.data_dir, self.limits.load_documents))
 
     async def snapshots(self):
         return [{'id': name, 'documents': manifest['accepted'], 'validation_rejected': manifest['rejected'],
@@ -127,6 +173,34 @@ class PostgresReplayStore:
                     row['id'],status,rate if action == 'rate' else row['target_rate'])
                 return self.view(updated)
 
+    async def cancel_job(self, job_id):
+        """Stop a job for good: staged but unpublished batches are dropped, published ones still complete."""
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                row = await connection.fetchrow('SELECT * FROM replay_jobs WHERE id=$1 FOR UPDATE',UUID(str(job_id)))
+                if not row:
+                    raise LookupError('Job not found')
+                if row['status'] not in ('running','paused'):
+                    raise Conflict('Only a running or paused job can be cancelled')
+                dropped = await connection.fetch("""UPDATE replay_outbox SET sent=true WHERE NOT sent AND created_at>=$2
+                    AND id IN (SELECT id FROM replay_batches WHERE job_id=$1 AND created_at>=$2 AND status='pending') RETURNING id,created_at""",
+                    row['id'],row['created_at'])
+                await connection.executemany("UPDATE replay_batches SET status='cancelled' WHERE id=$1 AND created_at=$2",
+                    [(batch['id'],batch['created_at']) for batch in dropped])
+                return self.view(await connection.fetchrow("UPDATE replay_jobs SET status='cancelled',updated_at=now() WHERE id=$1 RETURNING *",row['id']))
+
+    async def purge_jobs(self):
+        """Delete the whole replay history; refused while a job could still produce or publish."""
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                await connection.execute('LOCK TABLE replay_jobs IN ACCESS EXCLUSIVE MODE')
+                active = await connection.fetchval("SELECT count(*) FROM replay_jobs WHERE status IN ('running','paused')")
+                if active:
+                    raise Conflict(f'{active} active job(s): cancel them first')
+                deleted = await connection.fetchval('SELECT count(*) FROM replay_jobs')
+                await connection.execute('TRUNCATE replay_outbox, replay_batches, replay_jobs')
+                return deleted
+
     async def ensure_partitions(self, now=None):
         """Create today's and upcoming partitions (also called on write after a UTC day rollover)."""
         now = now or datetime.now(timezone.utc)
@@ -154,29 +228,67 @@ class PostgresReplayStore:
         async with self.pool.acquire() as connection:
             async with connection.transaction():
                 job = await connection.fetchrow("""SELECT * FROM replay_jobs WHERE status='running' AND produced<total
-                    AND next_at<=now() AND produced-inserted-duplicates-rejected<1000
-                    ORDER BY next_at LIMIT 1 FOR UPDATE SKIP LOCKED""")
+                    AND next_at<=now() AND produced-inserted-duplicates-rejected<$1
+                    ORDER BY next_at LIMIT 1 FOR UPDATE SKIP LOCKED""", self.limits.max_outstanding)
                 if not job:
                     return False
-                manifest, records = self.catalog[job['snapshot_id']]
-                if manifest['jsonl_sha256'] != job['snapshot_hash']:
+                if self._records(job['snapshot_id'], job['snapshot_hash']) is None:
                     await connection.execute("UPDATE replay_jobs SET status='failed',error='Snapshot changed',updated_at=now() WHERE id=$1",job['id'])
                     return False
-                size = min(100,max(1,job['target_rate']//10))
                 start = job['produced']
-                documents = records[start:start+size]
-                end = start + len(documents)
+                end = min(job['total'], start + self.limits.size_for(job['target_rate']))
                 batch_id = uuid5(job['id'],str(start))
-                payload = {'schema_version': 1, 'batch_id': str(batch_id), 'job_id': str(job['id']),
-                    'checkpoint': end, 'prepared_at': job['created_at'].isoformat(), 'documents': documents}
+                # Reference only: the input is immutable, so the dispatcher rebuilds the documents when it publishes.
+                # Full payloads stayed here for the whole retention period (~3 KB per document).
+                reference = {'schema_version': 2, 'batch_id': str(batch_id), 'job_id': str(job['id']),
+                    'prepared_at': job['created_at'].isoformat(), 'snapshot_id': job['snapshot_id'],
+                    'snapshot_hash': job['snapshot_hash'], 'start': start, 'end': end}
                 # Same created_at for batch and outbox row: composite FK, identical day partition.
                 created_at = await connection.fetchval('INSERT INTO replay_batches(id,job_id,start_offset,end_offset) VALUES($1,$2,$3,$4) RETURNING created_at',
                     batch_id,job['id'],start,end)
-                await connection.execute('INSERT INTO replay_outbox(id,payload,created_at) VALUES($1,$2::jsonb,$3)',batch_id,json.dumps(payload),created_at)
+                await connection.execute('INSERT INTO replay_outbox(id,payload,created_at) VALUES($1,$2::jsonb,$3)',batch_id,json.dumps(reference),created_at)
                 await connection.execute('UPDATE replay_jobs SET produced=$2,next_at=$3,updated_at=now() WHERE id=$1',
-                    job['id'],end,datetime.now(timezone.utc)+timedelta(seconds=len(documents)/job['target_rate']))
+                    job['id'],end,next_production(job['next_at'],datetime.now(timezone.utc),end-start,job['target_rate']))
                 logging.getLogger(__name__).debug('Staged job=%s batch=%s end=%s', job['id'], batch_id, end)
                 return True
+
+    def _records(self, snapshot_id, snapshot_hash):
+        manifest, records = self.catalog.get(snapshot_id, (None, None))
+        return records if manifest and manifest['jsonl_sha256'] == snapshot_hash else None
+
+    def materialize(self, payload):
+        """Build the Content message from a staged reference (rows staged before references carry documents)."""
+        if 'documents' in payload:
+            return payload
+        records = self._records(payload['snapshot_id'], payload['snapshot_hash'])
+        if records is None:
+            raise SnapshotChanged(payload['snapshot_id'])
+        documents = records.window(UUID(payload['job_id']), datetime.fromisoformat(payload['prepared_at']),
+                                   payload['start'], payload['end'])
+        if len(documents) != payload['end'] - payload['start']:
+            raise SnapshotChanged(payload['snapshot_id'])
+        return {'schema_version': 1, 'batch_id': payload['batch_id'], 'job_id': payload['job_id'],
+                'checkpoint': payload['end'], 'prepared_at': payload['prepared_at'], 'documents': documents}
+
+    async def dispatch(self, publish, limit=20):
+        """Publish staged batches; a row is marked sent only after the broker confirmed it."""
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                rows = await connection.fetch('SELECT id,created_at,payload FROM replay_outbox WHERE NOT sent ORDER BY created_at LIMIT $1 FOR UPDATE SKIP LOCKED', limit)
+                for row in rows:
+                    payload = json.loads(row['payload'])
+                    try:
+                        message = self.materialize(payload)
+                    except SnapshotChanged:
+                        # Never publishable again: fail the job visibly instead of retrying this row forever.
+                        job_id = UUID(payload['job_id'])
+                        await connection.execute("UPDATE replay_jobs SET status='failed',error='Snapshot changed',updated_at=now() WHERE id=$1 AND status IN ('running','paused')",job_id)
+                        await connection.execute("UPDATE replay_batches SET status='failed' WHERE id=$1 AND created_at=$2",row['id'],row['created_at'])
+                    else:
+                        await publish('corpus.store', message)
+                    # (id, created_at) is the partitioned primary key: the update touches one partition.
+                    await connection.execute('UPDATE replay_outbox SET sent=true WHERE id=$1 AND created_at=$2',row['id'],row['created_at'])
+                return len(rows)
 
     async def complete(self, result):
         async with self.pool.acquire() as connection:

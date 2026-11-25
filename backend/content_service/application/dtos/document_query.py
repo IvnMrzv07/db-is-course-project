@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
+from contracts.load_ids import LOAD_SCOPE
 
 @dataclass(frozen=True, kw_only=True)
 class DocumentQuery:
@@ -25,7 +26,11 @@ class DocumentQuery:
             raise ValueError('End date is outside supported range')
         if self.date_from and self.date_to and self.date_from > self.date_to:
             raise ValueError("Start date must precede end date")
-        if self.corpus_scope not in ("kaggle-cs", "synthetic-cs"):
+        if self.corpus_scope not in ("kaggle-cs", "synthetic-cs", LOAD_SCOPE):
             raise ValueError("Unknown corpus scope")
         if any(len(v) > 200 for v in (self.tournament or "", self.team or "")):
             raise ValueError("Filter too long")
+
+    @property
+    def is_whole_scope(self) -> bool:
+        return not (self.q.strip() or self.document_type or self.tournament or self.team or self.date_from or self.date_to)
